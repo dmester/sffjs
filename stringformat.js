@@ -30,6 +30,12 @@ var msf = {};
 
     // ***** Private Methods *****
     
+    // Minimization optimization 
+    function toUpperCase(s)
+    {
+        return s.toUpperCase();
+    }
+    
     // Converts a number to a string and ensures the number has at 
     // least two digits.
     function numberPair(n) {
@@ -38,7 +44,7 @@ var msf = {};
 
     // This method generates a culture object from a specified IETF language code
     function getCulture(lcid) {
-        lcid = lcid.toLowerCase();
+        lcid = toUpperCase(lcid);
         
         // Common format strings
         var t = {
@@ -60,7 +66,7 @@ var msf = {};
         };
         
         // Culture specific strings
-        if (lcid.substr(0, 2) == "sv") {
+        if (lcid.substr(0, 2) == "SV") {
             t.name = "sv-SE";
             t.d = "yyyy-MM-dd";
             t.D = "den dd MMMM yyyy";
@@ -71,7 +77,7 @@ var msf = {};
             t._ct = ".";
             t._cr = ",";
             t._c = "#,0.00 kr";
-        } else if (lcid != "en-gb") {
+        } else if (lcid != "EN-GB") {
             t.name = "en-US";
             t.t = "hh:mm tt";
             t.T = "hh:mm:ss tt";
@@ -89,37 +95,91 @@ var msf = {};
         
         return t;
     }
+    
+    function groupedAppend(out, value) {
+        for (var i in value) {
+            // Write number
+            out.push(value.charAt(i));
 
+            // Begin a new group?
+            if (out.g > 1 && out.g-- % 3 == 1) {
+                out.push(out.t);
+            }
+        }
+    }
+    
+    function round(number, decimals) {
+        var roundingFactor = Math.pow(10, decimals || 0);
+        return (Math.round(Math.abs(number) * roundingFactor) / roundingFactor).toString();
+    }
+    
+    function numberOfIntegralDigits(numberString) {
+        var point = numberString.indexOf(".");
+        return point < 0 ? numberString.length : point;
+    }
+    
+    function numberOfDecimalDigits(numberString) {
+        var point = numberString.indexOf(".");
+        return point < 0 ? 0 : numberString.length - point - 1;
+    }
+    
+    function basicNumberFormatter(number, minIntegralDigits, minDecimals, maxDecimals, radixPoint, thousandSeparator) {
+        var out = [];
+        out.t = thousandSeparator;
+        
+        if (number < 0) {
+            out.push("-");
+        }
+        
+        number = round(number, maxDecimals);
+        
+        var integralDigits = numberOfIntegralDigits(number);
+        minIntegralDigits -= (out.g = integralDigits);
+        
+        // Pad with zeroes
+        while (minIntegralDigits-- > 0) {
+            groupedAppend(out, "0");
+        }
+        
+        // Add integer part
+        groupedAppend(out, number.substr(0, integralDigits));
+        
+        // Add decimal point
+        var decimals = numberOfDecimalDigits(number);
+        
+        if (minDecimals || decimals) {
+            out.push(radixPoint);
+            
+            if (decimals) {
+                minDecimals -= decimals;
+                groupedAppend(out, number.substr(integralDigits + 1));
+            }
+            
+            // Pad with zeroes
+            while (minDecimals-- > 0) {
+                groupedAppend(out, "0");
+            }
+        }
+        
+        return out.join("");
+    }
+    
     // Handles the internal format processing of a number
-    function processNumber(input, format) {
+    function processNumber(input, format, radixPoint, thousandSeparator) {
         var digits = 0,
             forcedDigits = -1,
             integralDigits = -1,
-            groupCounter = 0,
             decimals = 0,
             forcedDecimals = -1,
             atDecimals = false,
             unused = true, // True until a digit has been written to the output
-            out = [], // Used as a StringBuilder
-            c, i;
-
-        // Groups a string of digits by thousands and appends them to the string writer.
-        function append(value) {
-            for (var i = 0; i < value.length; i++) {
-                // Write number
-                out.push(value.charAt(i));
-
-                // Begin a new group?
-                if (groupCounter > 1 && groupCounter-- % 3 == 1) {
-                    out.push(format.t);
-                }
-            }
-        }
+            c, i,
+            out = [];
 
         // Analyse format string
         // Count number of digits, decimals, forced digits and forced decimals.
-        for (i = 0; i < format.f.length; i++) {
-            c = format.f.charAt(i);
+        for (i in format) {
+            c = format.charAt(i);
 
             // Only 0 and # are digit placeholders, skip other characters in analyzing phase
             if (c == "0" || c == "#") {
@@ -147,23 +207,21 @@ var msf = {};
             out.push("-");
         }
 
-        // Round the input value to a specified number of decimals            
-        input = (Math.round(Math.abs(input) * Math.pow(10, decimals)) / Math.pow(10, decimals)).toString();
+        // Round the input value to a specified number of decimals
+        input = round(input, decimals);
 
         // Get integral length
-        integralDigits = input.indexOf(".");
-        integralDigits = integralDigits < 0 ? input.length : integralDigits;
+        integralDigits = numberOfIntegralDigits(input);
 
         // Set initial input cursor position
         i = integralDigits - digits;
 
-        // Group thousands?
-        if (format.f.match(/^[^\.]*[0#],[0#]/)) {
-            groupCounter = Math.max(integralDigits, forcedDigits);
-        }
-
-        for (var f = 0; f < format.f.length; f++) {
-            c = format.f.charAt(f);
+        // Initialize thousand grouping
+        out.g = Math.max(integralDigits, forcedDigits);
+        out.t = thousandSeparator;
+        
+        for (var f in format) {
+            c = format.charAt(f);
             
             // Digit placeholder
             if (c == "#" || c == "0") {
@@ -171,20 +229,20 @@ var msf = {};
                     // In the integral part
                     if (i >= 0) {
                         if (unused) {
-                            append(input.substr(0, i));
+                            groupedAppend(out, input.substr(0, i));
                         }
-                        append(input.charAt(i));
+                        groupedAppend(out, input.charAt(i));
 
                         // Not yet inside the input number, force a zero?
                     } else if (i >= integralDigits - forcedDigits) {
-                        append("0");
+                        groupedAppend(out, "0");
                     }
 
                     unused = false;
 
                 } else if (forcedDecimals-- > 0 || i < input.length) {
                     // In the fractional part
-                    append(i >= input.length ? "0" : input.charAt(i));
+                    groupedAppend(out, i >= input.length ? "0" : input.charAt(i));
                 }
 
                 i++;
@@ -192,7 +250,7 @@ var msf = {};
             // Radix point character according to current culture.
             } else if (c == ".") {
                 if (input.length > ++i || forcedDecimals > 0) {
-                    out.push(format.r);
+                    out.push(radixPoint);
                 }
 
             // Other characters are written as they are, except from commas
@@ -212,54 +270,139 @@ var msf = {};
         /// <param name="format">The formatting string used to format this number.</param>
 
         var number = Number(this);
-
-        if (format == "X") {
-            return Math.round(number).toString(16).toUpperCase();
-        } else if (format == "x") {
-            return Math.round(number).toString(16);
-        } else {
-            // Write number as currency formatted string
-            var formatting = {
-                t: msf.LC._t,
-                r: msf.LC._r
-            };
-
-            var g = "0.################",
-                lowerFormat = format ? format.toLowerCase() : null;
-                
-            if (lowerFormat === null || lowerFormat == "g") {
-                format = g;
-            } else if (lowerFormat == "n") {
-                format = "#," + g;
-            } else if (lowerFormat == "c") {
-                format = msf.LC._c;
-                formatting.r = msf.LC._cr;
-                formatting.t = msf.LC._ct;
-            } else if (lowerFormat == "f") {
-                format = "0.00";
-            }
-
-            // Thousands
-            if (format.indexOf(",.") !== -1) {
-                number /= 1000;
-            }
-
-            // Percent
-            if (format.indexOf("%") !== -1) {
-                number *= 100;
-            }
-
-            // Split groups ( positive; negative; zero, where the two last ones are optional)
-            var groups = format.split(";");
-            if (number < 0 && groups.length > 1) {
-                number *= -1;
-                formatting.f = groups[1];
-            } else {
-                formatting.f = groups[!number && groups.length > 2 ? 2 : 0];
-            }
-            
-            return processNumber(number, formatting);
+        var radixPoint = msf.LC._r;
+        var thousandSeparator = msf.LC._t;
+        
+        if (!isFinite(number)) {
+            return "" + number;
         }
+        
+        if (!format) {
+            return basicNumberFormatter(number, 0, 0, 10, radixPoint);
+        }
+        
+        var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d*)$/);
+        
+        if (standardFormatStringMatch)
+        {
+            var result;
+            var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]);
+            var precision = Number(standardFormatStringMatch[2]);
+            
+            // Standard numeric format string
+            switch (standardFormatStringMatch_UpperCase) {
+                case "R":
+                    return "" + number;
+                
+                case "X":
+                    var result = Math.round(number).toString(16);
+                    
+                    if (standardFormatStringMatch[1] == "X") {
+                        result = toUpperCase(result);
+                    }
+                    
+                    if (precision) {
+                        var paddingToAdd = precision - result.length;
+                        
+                        while (paddingToAdd-- > 0) {
+                            result = "0" + result;
+                        }
+                    }
+                    
+                    return result;
+                
+                case "C":
+                    format = msf.LC._c;
+                    radixPoint = msf.LC._cr;
+                    thousandSeparator = msf.LC._ct;
+                    break;
+                    
+                case "D":
+                    return basicNumberFormatter(number, precision || 1, 0, 0);
+                
+                case "F":
+                    thousandSeparator = "";
+                    // Fall through to N, which has the same format as F, except no thousand grouping
+                    
+                case "N":
+                    return basicNumberFormatter(number, 1, precision || 2, precision || 2, radixPoint, thousandSeparator);
+                
+                case "P":
+                    return basicNumberFormatter(number * 100, 1, precision || 2, precision || 2, radixPoint, thousandSeparator) + " %";
+                
+                case "G":
+                case "E":
+                    // Determine coefficient and exponent for normalized notation
+                    var exponent = 0;
+                    var coefficient = Math.abs(number);
+                    while (coefficient >= 10) {
+                        coefficient /= 10;
+                        exponent++;
+                    }
+                    
+                    while (coefficient < 1) {
+                        coefficient *= 10;
+                        exponent--;
+                    }
+                    
+                    var exponentPrefix = standardFormatStringMatch[1];
+                    var exponentPrecision = 3;
+                    
+                    var minDecimals = precision || 6;
+                    var maxDecimals = precision || 6;
+                    
+                    if (standardFormatStringMatch_UpperCase == "G") {
+                        if (exponent > -5 && (!precision || exponent < precision)) {
+                            minDecimals = precision ? precision - (exponent > 0 ? exponent + 1 : 1) : 0;
+                            maxDecimals = precision ? precision - (exponent > 0 ? exponent + 1 : 1) : 10;
+                        
+                            return basicNumberFormatter(number, 1, minDecimals, maxDecimals, radixPoint);
+                        }
+                    
+                        exponentPrefix = exponentPrefix == "G" ? "E" : "e";
+                        exponentPrecision = 2;
+                        
+                        // The precision of G is number of significant digits, not the number of decimals.
+                        minDecimals = precision ? precision - 1 : 0;
+                        maxDecimals = precision ? precision - 1 : 10;
+                    } else {
+                        
+                    }
+                    
+                    if (exponent >= 0) {
+                        exponentPrefix += "+";
+                    }
+                    
+                    if (number < 0) {
+                        coefficient *= -1;
+                    }
+                    
+                    return basicNumberFormatter("" + coefficient, 1, minDecimals, maxDecimals, radixPoint, thousandSeparator) + exponentPrefix + basicNumberFormatter(exponent, exponentPrecision, 0);
+            }
+        }
+        
+        // Custom numeric format string
+                
+        // Thousands
+        if (format.indexOf(",.") !== -1) {
+            number /= 1000;
+        }
+
+        // Percent
+        if (format.indexOf("%") !== -1) {
+            number *= 100;
+        }
+
+        // Split groups ( positive; negative; zero, where the two last ones are optional)
+        var groups = format.split(";");
+        if (number < 0 && groups.length > 1) {
+            number *= -1;
+            format = groups[1];
+        } else {
+            format = groups[!number && groups.length > 2 ? 2 : 0];
+        }
+        
+        return processNumber(number, format, radixPoint, format.match(/^[^\.]*[0#],[0#]/) && thousandSeparator);
     };
 
     // ***** Date Formatting *****
