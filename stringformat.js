@@ -1,6 +1,6 @@
 ﻿/**
  * String.format for JavaScript
- * Copyright (c) Daniel Mester Pirttijärvi 2012
+ * Copyright (c) Daniel Mester Pirttijärvi 2013
  * 
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
