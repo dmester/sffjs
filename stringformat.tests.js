@@ -39,7 +39,27 @@
         assert.doesThrow(function () { String.format("{1}", 42) }, "Missing argument", "Index out of range");
         assert.doesThrow(function () { String.format("{-1}", 42) }, "Missing argument", "Negative index");
 
+        
+        test.section("Path");
+        assert.formatsTo("Hi, John!", "Hi, {authors[0].firstname}!", testObject);
+        assert.formatsTo("Hi, !", "Hi, {authors[1].firstname}!", testObject);
+        
+        test.section("Resolve");
+        assert.areEqual(undefined, msf.resolve("fgfgdgh", undefined), "undefined value");
+        assert.areEqual(undefined, msf.resolve("fgfgdgh", testObject), "undefined member");
+        assert.areEqual(undefined, msf.resolve("authors.dfgggf", testObject), "undefined sub-member");
+        assert.areEqual(testObject.authors, msf.resolve("authors", testObject), "normal member");
+        assert.areEqual(1, msf.resolve("authors.length", testObject), "normal member");
+        assert.areEqual(testObject.authors[0], msf.resolve("authors[0]", testObject), "index member");
+        assert.areEqual("John", msf.resolve("authors[0].firstname", testObject), "index+normal member");
 
+        test.section("Resolve: should throw");
+        assert.doesThrow(function () { msf.resolve("fgdgg$", undefined) }, "Invalid path", "inline dollar sign");
+        assert.doesThrow(function () { msf.resolve("fgdgg[]", undefined) }, "Invalid path", "No index number specified");
+        assert.doesThrow(function () { msf.resolve("fgdgg[-1]", undefined) }, "Invalid path", "Negative index");
+        assert.doesThrow(function () { msf.resolve("fgdgg.", undefined) }, "Invalid path", "Ending point");
+        assert.doesThrow(function () { msf.resolve(".fgdgg", undefined) }, "Invalid path", "Starting point");
+        assert.doesThrow(function () { msf.resolve("fgdgg..hj", undefined) }, "Invalid path", "Double point");
 
         test.section("Special numeric values");
         assert.formatsTo("NaN", "{0}", NaN);

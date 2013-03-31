@@ -31,8 +31,7 @@ var msf = {};
     // ***** Private Methods *****
     
     // Minimization optimization 
-    function toUpperCase(s)
-    {
+    function toUpperCase(s) {
         return s.toUpperCase();
     }
     
@@ -449,27 +448,42 @@ var msf = {};
         /// <param name="obj1">Object 2 [optional]</param>
         /// <param name="obj2">Object 3 [optional]</param>
 
-        var outerArgs = arguments, arg;
+        var outerArgs = arguments, value;
         
-        return str.replace(/(\{*)\{((\d+)(\,(-?\d*))?(\:([^\}]*))?)\}/g, function () {
+        return str.replace(/(\{*)\{(([^,}:]+)(\,(-?\d*))?(\:([^\}]*))?)\}/g, function () {
             var innerArgs = arguments;
+            
+            // Ensure the starting { was not escaped
             if (innerArgs[1] && innerArgs[1].length % 2 == 1) {
+                
+                // It was! Just return the matched string
                 return innerArgs[0];
+                
             }
             
-            // Throw exception if argument is missing
-            if ((arg = outerArgs[parseInt(innerArgs[3], 10) + 1]) === undefined) {
-                throw "Missing argument";
+            if (/^\d+$/.test(innerArgs[3])) {
+                // Numeric mode
+                
+                // Read index and ensure it is within the bounds of the specified argument list
+                var index = Number(innerArgs[3]);
+                if (index > outerArgs.length - 2) {
+                    // Throw exception if argument is not specified (however undefined and null values are fine!)
+                    throw "Missing argument";
+                }
+                
+                value = outerArgs[index + 1];
+            } else {
+                // Object path mode
+                value = msf.resolve(innerArgs[3], outerArgs[1]);
             }
             
             // If the object has a custom format method, use it,
             // otherwise use toString to create a string
-            var formatted = arg.__Format ? 
-                    arg.__Format(innerArgs[7]) : 
-                    arg.toString();
-                    
-            var align = parseInt(innerArgs[5], 10) || 0;
-            var paddingLength = Math.abs(align) - formatted.length;
+            value = !hasValue(value) ? "" : value.__Format ? value.__Format(innerArgs[7]) : "" + value;
+            
+            // Add padding (if specified)
+            var align = Number(innerArgs[5]) || 0;
+            var paddingLength = Math.abs(align) - value.length;
 
             if (paddingLength > 0) {
                 // Build padding string
@@ -479,10 +493,11 @@ var msf = {};
                 }
 
                 // Add padding string at right side
-                formatted = align > 0 ? formatted + padding : padding + formatted;
+                value = align > 0 ? value + padding : padding + value;
             }
             
-            return innerArgs[1] + formatted;
+            // innerArgs[1] is the leading {'s
+            return innerArgs[1] + value;
         }).replace(/\{\{/g, "{").replace(/\}\}/g, "}");
     };
 
@@ -506,6 +521,30 @@ var msf = {};
     /*global navigator */// <- for JSLint, just ignore
     msf.setCulture(navigator.systemLanguage || navigator.language || "en-US");
     
+    function hasValue(value) {
+        return value !== null && !(typeof value === "undefined");
+    }
+
+    msf.resolve = function (path, value) {
+        if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
+            throw "Invalid path";
+        }
+        
+        if (hasValue(value)) {
+            var firstMember = /^[a-zA-Z_$]\w+/;
+            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g;
+            
+            var match = firstMember.exec(path);
+        
+            value = value[match[0]];
+            
+            while (hasValue(value) && (match = followingMembers.exec(path))) {
+                value = value[match[2] || Number(match[3])];
+            }
+        }
+        
+        return value;
+    };
 
     // Set Format methods
     var pr = Date.prototype;
