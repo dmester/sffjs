@@ -47,7 +47,7 @@ var msf = {};
 
     // Returns true if value is not null or undefined
     function hasValue(value) {
-        return value !== null && !(typeof value === "undefined");
+        return !(value === null || typeof value === "undefined");
     }
 
     // This method generates a culture object from a specified IETF language code
@@ -75,18 +75,48 @@ var msf = {};
             _pm: "PM"
         };
         
+        var language = lcid.substr(0, 2);
+        var europeanNumbers;
+        
         // Culture specific strings
-        if (lcid.substr(0, 2) == "SV") {
-            t.name = "sv-SE";
+        if (language == "SV") {
+            t.name = "sv";
             t.d = "yyyy-MM-dd";
             t.D = "'den 'd MMMM yyyy";
             t._m = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
             t._d = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
-            t._r = ",";
+            t._r = t._cr = ",";
             t._t = " ";
             t._ct = ".";
-            t._cr = ",";
             t._c = "#,0.00 kr";
+        } else if (language == "DE") {
+            t.name = "de";
+            t.M = "d. MMMM";
+            t.d = "yyyy-MM-dd";
+            t.D = "dddd, d. MMMM yyyy";
+            t._m = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
+            t._d = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
+            europeanNumbers = 1;
+        } else if (language == "ES") {
+            t.name = "es";
+            t.M = "d' de 'MMMM";
+            t.d = "dd/MM/yyyy";
+            t.Y = "MMMM' de 'yyyy";
+            t.D = "dddd, d' de 'MMMM' de 'yyyy";
+            t._m = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
+            t._d = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
+            europeanNumbers = 1;
+        } else if (language == "FR") {
+            t.name = "fr";
+            t._r = t._cr = ",";
+            t._t = t._ct = " ";
+            t._c = "#,0.00 €";
+            t.M = "";
+            t.d = "dd/MM/yyyy";
+            t.D = "dddd d MMMM yyyy";
+            t._m = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
+            t._d = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
+            europeanNumbers = 1;
         } else if (lcid != "EN-GB") {
             t.name = "en-US";
             t.t = "h:mm tt";
@@ -95,6 +125,12 @@ var msf = {};
             t.D = "dddd, MMMM d, yyyy";
             t.M = "MMMM d";
             t._c = "$#,0.00";
+        }
+        
+        if (europeanNumbers) {
+            t._r = t._cr = ",";
+            t._t = t._ct = ".";
+            t._c = "#,0.00 €";
         }
         
         // Composite formats
@@ -189,11 +225,9 @@ var msf = {};
         if (minDecimals || decimals) {
             out.push(radixPoint);
             
-            if (decimals) {
-                minDecimals -= decimals;
-                groupedAppend(out, number.substr(integralDigits + 1));
-            }
-            
+            minDecimals -= decimals;
+            groupedAppend(out, number.substr(integralDigits + 1));
+
             // Pad with zeroes
             while (minDecimals-- > 0) {
                 groupedAppend(out, "0");
