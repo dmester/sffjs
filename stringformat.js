@@ -41,6 +41,11 @@ var msf = {};
         return (n < 10 ? "0" : "") + n;
     }
 
+    // Returns true if value is not null or undefined
+    function hasValue(value) {
+        return value !== null && !(typeof value === "undefined");
+    }
+
     // This method generates a culture object from a specified IETF language code
     function getCulture(lcid) {
         lcid = toUpperCase(lcid);
@@ -95,18 +100,28 @@ var msf = {};
         return t;
     }
     
-    function groupedAppend(out, value) {
-        for (var i in value) {
-            // Write number
-            out.push(value.charAt(i));
-
-            // Begin a new group?
-            if (out.g > 1 && out.g-- % 3 == 1) {
-                out.push(out.t);
+    function resolvePath(path, value) {
+        if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
+            throw "Invalid path";
+        }
+        
+        if (hasValue(value)) {
+            var firstMember = /^[a-zA-Z_$]\w+/;
+            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g;
+            
+            var match = firstMember.exec(path);
+        
+            value = value[match[0]];
+            
+            while (hasValue(value) && (match = followingMembers.exec(path))) {
+                value = value[match[2] || Number(match[3])];
             }
         }
-    }
+        
+        return value;
+    };
     
+    // Maths
     function round(number, decimals) {
         var roundingFactor = Math.pow(10, decimals || 0);
         return (Math.round(Math.abs(number) * roundingFactor) / roundingFactor).toString();
@@ -122,6 +137,20 @@ var msf = {};
         return point < 0 ? 0 : numberString.length - point - 1;
     }
     
+    // Formatting helpers
+    function groupedAppend(out, value) {
+        for (var i in value) {
+            // Write number
+            out.push(value.charAt(i));
+
+            // Begin a new group?
+            if (out.g > 1 && out.g-- % 3 == 1) {
+                out.push(out.t);
+            }
+        }
+    }
+    
+    // Handles formatting of standard format strings
     function basicNumberFormatter(number, minIntegralDigits, minDecimals, maxDecimals, radixPoint, thousandSeparator) {
         var out = [];
         out.t = thousandSeparator;
@@ -163,8 +192,8 @@ var msf = {};
         return out.join("");
     }
     
-    // Handles the internal format processing of a number
-    function processNumber(input, format, radixPoint, thousandSeparator) {
+    // Handles formatting of custom format strings
+    function customNumberFormatter(input, format, radixPoint, thousandSeparator) {
         var digits = 0,
             forcedDigits = -1,
             integralDigits = -1,
@@ -260,7 +289,8 @@ var msf = {};
         
         return out.join("");
     }
-
+    
+    // ***** PUBLIC INTERFACE
     // ***** Number Formatting *****
     Number.prototype.__Format = function(format) {
         /// <summary>
@@ -401,7 +431,7 @@ var msf = {};
             format = groups[!number && groups.length > 2 ? 2 : 0];
         }
         
-        return processNumber(number, format, radixPoint, format.match(/^[^\.]*[0#],[0#]/) && thousandSeparator);
+        return customNumberFormatter(number, format, radixPoint, format.match(/^[^\.]*[0#],[0#]/) && thousandSeparator);
     };
 
     // ***** Date Formatting *****
@@ -474,7 +504,7 @@ var msf = {};
                 value = outerArgs[index + 1];
             } else {
                 // Object path mode
-                value = msf.resolve(innerArgs[3], outerArgs[1]);
+                value = resolvePath(innerArgs[3], outerArgs[1]);
             }
             
             // If the object has a custom format method, use it,
@@ -521,31 +551,6 @@ var msf = {};
     /*global navigator */// <- for JSLint, just ignore
     msf.setCulture(navigator.systemLanguage || navigator.language || "en-US");
     
-    function hasValue(value) {
-        return value !== null && !(typeof value === "undefined");
-    }
-
-    msf.resolve = function (path, value) {
-        if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
-            throw "Invalid path";
-        }
-        
-        if (hasValue(value)) {
-            var firstMember = /^[a-zA-Z_$]\w+/;
-            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g;
-            
-            var match = firstMember.exec(path);
-        
-            value = value[match[0]];
-            
-            while (hasValue(value) && (match = followingMembers.exec(path))) {
-                value = value[match[2] || Number(match[3])];
-            }
-        }
-        
-        return value;
-    };
-
     // Set Format methods
     var pr = Date.prototype;
     pr.format = pr.format || pr.__Format;
@@ -554,7 +559,8 @@ var msf = {};
     String.format = String.format || String.__Format;
 
 //#IF DEBUG
-        
+    msf.resolve = resolvePath;
+    
     msf.doBenchmark = function (format, arg) {
         /// <summary>
         ///     Tests the performance of the String.format script.
