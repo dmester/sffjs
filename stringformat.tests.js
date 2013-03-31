@@ -45,21 +45,61 @@
         assert.formatsTo("Hi, !", "Hi, {authors[1].firstname}!", testObject);
         
         test.section("Resolve");
-        assert.areEqual(undefined, msf.resolve("fgfgdgh", undefined), "undefined value");
-        assert.areEqual(undefined, msf.resolve("fgfgdgh", testObject), "undefined member");
-        assert.areEqual(undefined, msf.resolve("authors.dfgggf", testObject), "undefined sub-member");
-        assert.areEqual(testObject.authors, msf.resolve("authors", testObject), "normal member");
-        assert.areEqual(1, msf.resolve("authors.length", testObject), "normal member");
-        assert.areEqual(testObject.authors[0], msf.resolve("authors[0]", testObject), "index member");
-        assert.areEqual("John", msf.resolve("authors[0].firstname", testObject), "index+normal member");
+        assert.areEqual(undefined, msf.resolve("fgfgdgh", undefined), "Undefined value");
+        assert.areEqual(undefined, msf.resolve("fgfgdgh", testObject), "Undefined member");
+        assert.areEqual(undefined, msf.resolve("authors.dfgggf", testObject), "Undefined sub-member");
+        assert.areEqual(testObject.authors, msf.resolve("authors", testObject), "Normal member");
+        assert.areEqual(1, msf.resolve("authors.length", testObject), "Normal member");
+        assert.areEqual(testObject.authors[0], msf.resolve("authors[0]", testObject), "Index member");
+        assert.areEqual("John", msf.resolve("authors[0].firstname", testObject), "Index+normal member");
 
         test.section("Resolve: should throw");
-        assert.doesThrow(function () { msf.resolve("fgdgg$", undefined) }, "Invalid path", "inline dollar sign");
+        assert.doesThrow(function () { msf.resolve("fgdgg$", undefined) }, "Invalid path", "Inline dollar sign");
         assert.doesThrow(function () { msf.resolve("fgdgg[]", undefined) }, "Invalid path", "No index number specified");
         assert.doesThrow(function () { msf.resolve("fgdgg[-1]", undefined) }, "Invalid path", "Negative index");
         assert.doesThrow(function () { msf.resolve("fgdgg.", undefined) }, "Invalid path", "Ending point");
         assert.doesThrow(function () { msf.resolve(".fgdgg", undefined) }, "Invalid path", "Starting point");
         assert.doesThrow(function () { msf.resolve("fgdgg..hj", undefined) }, "Invalid path", "Double point");
+
+        test.section("Date/time tandard");
+        var dtam = new Date(1989, 3, 2, 6, 20, 33);
+        var dtpm = new Date(1989, 3, 2, 18, 20, 33);
+        assert.formatsTo("4/2/1989", "{0:d}", dtam);
+        assert.formatsTo("Sunday, April 02, 1989", "{0:D}", dtam);
+        assert.formatsTo("Sunday, April 02, 1989 6:20 AM", "{0:f}", dtam);
+        assert.formatsTo("Sunday, April 02, 1989 6:20 PM", "{0:f}", dtpm);
+        assert.formatsTo("Sunday, April 02, 1989 6:20:33 AM", "{0:F}", dtam);
+        assert.formatsTo("Sunday, April 02, 1989 6:20:33 PM", "{0:F}", dtpm);
+        assert.formatsTo("4/2/1989 6:20 AM", "{0:g}", dtam);
+        assert.formatsTo("4/2/1989 6:20 PM", "{0:g}", dtpm);
+        assert.formatsTo("4/2/1989 6:20:33 AM", "{0:G}", dtam);
+        assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
+        assert.formatsTo("April 02", "{0:M}", dtpm);
+        assert.formatsTo("April 02", "{0:m}", dtpm);
+        assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:O}", dtpm);
+        assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:o}", dtpm);
+        
+        assert.formatsTo("Sun, 2 April 1989 06:20:33 GMT", "{0:R}", dtam);
+        assert.formatsTo("1989-04-02T06:20:33", "{0:s}", dtam);
+        
+        assert.formatsTo("6:20 AM", "{0:t}", dtam);
+        assert.formatsTo("6:20 PM", "{0:t}", dtpm);
+        
+        assert.formatsTo("6:20:33 AM", "{0:T}", dtam);
+        assert.formatsTo("6:20:33 PM", "{0:T}", dtpm);
+        
+        assert.formatsTo("1989-04-02 06:20:33Z", "{0:u}", dtpm);
+        assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:U}", dtpm);
+        
+        assert.formatsTo("April, 1989", "{0:y}", dtpm);
+        assert.formatsTo("April, 1989", "{0:Y}", dtpm);
+        
+        test.section("Date/time custom");
+        assert.formatsTo("1989-04-02 18:20:33", "{0:yyyy-MM-dd HH:mm:ss}", dtpm);
+        assert.formatsTo("06:20:33 A", "{0:hh:mm:ss t}", dtam);
+        assert.formatsTo("06:20:33 AM", "{0:hh:mm:ss tt}", dtam);
+        assert.formatsTo("06:20:33 P", "{0:hh:mm:ss t}", dtpm);
+        assert.formatsTo("06:20:33 PM", "{0:hh:mm:ss tt}", dtpm);
 
         test.section("Special numeric values");
         assert.formatsTo("NaN", "{0}", NaN);
@@ -187,6 +227,14 @@
         
         assert.formatsTo("2353", "{0:R}", 2353);
         assert.formatsTo("25.3333333", "{0:R}", 25.3333333);
+        
+        assert.formatsTo("1989-04-02", "{0:d}", dtam);
+        assert.formatsTo("söndag den 2 april 1989 18:20:33", "{0:F}", dtpm);
+        assert.formatsTo("1989-04-02 18:20:33", "{0:G}", dtpm);
+        assert.formatsTo("2 april", "{0:m}", dtpm);
+        assert.formatsTo("18:20", "{0:t}", dtpm);
+        assert.formatsTo("18:20:33", "{0:T}", dtpm);
+        assert.formatsTo("april 1989", "{0:y}", dtpm);
 
         test.print();
     }
@@ -281,6 +329,10 @@
                 
             case "undefined": return "[undefined]";
             case "object":
+                
+                if (value instanceof Date) {
+                    return value.format("yyyy-MM-ddTHH:mm:ss");
+                }
                 
                 var first = true;
                 var s = "{ ";
