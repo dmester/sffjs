@@ -28,6 +28,10 @@ var msf = {};
 
 (function() {
 
+    // ***** Shortcuts *****
+    var _Number = Number,
+        _String = String;
+    
     // ***** Private Methods *****
     
     // Minimization optimization 
@@ -104,17 +108,16 @@ var msf = {};
         if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
             throw "Invalid path";
         }
-        
+
+        // Parse and evaluate path
         if (hasValue(value)) {
-            var firstMember = /^[a-zA-Z_$]\w+/;
-            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g;
-            
-            var match = firstMember.exec(path);
-        
+            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g,
+                match = /^[a-zA-Z_$]\w+/.exec(path);
+                
             value = value[match[0]];
             
             while (hasValue(value) && (match = followingMembers.exec(path))) {
-                value = value[match[2] || Number(match[3])];
+                value = value[match[2] || _Number(match[3])];
             }
         }
         
@@ -161,7 +164,9 @@ var msf = {};
         
         number = round(number, maxDecimals);
         
-        var integralDigits = numberOfIntegralDigits(number);
+        var integralDigits = numberOfIntegralDigits(number),
+            decimals = numberOfDecimalDigits(number);
+        
         minIntegralDigits -= (out.g = integralDigits);
         
         // Pad with zeroes
@@ -173,8 +178,6 @@ var msf = {};
         groupedAppend(out, number.substr(0, integralDigits));
         
         // Add decimal point
-        var decimals = numberOfDecimalDigits(number);
-        
         if (minDecimals || decimals) {
             out.push(radixPoint);
             
@@ -201,7 +204,7 @@ var msf = {};
             forcedDecimals = -1,
             atDecimals = false,
             unused = true, // True until a digit has been written to the output
-            c, i,
+            c, i, f,
             out = [];
 
         // Analyse format string
@@ -248,7 +251,7 @@ var msf = {};
         out.g = Math.max(integralDigits, forcedDigits);
         out.t = thousandSeparator;
         
-        for (var f in format) {
+        for (f in format) {
             c = format.charAt(f);
             
             // Digit placeholder
@@ -292,15 +295,15 @@ var msf = {};
     
     // ***** PUBLIC INTERFACE
     // ***** Number Formatting *****
-    Number.prototype.__Format = function(format) {
+    _Number.prototype.__Format = function(format) {
         /// <summary>
         ///     Formats this number according the specified format string.
         /// </summary>
         /// <param name="format">The formatting string used to format this number.</param>
 
-        var number = Number(this);
-        var radixPoint = msf.LC._r;
-        var thousandSeparator = msf.LC._t;
+        var number = _Number(this),
+            radixPoint = msf.LC._r,
+            thousandSeparator = msf.LC._t;
         
         if (!isFinite(number)) {
             return "" + number;
@@ -314,9 +317,8 @@ var msf = {};
         
         if (standardFormatStringMatch)
         {
-            var result;
-            var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]);
-            var precision = Number(standardFormatStringMatch[2]);
+            var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]),
+                precision = _Number(standardFormatStringMatch[2]);
             
             // Standard numeric format string
             switch (standardFormatStringMatch_UpperCase) {
@@ -330,12 +332,10 @@ var msf = {};
                         result = toUpperCase(result);
                     }
                     
-                    if (precision) {
-                        var paddingToAdd = precision - result.length;
-                        
-                        while (paddingToAdd-- > 0) {
-                            result = "0" + result;
-                        }
+                    // Add padding, remember precision might be NaN
+                    precision -= result.length;
+                    while (precision-- > 0) {
+                        result = "0" + result;
                     }
                     
                     return result;
@@ -362,8 +362,8 @@ var msf = {};
                 case "G":
                 case "E":
                     // Determine coefficient and exponent for normalized notation
-                    var exponent = 0;
-                    var coefficient = Math.abs(number);
+                    var exponent = 0, coefficient = Math.abs(number);
+                    
                     while (coefficient >= 10) {
                         coefficient /= 10;
                         exponent++;
@@ -374,11 +374,10 @@ var msf = {};
                         exponent--;
                     }
                     
-                    var exponentPrefix = standardFormatStringMatch[1];
-                    var exponentPrecision = 3;
-                    
-                    var minDecimals = precision || 6;
-                    var maxDecimals = precision || 6;
+                    var exponentPrefix = standardFormatStringMatch[1],
+                        exponentPrecision = 3,
+                        minDecimals = precision || 6,
+                        maxDecimals = precision || 6;
                     
                     if (standardFormatStringMatch_UpperCase == "G") {
                         if (exponent > -5 && (!precision || exponent < precision)) {
@@ -394,8 +393,6 @@ var msf = {};
                         // The precision of G is number of significant digits, not the number of decimals.
                         minDecimals = precision ? precision - 1 : 0;
                         maxDecimals = precision ? precision - 1 : 10;
-                    } else {
-                        
                     }
                     
                     if (exponent >= 0) {
@@ -437,39 +434,39 @@ var msf = {};
     // ***** Date Formatting *****
     Date.prototype.__Format = function(format) {
         var date = this;
-		var output = "";
-		var i;
+            
         if (format.length == 1) {
             format = msf.LC[format] || format;
         }
 		
-		return format.replace(/(d{1,4}|M{1,4}|yyyy|yy|HH|H|hh|h|mm|m|ss|s|tt)/g, 
-			function () { switch (arguments[0]) {
-					case "dddd": return msf.LC._d[date.getDay()];
-					case "ddd": return msf.LC._d[date.getDay()].substr(0, 3);
-					case "dd": return numberPair(date.getDate());
-					case "d": return date.getDate();
-					case "MMMM": return msf.LC._m[date.getMonth()];
-					case "MMM": return msf.LC._m[date.getMonth()].substr(0, 3);
-					case "MM": return numberPair(date.getMonth() + 1);
-					case "M": return date.getMonth() + 1;
-					case "yyyy": return date.getFullYear();
-					case "yy": return date.getFullYear().toString().substr(2);
-					case "HH": return numberPair(date.getHours());
-					case "hh": return numberPair((date.getHours() - 1) % 12 + 1);
-					case "H": return date.getHours();
-					case "h": return (date.getHours() - 1) % 12 + 1;
-					case "mm": return numberPair(date.getMinutes());
-					case "m": return date.getMinutes();
-					case "ss": return numberPair(date.getSeconds());
-					case "s": return date.getSeconds();
-					case "tt": return date.getHours() < 12 ? "AM" : "PM";
-					default: return "";
-				}
+		return format.replace(/(d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt)/g, 
+			function () { 
+                var argument = arguments[0];
+
+                return argument == "dddd" ? msf.LC._d[date.getDay()] :
+                        argument == "ddd" ? msf.LC._d[date.getDay()].substr(0, 3) :
+                        argument == "dd" ? numberPair(date.getDate()) :
+                        argument == "d" ? date.getDate() :
+                        argument == "MMMM" ? msf.LC._m[date.getMonth()] :
+                        argument == "MMM" ? msf.LC._m[date.getMonth()].substr(0, 3) :
+                        argument == "MM" ? numberPair(date.getMonth() + 1) :
+                        argument == "M" ? date.getMonth() + 1 :
+                        argument == "yyyy" ? date.getFullYear() :
+                        argument == "yy" ? ("" + date.getFullYear()).substr(2) :
+                        argument == "HH" ? numberPair(date.getHours()) :
+                        argument == "hh" ? numberPair((date.getHours() - 1) % 12 + 1) :
+                        argument == "H" ? date.getHours() :
+                        argument == "h" ? (date.getHours() - 1) % 12 + 1 :
+                        argument == "mm" ? numberPair(date.getMinutes()) :
+                        argument == "m" ? date.getMinutes() :
+                        argument == "ss" ? numberPair(date.getSeconds()) :
+                        argument == "s" ? date.getSeconds() :
+                        argument == "tt" ? (date.getHours() < 12 ? "AM" : "PM") :
+                        "";
 			});
     };
 
-    String.__Format = function(str, obj0, obj1, obj2) {
+    _String.__Format = function(str, obj0, obj1, obj2) {
         /// <summary>
         ///     Formats a string according to a specified formatting string.
         /// </summary>
@@ -496,7 +493,7 @@ var msf = {};
                 // Numeric mode
                 
                 // Read index and ensure it is within the bounds of the specified argument list
-                var index = Number(innerArgs[3]);
+                var index = _Number(innerArgs[3]);
                 if (index > outerArgs.length - 2) {
                     // Throw exception if argument is not specified (however undefined and null values are fine!)
                     throw "Missing argument";
@@ -512,23 +509,18 @@ var msf = {};
             // otherwise use toString to create a string
             value = !hasValue(value) ? "" : value.__Format ? value.__Format(innerArgs[7]) : "" + value;
             
-            // Add padding (if specified)
-            var align = Number(innerArgs[5]) || 0;
-            var paddingLength = Math.abs(align) - value.length;
-
-            if (paddingLength > 0) {
-                // Build padding string
-                var padding = " ";
-                while (padding.length < paddingLength) {
-                    padding += " ";
-                }
-
-                // Add padding string at right side
-                value = align > 0 ? value + padding : padding + value;
+            // Add padding (if necessary)
+            var align = _Number(innerArgs[5]) || 0,
+                paddingLength = Math.abs(align) - value.length,
+                padding = "";
+                
+            while (paddingLength-- > 0) {
+                padding += " ";
             }
             
             // innerArgs[1] is the leading {'s
-            return innerArgs[1] + value;
+            return innerArgs[1] + (align > 0 ? value + padding : padding + value);
+            
         }).replace(/\{\{/g, "{").replace(/\}\}/g, "}");
     };
 
@@ -555,9 +547,9 @@ var msf = {};
     // Set Format methods
     var pr = Date.prototype;
     pr.format = pr.format || pr.__Format;
-    pr = Number.prototype;
+    pr = _Number.prototype;
     pr.format = pr.format || pr.__Format;
-    String.format = String.format || String.__Format;
+    _String.format = _String.format || _String.__Format;
 
 //#IF DEBUG
     msf.resolve = resolvePath;
