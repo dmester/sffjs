@@ -464,28 +464,28 @@ var msf = {};
 		
 		return format.replace(/('[^']*'|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
 			function () { 
-                var argument = arguments[0];
+                var argument = arguments[0], getFullYear = "getFullYear", getMonth = "getMonth", getSeconds = "getSeconds", getMinutes = "getMinutes", getHours = "getHours";
 
                 return argument == "dddd" ? culture._d[date.getDay()] :
                         argument == "ddd" ? culture._d[date.getDay()].substr(0, 3) :
                         argument == "dd" ? numberPair(date.getDate()) :
                         argument == "d" ? date.getDate() :
-                        argument == "MMMM" ? culture._m[date.getMonth()] :
-                        argument == "MMM" ? culture._m[date.getMonth()].substr(0, 3) :
-                        argument == "MM" ? numberPair(date.getMonth() + 1) :
-                        argument == "M" ? date.getMonth() + 1 :
-                        argument == "yyyy" ? date.getFullYear() :
-                        argument == "yy" ? ("" + date.getFullYear()).substr(2) :
-                        argument == "HH" ? numberPair(date.getHours()) :
-                        argument == "H" ? date.getHours() :
-                        argument == "hh" ? numberPair((date.getHours() - 1) % 12 + 1) :
-                        argument == "h" ? (date.getHours() - 1) % 12 + 1 :
-                        argument == "mm" ? numberPair(date.getMinutes()) :
-                        argument == "m" ? date.getMinutes() :
-                        argument == "ss" ? numberPair(date.getSeconds()) :
-                        argument == "s" ? date.getSeconds() :
-                        argument == "tt" ? (date.getHours() < 12 ? culture._am : culture._pm) : 
-                        argument == "t" ? (date.getHours() < 12 ? culture._am : culture._pm).charAt(0) :
+                        argument == "MMMM" ? culture._m[date[getMonth]()] :
+                        argument == "MMM" ? culture._m[date[getMonth]()].substr(0, 3) :
+                        argument == "MM" ? numberPair(date[getMonth]() + 1) :
+                        argument == "M" ? date[getMonth]() + 1 :
+                        argument == "yyyy" ? date[getFullYear]() :
+                        argument == "yy" ? ("" + date[getFullYear]()).substr(2) :
+                        argument == "HH" ? numberPair(date[getHours]()) :
+                        argument == "H" ? date[getHours]() :
+                        argument == "hh" ? numberPair((date[getHours]() - 1) % 12 + 1) :
+                        argument == "h" ? (date[getHours]() - 1) % 12 + 1 :
+                        argument == "mm" ? numberPair(date[getMinutes]()) :
+                        argument == "m" ? date[getMinutes]() :
+                        argument == "ss" ? numberPair(date[getSeconds]()) :
+                        argument == "s" ? date[getSeconds]() :
+                        argument == "tt" ? (date[getHours]() < 12 ? culture._am : culture._pm) : 
+                        argument == "t" ? (date[getHours]() < 12 ? culture._am : culture._pm).charAt(0) :
                         argument.substr(1, argument.length - 2);
 			});
     };
@@ -499,10 +499,10 @@ var msf = {};
         /// <param name="obj1">Object 2 [optional]</param>
         /// <param name="obj2">Object 3 [optional]</param>
 
-        var outerArgs = arguments, value;
+        var outerArgs = arguments;
         
         return str.replace(/(\{*)\{(([^,}:]+)(\,(-?\d*))?(\:([^\}]*))?)\}/g, function () {
-            var innerArgs = arguments;
+            var innerArgs = arguments, value;
             
             // Ensure the starting { was not escaped
             if (innerArgs[1] && innerArgs[1].length % 2 == 1) {
