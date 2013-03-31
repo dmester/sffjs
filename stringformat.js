@@ -106,7 +106,10 @@ var msf = {};
         return t;
     }
     
+    // This function resolves a path on the format <membername>(.<membername>|[<index>])*
+    // and evaluates the value.
     function resolvePath(path, value) {
+        // Validate path
         if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
             throw "Invalid path";
         }
@@ -118,6 +121,7 @@ var msf = {};
                 
             value = value[match[0]];
             
+            // Evaluate path until we reach the searched member or the value is undefined/null
             while (hasValue(value) && (match = followingMembers.exec(path))) {
                 value = value[match[2] || _Number(match[3])];
             }
