@@ -469,7 +469,7 @@ var msf = {};
                         argument == "m" ? date.getMinutes() :
                         argument == "ss" ? numberPair(date.getSeconds()) :
                         argument == "s" ? date.getSeconds() :
-                        argument == "tt" ? (date.getHours() < 12 ? culture._am : culture._pm) :
+                        argument == "tt" ? (date.getHours() < 12 ? culture._am : culture._pm) : 
                         argument == "t" ? (date.getHours() < 12 ? culture._am : culture._pm).charAt(0) :
                         "";
 			});
