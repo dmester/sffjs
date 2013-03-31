@@ -210,8 +210,9 @@ var msf = {};
             integralDigits = -1,
             decimals = 0,
             forcedDecimals = -1,
-            atDecimals = false,
-            unused = true, // True until a digit has been written to the output
+            atDecimals = 0, // Bool
+            inString = 0, // Bool
+            unused = 1, // Bool, True until a digit has been written to the output
             c, i, f,
             out = [];
 
@@ -219,25 +220,31 @@ var msf = {};
         // Count number of digits, decimals, forced digits and forced decimals.
         for (i in format) {
             c = format.charAt(i);
+            
+            // Check if we are within a literal
+            if (c == "'") {
+                inString = !inString;
+            } else if (!inString) {
+            
+                // Only 0 and # are digit placeholders, skip other characters in analyzing phase
+                if (c == "0" || c == "#") {
+                    decimals += atDecimals;
 
-            // Only 0 and # are digit placeholders, skip other characters in analyzing phase
-            if (c == "0" || c == "#") {
-                decimals += atDecimals;
-
-                if (c == "0") {
-                    // 0 is a forced digit
-                    if (atDecimals) {
-                        forcedDecimals = decimals;
-                    } else if (forcedDigits < 0) {
-                        forcedDigits = digits;
+                    if (c == "0") {
+                        // 0 is a forced digit
+                        if (atDecimals) {
+                            forcedDecimals = decimals;
+                        } else if (forcedDigits < 0) {
+                            forcedDigits = digits;
+                        }
                     }
+
+                    digits += !atDecimals;
                 }
 
-                digits += !atDecimals;
+                // If the current character is ".", then we have reached the end of the integral part
+                atDecimals = atDecimals || c == ".";
             }
-
-            // If the current character is ".", then we have reached the end of the integral part
-            atDecimals = atDecimals || c == ".";
         }
         forcedDigits = forcedDigits < 0 ? 1 : digits - forcedDigits;
 
@@ -259,11 +266,19 @@ var msf = {};
         out.g = Math.max(integralDigits, forcedDigits);
         out.t = thousandSeparator;
         
+        inString = 0;
+        
         for (f in format) {
             c = format.charAt(f);
+        
+            // Check if we are within a literal
+            if (c == "'") {
+                inString = !inString;
+            } else if (inString)  {
+                out.push(c);
             
             // Digit placeholder
-            if (c == "#" || c == "0") {
+            } else if (c == "#" || c == "0") {
                 if (i < integralDigits) {
                     // In the integral part
                     if (i >= 0) {
@@ -277,7 +292,7 @@ var msf = {};
                         groupedAppend(out, "0");
                     }
 
-                    unused = false;
+                    unused = 0;
 
                 } else if (forcedDecimals-- > 0 || i < input.length) {
                     // In the fractional part
@@ -447,7 +462,7 @@ var msf = {};
             format = culture[format] || format;
         }
 		
-		return format.replace(/(d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
+		return format.replace(/('[^']*'|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
 			function () { 
                 var argument = arguments[0];
 
@@ -462,8 +477,8 @@ var msf = {};
                         argument == "yyyy" ? date.getFullYear() :
                         argument == "yy" ? ("" + date.getFullYear()).substr(2) :
                         argument == "HH" ? numberPair(date.getHours()) :
-                        argument == "hh" ? numberPair((date.getHours() - 1) % 12 + 1) :
                         argument == "H" ? date.getHours() :
+                        argument == "hh" ? numberPair((date.getHours() - 1) % 12 + 1) :
                         argument == "h" ? (date.getHours() - 1) % 12 + 1 :
                         argument == "mm" ? numberPair(date.getMinutes()) :
                         argument == "m" ? date.getMinutes() :
@@ -471,7 +486,7 @@ var msf = {};
                         argument == "s" ? date.getSeconds() :
                         argument == "tt" ? (date.getHours() < 12 ? culture._am : culture._pm) : 
                         argument == "t" ? (date.getHours() < 12 ? culture._am : culture._pm).charAt(0) :
-                        "";
+                        argument.substr(1, argument.length - 2);
 			});
     };
 
