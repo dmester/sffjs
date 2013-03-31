@@ -440,7 +440,7 @@ var msf = {};
 		var output = "";
 		var i;
         if (format.length == 1) {
-            format = msf.LC[format];
+            format = msf.LC[format] || format;
         }
 		
 		return format.replace(/(d{1,4}|M{1,4}|yyyy|yy|HH|H|hh|h|mm|m|ss|s|tt)/g, 
