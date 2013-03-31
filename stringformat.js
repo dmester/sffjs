@@ -491,6 +491,7 @@ var msf = {};
                 
             }
             
+            // innerArgs[3] is the index/path
             if (/^\d+$/.test(innerArgs[3])) {
                 // Numeric mode
                 
