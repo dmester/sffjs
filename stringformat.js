@@ -100,6 +100,8 @@ var msf = {};
         t.F = t.D + " " + t.T;
         t.g = t.d + " " + t.t;
         t.G = t.d + " " + t.T;
+        t.m = t.M;
+        t.y = t.Y;
         
         return t;
     }
