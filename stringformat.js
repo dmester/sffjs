@@ -70,7 +70,9 @@ var msf = {};
             _t: ",", // Thounsands separator
             _c: "£#,0.00", // Currency format string
             _ct: ",", // Currency thounsands separator
-            _cr: "."  // Currency radix point
+            _cr: ".",  // Currency radix point
+            _am: "AM",
+            _pm: "PM"
         };
         
         // Culture specific strings
@@ -439,22 +441,22 @@ var msf = {};
 
     // ***** Date Formatting *****
     Date.prototype.__Format = function(format) {
-        var date = this;
+        var date = this, culture = msf.LC;
             
         if (format.length == 1) {
-            format = msf.LC[format] || format;
+            format = culture[format] || format;
         }
 		
-		return format.replace(/(d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt)/g, 
+		return format.replace(/(d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
 			function () { 
                 var argument = arguments[0];
 
-                return argument == "dddd" ? msf.LC._d[date.getDay()] :
-                        argument == "ddd" ? msf.LC._d[date.getDay()].substr(0, 3) :
+                return argument == "dddd" ? culture._d[date.getDay()] :
+                        argument == "ddd" ? culture._d[date.getDay()].substr(0, 3) :
                         argument == "dd" ? numberPair(date.getDate()) :
                         argument == "d" ? date.getDate() :
-                        argument == "MMMM" ? msf.LC._m[date.getMonth()] :
-                        argument == "MMM" ? msf.LC._m[date.getMonth()].substr(0, 3) :
+                        argument == "MMMM" ? culture._m[date.getMonth()] :
+                        argument == "MMM" ? culture._m[date.getMonth()].substr(0, 3) :
                         argument == "MM" ? numberPair(date.getMonth() + 1) :
                         argument == "M" ? date.getMonth() + 1 :
                         argument == "yyyy" ? date.getFullYear() :
@@ -467,7 +469,8 @@ var msf = {};
                         argument == "m" ? date.getMinutes() :
                         argument == "ss" ? numberPair(date.getSeconds()) :
                         argument == "s" ? date.getSeconds() :
-                        argument == "tt" ? (date.getHours() < 12 ? "AM" : "PM") :
+                        argument == "tt" ? (date.getHours() < 12 ? culture._am : culture._pm) :
+                        argument == "t" ? (date.getHours() < 12 ? culture._am : culture._pm).charAt(0) :
                         "";
 			});
     };
