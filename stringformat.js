@@ -483,7 +483,7 @@ var msf = {};
             }
             
             return innerArgs[1] + formatted;
-        }).replace(/\{\{/g, "{");
+        }).replace(/\{\{/g, "{").replace(/\}\}/g, "}");
     };
 
     
