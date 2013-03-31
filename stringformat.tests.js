@@ -30,6 +30,7 @@
         test.section("Tags");
         assert.formatsTo("Test {with} brackets", "Test {{with}} brackets");
         
+        
         test.section("Index");
         assert.formatsTo("!String!", "!{0}!", "String");
         assert.formatsTo("!42!", "!{0}!", 42);
@@ -37,7 +38,7 @@
         assert.formatsTo("null:!!", "null:!{0}!", null);
         assert.formatsTo("undefined:!!", "undefined:!{0}!", undefined);
         assert.doesThrow(function () { String.format("{1}", 42) }, "Missing argument", "Index out of range");
-        assert.doesThrow(function () { String.format("{-1}", 42) }, "Missing argument", "Negative index");
+        assert.doesThrow(function () { String.format("{-1}", 42) }, "Invalid path", "Negative index");
 
         
         test.section("Path");
@@ -65,17 +66,17 @@
         var dtam = new Date(1989, 3, 2, 6, 20, 33);
         var dtpm = new Date(1989, 3, 2, 18, 20, 33);
         assert.formatsTo("4/2/1989", "{0:d}", dtam);
-        assert.formatsTo("Sunday, April 02, 1989", "{0:D}", dtam);
-        assert.formatsTo("Sunday, April 02, 1989 6:20 AM", "{0:f}", dtam);
-        assert.formatsTo("Sunday, April 02, 1989 6:20 PM", "{0:f}", dtpm);
-        assert.formatsTo("Sunday, April 02, 1989 6:20:33 AM", "{0:F}", dtam);
-        assert.formatsTo("Sunday, April 02, 1989 6:20:33 PM", "{0:F}", dtpm);
+        assert.formatsTo("Sunday, April 2, 1989", "{0:D}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989 6:20 AM", "{0:f}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989 6:20 PM", "{0:f}", dtpm);
+        assert.formatsTo("Sunday, April 2, 1989 6:20:33 AM", "{0:F}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:F}", dtpm);
         assert.formatsTo("4/2/1989 6:20 AM", "{0:g}", dtam);
         assert.formatsTo("4/2/1989 6:20 PM", "{0:g}", dtpm);
         assert.formatsTo("4/2/1989 6:20:33 AM", "{0:G}", dtam);
         assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
-        assert.formatsTo("April 02", "{0:M}", dtpm);
-        assert.formatsTo("April 02", "{0:m}", dtpm);
+        assert.formatsTo("April 2", "{0:M}", dtpm);
+        assert.formatsTo("April 2", "{0:m}", dtpm);
         assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:O}", dtpm);
         assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:o}", dtpm);
         
@@ -91,8 +92,8 @@
         assert.formatsTo("1989-04-02 06:20:33Z", "{0:u}", dtpm);
         assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:U}", dtpm);
         
-        assert.formatsTo("April, 1989", "{0:y}", dtpm);
-        assert.formatsTo("April, 1989", "{0:Y}", dtpm);
+        assert.formatsTo("April 1989", "{0:y}", dtpm);
+        assert.formatsTo("April 1989", "{0:Y}", dtpm);
         
         test.section("Date/time custom");
         assert.formatsTo("1989-04-02 18:20:33", "{0:yyyy-MM-dd HH:mm:ss}", dtpm);
@@ -100,6 +101,8 @@
         assert.formatsTo("06:20:33 AM", "{0:hh:mm:ss tt}", dtam);
         assert.formatsTo("06:20:33 P", "{0:hh:mm:ss t}", dtpm);
         assert.formatsTo("06:20:33 PM", "{0:hh:mm:ss tt}", dtpm);
+        
+        assert.formatsTo("hh:mm:33 PM", "{0:'hh:mm':ss tt}", dtpm);
 
         test.section("Special numeric values");
         assert.formatsTo("NaN", "{0}", NaN);
@@ -144,6 +147,8 @@
         assert.formatsTo("043", "{0:000}", 42.5);
         assert.formatsTo("042.50", "{0:000.#0}", 42.5);
         assert.formatsTo("042.5", "{0:000.0#}", 42.5);
+        
+        assert.formatsTo("1098#234.0", "{0:0'098#'000.0#}", 1234);
         
         test.section("Specifier D");
         assert.formatsTo("43", "{0:d}", 42.5);
@@ -229,7 +234,7 @@
         assert.formatsTo("25.3333333", "{0:R}", 25.3333333);
         
         assert.formatsTo("1989-04-02", "{0:d}", dtam);
-        assert.formatsTo("söndag den 2 april 1989 18:20:33", "{0:F}", dtpm);
+        assert.formatsTo("den 2 april 1989 18:20:33", "{0:F}", dtpm);
         assert.formatsTo("1989-04-02 18:20:33", "{0:G}", dtpm);
         assert.formatsTo("2 april", "{0:m}", dtpm);
         assert.formatsTo("18:20", "{0:t}", dtpm);
@@ -324,7 +329,7 @@
         switch (typeof value) {
             case "number": return value.toString();
             case "string": 
-                if (value.length > 20) { value = value.substr(0, 20) + "..."; }
+                if (value.length > 40) { value = value.substr(0, 40) + "..."; }
                 return "\"" + value + "\"";
                 
             case "undefined": return "[undefined]";

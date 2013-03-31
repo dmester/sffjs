@@ -79,7 +79,7 @@ var msf = {};
         if (lcid.substr(0, 2) == "SV") {
             t.name = "sv-SE";
             t.d = "yyyy-MM-dd";
-            t.D = "den dd MMMM yyyy";
+            t.D = "'den 'd MMMM yyyy";
             t._m = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
             t._d = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
             t._r = ",";
@@ -89,11 +89,11 @@ var msf = {};
             t._c = "#,0.00 kr";
         } else if (lcid != "EN-GB") {
             t.name = "en-US";
-            t.t = "hh:mm tt";
-            t.T = "hh:mm:ss tt";
-            t.d = "MM/dd/yyyy";
-            t.D = "MMMM dd, yyyy";
-            t.Y = "MMMM, yyyy";
+            t.t = "h:mm tt";
+            t.T = "h:mm:ss tt";
+            t.d = "M/d/yyyy";
+            t.D = "dddd, MMMM d, yyyy";
+            t.M = "MMMM d";
             t._c = "$#,0.00";
         }
         
