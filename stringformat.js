@@ -186,7 +186,7 @@ var msf = {};
     
     // Formatting helpers
     function groupedAppend(out, value) {
-        for (var i in value) {
+        for (var i = 0; i < value.length; i++) {
             // Write number
             out.push(value.charAt(i));
 
@@ -252,7 +252,7 @@ var msf = {};
 
         // Analyse format string
         // Count number of digits, decimals, forced digits and forced decimals.
-        for (i in format) {
+        for (i = 0; i < format.length; i++) {
             c = format.charAt(i);
             
             // Check if we are within a literal
@@ -302,7 +302,7 @@ var msf = {};
         
         inString = 0;
         
-        for (f in format) {
+        for (f = 0; f < format.length; f++) {
             c = format.charAt(f);
         
             // Check if we are within a literal
