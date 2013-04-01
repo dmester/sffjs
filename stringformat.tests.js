@@ -161,6 +161,7 @@
         assert.formatsTo("043", "{0:000}", 42.5);
         assert.formatsTo("042.50", "{0:000.#0}", 42.5);
         assert.formatsTo("042.5", "{0:000.0#}", 42.5);
+        assert.formatsTo("042.5000000000000000000000000", "{0:000.0000000000000000000000000}", 42.5);
         
         assert.formatsTo("1098#234.0", "{0:0'098#'000.0#}", 1234);
         
@@ -180,6 +181,7 @@
         assert.formatsTo("1242.6", "{0:f1}", 1242.55);
         assert.formatsTo("1242.500", "{0:F3}", 1242.5);
         assert.formatsTo("1242.000", "{0:F3}", 1242);
+        assert.formatsTo("1242.000000000000000", "{0:F3000}", 1242);
         
         test.section("Specifier N");
         assert.formatsTo("1,242.50", "{0:n}", 1242.5);
@@ -187,6 +189,7 @@
         assert.formatsTo("1,242.6", "{0:n1}", 1242.55);
         assert.formatsTo("1,242.500", "{0:N3}", 1242.5);
         assert.formatsTo("1,242.000", "{0:N3}", 1242);
+        assert.formatsTo("1,242.000000000000000", "{0:N3000}", 1242);
         
         test.section("Specifier G");
         assert.formatsTo("1242", "{0:g}", 1242);
@@ -210,6 +213,7 @@
         assert.formatsTo("1243", "{0:G4}", 1242.5);
         assert.formatsTo("1242.6", "{0:G5}", 1242.55);
         assert.formatsTo("1.24E+03", "{0:G3}", 1242);
+        assert.formatsTo("1242.00000000000", "{0:G3000}", 1242);
         
         test.section("Specifier X");
         assert.formatsTo("a", "{0:x}", 10);

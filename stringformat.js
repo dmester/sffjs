@@ -377,6 +377,9 @@ var msf = {};
             var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]),
                 precision = _Number(standardFormatStringMatch[2]);
             
+            // Limit precision to max 15
+            precision = precision > 15 ? 15 : precision;
+            
             // Standard numeric format string
             switch (standardFormatStringMatch_UpperCase) {
                 case "R":
