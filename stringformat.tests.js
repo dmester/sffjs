@@ -170,6 +170,7 @@
         assert.formatsTo("43", "{0:D}", 42.5);
         assert.formatsTo("0043", "{0:d4}", 42.5);
         assert.formatsTo("43", "{0:D1}", 42.5);
+        assert.formatsTo("43", "{0:D0}", 42.5);
         
         test.section("Specifier C");
         assert.formatsTo("$42.50", "{0:c}", 42.5);
@@ -182,6 +183,7 @@
         assert.formatsTo("1242.500", "{0:F3}", 1242.5);
         assert.formatsTo("1242.000", "{0:F3}", 1242);
         assert.formatsTo("1242.000000000000000", "{0:F3000}", 1242);
+        assert.formatsTo("1242", "{0:F0}", 1242.3);
         
         test.section("Specifier N");
         assert.formatsTo("1,242.50", "{0:n}", 1242.5);
@@ -190,6 +192,7 @@
         assert.formatsTo("1,242.500", "{0:N3}", 1242.5);
         assert.formatsTo("1,242.000", "{0:N3}", 1242);
         assert.formatsTo("1,242.000000000000000", "{0:N3000}", 1242);
+        assert.formatsTo("1,242", "{0:N0}", 1242.3);
         
         test.section("Specifier G");
         assert.formatsTo("1242", "{0:g}", 1242);
@@ -207,6 +210,7 @@
         assert.formatsTo("-4E-05", "{0:G}", -0.00004);
         assert.formatsTo("-4E-06", "{0:G}", -0.000004);
         assert.formatsTo("-4.7e-07", "{0:g}", -0.00000047);
+        assert.formatsTo("-5e-07", "{0:g0}", -0.00000047);
         
         assert.formatsTo("1e+03", "{0:g1}", 1242.55);
         assert.formatsTo("1.2e+03", "{0:g2}", 1242.55);
@@ -228,9 +232,12 @@
         assert.formatsTo("2.35e+003", "{0:e2}", 2353);
         assert.formatsTo("2.35E+003", "{0:E2}", 2353);
         
+        assert.formatsTo("2E+003", "{0:E0}", 2353);
+        
         test.section("Specifier P");
         assert.formatsTo("12.55 %", "{0:p}", 0.12549);
         assert.formatsTo("12.55 %", "{0:P}", 0.12549);
+        assert.formatsTo("13 %", "{0:P0}", 0.12549);
         
         assert.formatsTo("1,212.55 %", "{0:p}", 12.12549);
         assert.formatsTo("1,212.55 %", "{0:P}", 12.12549);

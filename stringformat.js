@@ -31,6 +31,9 @@ var msf = {};
     // ***** Shortcuts *****
     var _Number = Number,
         _String = String;
+   
+    // This regular expression describes the syntax of a format item, and escaped braces.
+    var FORMAT_TOKEN = /(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g;
     
     // ***** Private Methods *****
     
@@ -39,19 +42,9 @@ var msf = {};
         return s.toUpperCase();
     }
     
-    // Converts a number to a string and ensures the number has at 
-    // least two digits.
-    function numberPair(n) {
-        return (n < 10 ? "0" : "") + n;
-    }
-
-    // Returns true if value is not null or undefined
-    function hasValue(value) {
-        return !(value === null || typeof value === "undefined");
-    }
-
-    // This method generates a culture object from a specified IETF language code
     function getCulture(lcid) {
+        /// <summary>This method generates a culture object from a specified IETF language code.</summary>
+        
         lcid = toUpperCase(lcid);
         
         // Common format strings
@@ -144,9 +137,29 @@ var msf = {};
         return t;
     }
     
-    // This function resolves a path on the format <membername>(.<membername>|[<index>])*
-    // and evaluates the value.
+    function numberPair(n) {
+        /// <summary>Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.</summary>
+        return (n < 10 ? "0" : "") + n;
+    }
+
+    function hasValue(value) {
+        /// <summary>Returns true if <paramref name="value"/> is not null or undefined.</summary>
+        return !(value === null || typeof value === "undefined");
+    }
+    
+    function coalesce(value1, value2) {
+        /// <summary>Returns the first of the two values that are not undefined or null.</summary>
+        return hasValue(value1) ? value1 : value2;
+    }
+    
     function resolvePath(path, value) {
+        /// <summary>
+        ///     This function resolves a path on the format <membername>(.<membername>|[<index>])*
+        ///     and evaluates the value.
+        /// </summary>
+        /// <param name="path">A series of path components separated by points. Each component is either an index in square brackets.</param>
+        /// <param name="value">An object on which the path is evaluated.</param>
+        
         // Validate path
         if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
             throw "Invalid path";
@@ -169,23 +182,43 @@ var msf = {};
     };
     
     // Maths
-    function round(number, decimals) {
+    
+    function absRound(number, decimals) {
+        /// <summary>Rounds a number to the specified number of digits.</summary>
+        /// <param name="number" type="Number">The value to be processed.</param>
+        /// <param name="decimals" type="Number" integer="true" optional="true">The maximum number of decimals. If not specified, the value is not rounded.</param>
+        /// <returns>The rounded absolute value as a string.</returns>
         var roundingFactor = Math.pow(10, decimals || 0);
-        return (Math.round(Math.abs(number) * roundingFactor) / roundingFactor).toString();
+        return "" + (Math.round(Math.abs(number) * roundingFactor) / roundingFactor);
     }
     
     function numberOfIntegralDigits(numberString) {
+        /// <summary>Counts the number of integral digits in a number converted to a string by the JavaScript runtime.</summary>
         var point = numberString.indexOf(".");
         return point < 0 ? numberString.length : point;
     }
     
     function numberOfDecimalDigits(numberString) {
+        /// <summary>Counts the number of decimal digits in a number converted to a string by the JavaScript runtime</summary>
         var point = numberString.indexOf(".");
         return point < 0 ? 0 : numberString.length - point - 1;
     }
     
     // Formatting helpers
+    
     function groupedAppend(out, value) {
+        /// <summary>Writes a value to an array in groups of three digits.</summary>
+        /// <param name="out" type="Array">
+        ///     An array used as string builder to which the grouped output will be appended. The array 
+        ///     may have to properties that affect the output:
+        ///
+        ///         g: the number of integral digits left to write.
+        ///         t: the thousand separator.
+        ///
+        //      If any of those properties are missing, the output is not grouped.
+        /// </param>
+        /// <param name="value" type="String">The value that will be written to <paramref name="out"/>.</param>
+        
         for (var i = 0; i < value.length; i++) {
             // Write number
             out.push(value.charAt(i));
@@ -197,8 +230,68 @@ var msf = {};
         }
     }
     
-    // Handles formatting of standard format strings
+    function unescapeBraces(braces, consumedBraces) {
+        /// <summary>Replaces escaped brackets ({ and }) with their unescaped representation.</summary>
+        /// <param name="braces">A string containing braces of a single type only.</param>
+        /// <param name="consumedBraces">The number of braces that should be ignored when unescaping.</param>
+        /// <returns>A string of the unescaped braces.</returns>
+        return braces.substr(0, (braces.length + 1 - (consumedBraces || 0)) / 2);
+    }
+    
+    function processFormatItem(pathOrIndex, align, formatString, args) {        
+        /// <summary>Process a single format item in a composite format string</summary>
+        /// <param name="pathOrIndex" type="String">The raw argument index or path component of the format item.</param>
+        /// <param name="align" type="String">The raw alignment component of the format item.</param>
+        /// <param name="formatString" type="String">The raw format string of the format item.</param>
+        /// <param name="args" type="Array">The arguments that were passed to String.format, where index 0 is the full composite format string.</param>
+        /// <returns>The formatted value as a string.</returns>
+        
+        var value;
+        
+        if (/^\d+$/.test(pathOrIndex)) {
+            // Numeric mode
+            
+            // Read index and ensure it is within the bounds of the specified argument list
+            var index = _Number(pathOrIndex);
+            if (index > args.length - 2) {
+                // Throw exception if argument is not specified (however undefined and null values are fine!)
+                throw "Missing argument";
+            }
+            
+            value = args[index + 1];
+        } else {
+            // Object path mode
+            value = resolvePath(pathOrIndex, args[1]);
+        }
+        
+        // If the object has a custom format method, use it,
+        // otherwise use toString to create a string
+        value = !hasValue(value) ? "" : value.__Format ? value.__Format(formatString) : "" + value;
+        
+        // Add padding (if necessary)
+        align = _Number(align) || 0;
+        
+        var paddingLength = Math.abs(align) - value.length,
+            padding = "";
+            
+        while (paddingLength-- > 0) {
+            padding += " ";
+        }
+        
+        // innerArgs[1] is the leading {'s
+        return (align > 0 ? value + padding : padding + value);
+    }
+    
     function basicNumberFormatter(number, minIntegralDigits, minDecimals, maxDecimals, radixPoint, thousandSeparator) {
+        /// <summary>Handles basic formatting used for standard numeric format strings.</summary>
+        /// <param name="number" type="Number">The number to format.</param>
+        /// <param name="minIntegralDigits" type="Number" integer="true">The minimum number of integral digits. The number is padded with leading zeroes if necessary.</param>
+        /// <param name="minDecimals" type="Number" integer="true">The minimum number of decimal digits. The decimal part is padded with trailing zeroes if necessary.</param>
+        /// <param name="maxDecimals" type="Number" integer="true">The maximum number of decimal digits. The number is rounded if necessary.</param>
+        /// <param name="radixPoint" type="String">The string that will be appended to the output as a radix point.</param>
+        /// <param name="thousandSeparator" type="String">The string that will be used as a thousand separator of the integral digits.</param>
+        /// <returns>The formatted value as a string.</returns>
+        
         var out = [];
         out.t = thousandSeparator;
         
@@ -206,7 +299,7 @@ var msf = {};
             out.push("-");
         }
         
-        number = round(number, maxDecimals);
+        number = absRound(number, maxDecimals);
         
         var integralDigits = numberOfIntegralDigits(number),
             decimals = numberOfDecimalDigits(number);
@@ -237,8 +330,14 @@ var msf = {};
         return out.join("");
     }
     
-    // Handles formatting of custom format strings
-    function customNumberFormatter(input, format, radixPoint, thousandSeparator) {
+    function customNumberFormatter(number, format, radixPoint, thousandSeparator) {
+        /// <summary>Handles formatting of custom numeric format strings.</summary>
+        /// <param name="number" type="Number">The number to format.</param>
+        /// <param name="format" type="String">A string specifying the format of the output.</param>
+        /// <param name="radixPoint" type="String">The string that will be appended to the output as a radix point.</param>
+        /// <param name="thousandSeparator" type="String">The string that will be used as a thousand separator of the integral digits.</param>
+        /// <returns>The formatted value as a string.</returns>
+        
         var digits = 0,
             forcedDigits = -1,
             integralDigits = -1,
@@ -283,17 +382,17 @@ var msf = {};
         forcedDigits = forcedDigits < 0 ? 1 : digits - forcedDigits;
 
         // Negative value? Begin string with a dash
-        if (input < 0) {
+        if (number < 0) {
             out.push("-");
         }
 
-        // Round the input value to a specified number of decimals
-        input = round(input, decimals);
+        // Round the number value to a specified number of decimals
+        number = absRound(number, decimals);
 
         // Get integral length
-        integralDigits = numberOfIntegralDigits(input);
+        integralDigits = numberOfIntegralDigits(number);
 
-        // Set initial input cursor position
+        // Set initial number cursor position
         i = integralDigits - digits;
 
         // Initialize thousand grouping
@@ -317,27 +416,27 @@ var msf = {};
                     // In the integral part
                     if (i >= 0) {
                         if (unused) {
-                            groupedAppend(out, input.substr(0, i));
+                            groupedAppend(out, number.substr(0, i));
                         }
-                        groupedAppend(out, input.charAt(i));
+                        groupedAppend(out, number.charAt(i));
 
-                        // Not yet inside the input number, force a zero?
+                        // Not yet inside the number number, force a zero?
                     } else if (i >= integralDigits - forcedDigits) {
                         groupedAppend(out, "0");
                     }
 
                     unused = 0;
 
-                } else if (forcedDecimals-- > 0 || i < input.length) {
+                } else if (forcedDecimals-- > 0 || i < number.length) {
                     // In the fractional part
-                    groupedAppend(out, i >= input.length ? "0" : input.charAt(i));
+                    groupedAppend(out, i >= number.length ? "0" : number.charAt(i));
                 }
 
                 i++;
 
             // Radix point character according to current culture.
             } else if (c == ".") {
-                if (input.length > ++i || forcedDecimals > 0) {
+                if (number.length > ++i || forcedDecimals > 0) {
                     out.push(radixPoint);
                 }
 
@@ -362,16 +461,19 @@ var msf = {};
             radixPoint = msf.LC._r,
             thousandSeparator = msf.LC._t;
         
+        // If not finite, i.e. ±Intifity and NaN, return the default JavaScript string notation
         if (!isFinite(number)) {
             return "" + number;
         }
         
-        if (!format) {
-            return basicNumberFormatter(number, 0, 0, 10, radixPoint);
-        }
+        // Set default format string if none was specified
+        format = format || "f0";
+        
+        // EVALUATE STANDARD NUMERIC FORMAT STRING
+        // See reference at
+        // http://msdn.microsoft.com/en-us/library/dwhawy9k.aspx
         
         var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d*)$/);
-        
         if (standardFormatStringMatch)
         {
             var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]),
@@ -382,45 +484,41 @@ var msf = {};
             
             // Standard numeric format string
             switch (standardFormatStringMatch_UpperCase) {
-                case "R":
-                    return "" + number;
-                
-                case "X":
-                    var result = Math.round(number).toString(16);
-                    
-                    if (standardFormatStringMatch[1] == "X") {
-                        result = toUpperCase(result);
-                    }
-                    
-                    // Add padding, remember precision might be NaN
-                    precision -= result.length;
-                    while (precision-- > 0) {
-                        result = "0" + result;
-                    }
-                    
-                    return result;
-                
-                case "C":
-                    format = msf.LC._c;
-                    radixPoint = msf.LC._cr;
-                    thousandSeparator = msf.LC._ct;
-                    break;
-                    
                 case "D":
+                    // DECIMAL
+                    // Precision: number of digits
+                    
+                    // Note: the .NET implementation throws an exception if used with non-integral 
+                    // data types. However, this implementation follows the JavaScript manner being
+                    // nice about arguments and thus rounds any floating point numbers to integers.
+                    
                     return basicNumberFormatter(number, precision || 1, 0, 0);
                 
                 case "F":
+                    // FIXED-POINT
+                    // Precision: number of decimals
+                    
                     thousandSeparator = "";
                     // Fall through to N, which has the same format as F, except no thousand grouping
                     
                 case "N":
+                    // NUMBER
+                    // Precision: number of decimals
+                    
                     return basicNumberFormatter(number, 1, precision || 2, precision || 2, radixPoint, thousandSeparator);
                 
-                case "P":
-                    return basicNumberFormatter(number * 100, 1, precision || 2, precision || 2, radixPoint, thousandSeparator) + " %";
-                
                 case "G":
+                    // GENERAL
+                    // Precision: number of significant digits
+                    
+                    // Fall through to E, whose implementation is shared with G
+                    
                 case "E":
+                    // EXPONENTIAL (SCIENTIFIC)
+                    // Precision: number of decimals
+                    
+                    // Note that we might have fell through from G above!
+                    
                     // Determine coefficient and exponent for normalized notation
                     var exponent = 0, coefficient = Math.abs(number);
                     
@@ -455,19 +553,71 @@ var msf = {};
                         maxDecimals = precision ? precision - 1 : 10;
                     }
                     
+                    // If the exponent is negative, then the minus is added when formatting the exponent as a number.
+                    // In the case of a positive exponent, we need to add the plus sign explicitly.
                     if (exponent >= 0) {
                         exponentPrefix += "+";
                     }
                     
+                    // Consider if the coefficient is positive or negative.
+                    // (the sign was lost when determining the coefficient)
                     if (number < 0) {
                         coefficient *= -1;
                     }
                     
                     return basicNumberFormatter("" + coefficient, 1, minDecimals, maxDecimals, radixPoint, thousandSeparator) + exponentPrefix + basicNumberFormatter(exponent, exponentPrecision, 0);
+                
+                case "P":
+                    // PERCENT
+                    // Precision: number of decimals
+                    
+                    return basicNumberFormatter(number * 100, 1, precision || 2, precision || 2, radixPoint, thousandSeparator) + " %";
+                
+                case "X":
+                    // HEXADECIMAL
+                    // Precision: number of digits
+                    
+                    // Note: the .NET implementation throws an exception if used with non-integral 
+                    // data types. However, this implementation follows the JavaScript manner being
+                    // nice about arguments and thus rounds any floating point numbers to integers.
+                    
+                    var result = Math.round(number).toString(16);
+                    
+                    if (standardFormatStringMatch[1] == "X") {
+                        result = toUpperCase(result);
+                    }
+                    
+                    // Add padding, remember precision might be NaN
+                    precision -= result.length;
+                    while (precision-- > 0) {
+                        result = "0" + result;
+                    }
+                    
+                    return result;
+                
+                case "C":
+                    // CURRENCY
+                    // Precision: ignored (number of decimals in the .NET implementation)
+                    
+                    // The currency format uses a custom format string specified by the culture.
+                    // Precision is not supported and probably won't be supported in the future.
+                    // Developers probably use explicit formatting of currencies anyway...
+                    format = msf.LC._c;
+                    radixPoint = msf.LC._cr;
+                    thousandSeparator = msf.LC._ct;
+                    break;
+                
+                case "R":
+                    // ROUND-TRIP
+                    // Precision: ignored
+                    
+                    // The result should be reparsable => just use Javascript default string representation.
+                    
+                    return "" + number;
             }
         }
         
-        // Custom numeric format string
+        // EVALUATE CUSTOM NUMERIC FORMAT STRING
                 
         // Thousands
         if (format.indexOf(",.") !== -1) {
@@ -527,10 +677,6 @@ var msf = {};
 			});
     };
     
-    function unescapeBrackets(brackets, consumedBrackets) {
-        return brackets.substr(0, (brackets.length + 1 - (consumedBrackets || 0)) / 2);
-    }
-
     _String.__Format = function(str, obj0, obj1, obj2) {
         /// <summary>
         ///     Formats a string according to a specified formatting string.
@@ -542,65 +688,25 @@ var msf = {};
 
         var outerArgs = arguments;
         
-        return str.replace(/(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
+        return str.replace(FORMAT_TOKEN, function () {
             var innerArgs = arguments, value;
             
             // Handle escaped {
-            if (innerArgs[7]) {
-                value = unescapeBrackets(innerArgs[7]);
-            }
+            return innerArgs[7] ? unescapeBraces(innerArgs[7]) :
             
             // Handle escaped }
-            else if (innerArgs[8]) {
-                value = unescapeBrackets(innerArgs[8]);
-            }
+                innerArgs[8] ? unescapeBraces(innerArgs[8]) :
             
             // Handle case when both { and } are present, but one or both of them are escaped
-            else if (innerArgs[1].length % 2 == 0 || innerArgs[6].length % 2 == 0) {
-                value = unescapeBrackets(innerArgs[1]) +
+                innerArgs[1].length % 2 == 0 || innerArgs[6].length % 2 == 0 ?
+                    unescapeBraces(innerArgs[1]) +
                     innerArgs[2] +
-                    unescapeBrackets(innerArgs[6]);
-            }
+                    unescapeBraces(innerArgs[6]) :
             
-            else {
-                
-                // innerArgs[3] is the index/path
-                if (/^\d+$/.test(innerArgs[3])) {
-                    // Numeric mode
-                    
-                    // Read index and ensure it is within the bounds of the specified argument list
-                    var index = _Number(innerArgs[3]);
-                    if (index > outerArgs.length - 2) {
-                        // Throw exception if argument is not specified (however undefined and null values are fine!)
-                        throw "Missing argument";
-                    }
-                    
-                    value = outerArgs[index + 1];
-                } else {
-                    // Object path mode
-                    value = resolvePath(innerArgs[3], outerArgs[1]);
-                }
-                
-                // If the object has a custom format method, use it,
-                // otherwise use toString to create a string
-                value = !hasValue(value) ? "" : value.__Format ? value.__Format(innerArgs[5]) : "" + value;
-                
-                // Add padding (if necessary)
-                var align = _Number(innerArgs[4]) || 0,
-                    paddingLength = Math.abs(align) - value.length,
-                    padding = "";
-                    
-                while (paddingLength-- > 0) {
-                    padding += " ";
-                }
-                
-                // innerArgs[1] is the leading {'s
-                value = unescapeBrackets(innerArgs[1], 1) +
-                    (align > 0 ? value + padding : padding + value) +
-                    unescapeBrackets(innerArgs[6], 1);
-            }
-            
-            return value;
+            // Valid format item
+                unescapeBraces(innerArgs[1], 1) +
+                processFormatItem(innerArgs[3], innerArgs[4], innerArgs[5], outerArgs) +
+                unescapeBraces(innerArgs[6], 1);
         });
     };
 
