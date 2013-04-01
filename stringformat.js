@@ -147,9 +147,9 @@ var msf = {};
         return !(value === null || typeof value === "undefined");
     }
     
-    function coalesce(value1, value2) {
-        /// <summary>Returns the first of the two values that are not undefined or null.</summary>
-        return hasValue(value1) ? value1 : value2;
+    function numberCoalesce(value1, value2) {
+        /// <summary>Returns the first of the two values that is not NaN.</summary>
+        return isNaN(value1) ? value2 : value1;
     }
     
     function resolvePath(path, value) {
@@ -466,8 +466,10 @@ var msf = {};
             return "" + number;
         }
         
-        // Set default format string if none was specified
-        format = format || "f0";
+        // Default formatting if no format string is specified
+        if (!format && format !== "0") {
+            return basicNumberFormatter(number, 0, 0, 10, radixPoint);
+        }
         
         // EVALUATE STANDARD NUMERIC FORMAT STRING
         // See reference at
@@ -477,7 +479,7 @@ var msf = {};
         if (standardFormatStringMatch)
         {
             var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]),
-                precision = _Number(standardFormatStringMatch[2]);
+                precision = parseInt(standardFormatStringMatch[2], 10); // parseInt used to ensure empty string is aprsed to NaN
             
             // Limit precision to max 15
             precision = precision > 15 ? 15 : precision;
@@ -492,7 +494,7 @@ var msf = {};
                     // data types. However, this implementation follows the JavaScript manner being
                     // nice about arguments and thus rounds any floating point numbers to integers.
                     
-                    return basicNumberFormatter(number, precision || 1, 0, 0);
+                    return basicNumberFormatter(number, numberCoalesce(precision, 1), 0, 0);
                 
                 case "F":
                     // FIXED-POINT
@@ -505,7 +507,7 @@ var msf = {};
                     // NUMBER
                     // Precision: number of decimals
                     
-                    return basicNumberFormatter(number, 1, precision || 2, precision || 2, radixPoint, thousandSeparator);
+                    return basicNumberFormatter(number, 1, numberCoalesce(precision, 2), numberCoalesce(precision, 2), radixPoint, thousandSeparator);
                 
                 case "G":
                     // GENERAL
@@ -534,8 +536,7 @@ var msf = {};
                     
                     var exponentPrefix = standardFormatStringMatch[1],
                         exponentPrecision = 3,
-                        minDecimals = precision || 6,
-                        maxDecimals = precision || 6;
+                        minDecimals, maxDecimals;
                     
                     if (standardFormatStringMatch_UpperCase == "G") {
                         if (exponent > -5 && (!precision || exponent < precision)) {
@@ -549,8 +550,10 @@ var msf = {};
                         exponentPrecision = 2;
                         
                         // The precision of G is number of significant digits, not the number of decimals.
-                        minDecimals = precision ? precision - 1 : 0;
-                        maxDecimals = precision ? precision - 1 : 10;
+                        minDecimals = (precision || 1) - 1;
+                        maxDecimals = (precision || 11) - 1;
+                    } else {
+                        minDecimals = maxDecimals = numberCoalesce(precision, 6);
                     }
                     
                     // If the exponent is negative, then the minus is added when formatting the exponent as a number.
@@ -571,7 +574,7 @@ var msf = {};
                     // PERCENT
                     // Precision: number of decimals
                     
-                    return basicNumberFormatter(number * 100, 1, precision || 2, precision || 2, radixPoint, thousandSeparator) + " %";
+                    return basicNumberFormatter(number * 100, 1, numberCoalesce(precision, 2), numberCoalesce(precision, 2), radixPoint, thousandSeparator) + " %";
                 
                 case "X":
                     // HEXADECIMAL

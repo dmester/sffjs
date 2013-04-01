@@ -149,6 +149,7 @@
         assert.formatsTo("35", "{0}", 35);
 
         test.section("Custom numeric format strings");
+        assert.formatsTo("4", "{0:0}", 4.42);
         assert.formatsTo("42%", "{0:0%}", 0.42);
         assert.formatsTo("42.01%", "{0:0.00%}", 0.42009);
         assert.formatsTo("42.01d", "{0:0.00d}", 42.009);
@@ -210,7 +211,7 @@
         assert.formatsTo("-4E-05", "{0:G}", -0.00004);
         assert.formatsTo("-4E-06", "{0:G}", -0.000004);
         assert.formatsTo("-4.7e-07", "{0:g}", -0.00000047);
-        assert.formatsTo("-5e-07", "{0:g0}", -0.00000047);
+        assert.formatsTo("-4.7e-07", "{0:g0}", -0.00000047);
         
         assert.formatsTo("1e+03", "{0:g1}", 1242.55);
         assert.formatsTo("1.2e+03", "{0:g2}", 1242.55);
