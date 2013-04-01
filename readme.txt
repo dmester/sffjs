@@ -1,6 +1,6 @@
 
 String.format for JavaScript
-Copyright (c) Daniel Mester Pirttijärvi 2012
+Copyright (c) Daniel Mester Pirttijärvi 2013
 
 http://www.masterdata.se/r/string_format_for_javascript/
 
@@ -14,11 +14,12 @@ String.Format method in Microsoft .NET Framework.
 
 FILES
 
-You got three files when you extracted the script library:
+You got a number of files when you extracted the script library:
 
-stringformat.js      - Compressed and obfuscated, to be used in production.
-stringformat.src.js  - Commented source file for your reference.
-test.html            - Test page that performs unit tests on the library.
+stringformat.js       - Compressed and obfuscated, to be used in production.
+stringformat.src.js   - Commented source file for your reference.
+tests.html            - Test page that performs unit tests on the library.
+stringformat.tests.js - Script for tests.html.
 
 
 HOW TO USE
