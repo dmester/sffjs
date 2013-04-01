@@ -51,24 +51,20 @@
         assert.formatsTo("Hi, {authors[1]..firstname}!", "Hi, {authors[1]..firstname}!", testObject);
         assert.formatsTo("Hi, {authors[1.firstname}!", "Hi, {authors[1.firstname}!", testObject);
         assert.formatsTo("Hi, {0.authors}!", "Hi, {0.authors}!", testObject);
+        assert.formatsTo("Hi, !", "Hi, {fdggffgf}!", undefined);
+        assert.formatsTo("Hi, !", "Hi, {fdggffgf}!", testObject);
+        assert.formatsTo("Hi, !", "Hi, {authors.fdg}!", testObject);
+        assert.formatsTo("Hi, 1!", "Hi, {authors.length}!", testObject);
+        assert.formatsTo("1.00", "{authors.length:0.00}", testObject);
         
-        test.section("Resolve");
-        assert.areEqual(undefined, msf.resolve("fgfgdgh", undefined), "Undefined value");
-        assert.areEqual(undefined, msf.resolve("fgfgdgh", testObject), "Undefined member");
-        assert.areEqual(undefined, msf.resolve("authors.dfgggf", testObject), "Undefined sub-member");
-        assert.areEqual(testObject.authors, msf.resolve("authors", testObject), "Normal member");
-        assert.areEqual(1, msf.resolve("authors.length", testObject), "Normal member");
-        assert.areEqual(testObject.authors[0], msf.resolve("authors[0]", testObject), "Index member");
-        assert.areEqual("John", msf.resolve("authors[0].firstname", testObject), "Index+normal member");
-
-        test.section("Resolve: should throw");
-        assert.doesThrow(function () { msf.resolve("fgdgg$", undefined) }, "Invalid path", "Inline dollar sign");
-        assert.doesThrow(function () { msf.resolve("fgdgg[]", undefined) }, "Invalid path", "No index number specified");
-        assert.doesThrow(function () { msf.resolve("fgdgg[-1]", undefined) }, "Invalid path", "Negative index");
-        assert.doesThrow(function () { msf.resolve("fgdgg.", undefined) }, "Invalid path", "Ending point");
-        assert.doesThrow(function () { msf.resolve(".fgdgg", undefined) }, "Invalid path", "Starting point");
-        assert.doesThrow(function () { msf.resolve("fgdgg..hj", undefined) }, "Invalid path", "Double point");
-
+        test.section("Invalid paths");
+        assert.formatsTo("Hi, {fg$}!", "Hi, {fg$}!", undefined);
+        assert.formatsTo("Hi, {fg[]}!", "Hi, {fg[]}!", undefined);
+        assert.formatsTo("Hi, {fg[-1]}!", "Hi, {fg[-1]}!", undefined);
+        assert.formatsTo("Hi, {fg.}!", "Hi, {fg.}!", undefined);
+        assert.formatsTo("Hi, {.fg}!", "Hi, {.fg}!", undefined);
+        assert.formatsTo("Hi, {a..b}!", "Hi, {a..b}!", undefined);
+        
         test.section("Date/time tandard");
         var dtam = new Date(1989, 3, 2, 6, 20, 33);
         var dtpm = new Date(1989, 3, 2, 18, 20, 33);

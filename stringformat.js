@@ -741,7 +741,6 @@ var msf = {};
     _String.format = _String.format || _String.__Format;
 
 //#IF DEBUG
-    msf.resolve = resolvePath;
     
     msf.doBenchmark = function (format, arg) {
         /// <summary>
