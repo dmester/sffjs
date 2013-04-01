@@ -539,7 +539,7 @@ var msf = {};
 
         var outerArgs = arguments;
         
-        return str.replace(/(\{+)(([\w\[\].]+)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
+        return str.replace(/(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
             var innerArgs = arguments, value;
             
             // Handle escaped {
