@@ -523,6 +523,10 @@ var msf = {};
                         argument.substr(1, argument.length - 2);
 			});
     };
+    
+    function unescapeBrackets(brackets, consumedBrackets) {
+        return brackets.substr(0, (brackets.length + 1 - (consumedBrackets || 0)) / 2);
+    }
 
     _String.__Format = function(str, obj0, obj1, obj2) {
         /// <summary>
@@ -535,51 +539,66 @@ var msf = {};
 
         var outerArgs = arguments;
         
-        return str.replace(/(\{*)\{(([^,}:]+)(\,(-?\d*))?(\:([^\}]*))?)\}/g, function () {
+        return str.replace(/(\{+)(([\w\[\].]+)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
             var innerArgs = arguments, value;
             
-            // Ensure the starting { was not escaped
-            if (innerArgs[1] && innerArgs[1].length % 2 == 1) {
-                
-                // It was! Just return the matched string
-                return innerArgs[0];
-                
+            // Handle escaped {
+            if (innerArgs[7]) {
+                value = unescapeBrackets(innerArgs[7]);
             }
             
-            // innerArgs[3] is the index/path
-            if (/^\d+$/.test(innerArgs[3])) {
-                // Numeric mode
+            // Handle escaped }
+            else if (innerArgs[8]) {
+                value = unescapeBrackets(innerArgs[8]);
+            }
+            
+            // Handle case when both { and } are present, but one or both of them are escaped
+            else if (innerArgs[1].length % 2 == 0 || innerArgs[6].length % 2 == 0) {
+                value = unescapeBrackets(innerArgs[1]) +
+                    innerArgs[2] +
+                    unescapeBrackets(innerArgs[6]);
+            }
+            
+            else {
                 
-                // Read index and ensure it is within the bounds of the specified argument list
-                var index = _Number(innerArgs[3]);
-                if (index > outerArgs.length - 2) {
-                    // Throw exception if argument is not specified (however undefined and null values are fine!)
-                    throw "Missing argument";
+                // innerArgs[3] is the index/path
+                if (/^\d+$/.test(innerArgs[3])) {
+                    // Numeric mode
+                    
+                    // Read index and ensure it is within the bounds of the specified argument list
+                    var index = _Number(innerArgs[3]);
+                    if (index > outerArgs.length - 2) {
+                        // Throw exception if argument is not specified (however undefined and null values are fine!)
+                        throw "Missing argument";
+                    }
+                    
+                    value = outerArgs[index + 1];
+                } else {
+                    // Object path mode
+                    value = resolvePath(innerArgs[3], outerArgs[1]);
                 }
                 
-                value = outerArgs[index + 1];
-            } else {
-                // Object path mode
-                value = resolvePath(innerArgs[3], outerArgs[1]);
-            }
-            
-            // If the object has a custom format method, use it,
-            // otherwise use toString to create a string
-            value = !hasValue(value) ? "" : value.__Format ? value.__Format(innerArgs[7]) : "" + value;
-            
-            // Add padding (if necessary)
-            var align = _Number(innerArgs[5]) || 0,
-                paddingLength = Math.abs(align) - value.length,
-                padding = "";
+                // If the object has a custom format method, use it,
+                // otherwise use toString to create a string
+                value = !hasValue(value) ? "" : value.__Format ? value.__Format(innerArgs[5]) : "" + value;
                 
-            while (paddingLength-- > 0) {
-                padding += " ";
+                // Add padding (if necessary)
+                var align = _Number(innerArgs[4]) || 0,
+                    paddingLength = Math.abs(align) - value.length,
+                    padding = "";
+                    
+                while (paddingLength-- > 0) {
+                    padding += " ";
+                }
+                
+                // innerArgs[1] is the leading {'s
+                value = unescapeBrackets(innerArgs[1], 1) +
+                    (align > 0 ? value + padding : padding + value) +
+                    unescapeBrackets(innerArgs[6], 1);
             }
             
-            // innerArgs[1] is the leading {'s
-            return innerArgs[1] + (align > 0 ? value + padding : padding + value);
-            
-        }).replace(/\{\{/g, "{").replace(/\}\}/g, "}");
+            return value;
+        });
     };
 
     

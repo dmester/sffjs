@@ -31,6 +31,8 @@
         assert.formatsTo("Test {with} brackets", "Test {{with}} brackets");
         assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
         assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
+        assert.formatsTo("Mismatch {{0}", "Mismatch {{{0}}", "{{brackets}");
+        assert.formatsTo("Double outer {{{brackets}}", "Double outer {{{0}}}", "{{brackets}");
         
         
         test.section("Index");
@@ -40,12 +42,15 @@
         assert.formatsTo("null:!!", "null:!{0}!", null);
         assert.formatsTo("undefined:!!", "undefined:!{0}!", undefined);
         assert.doesThrow(function () { String.format("{1}", 42) }, "Missing argument", "Index out of range");
-        assert.doesThrow(function () { String.format("{-1}", 42) }, "Invalid path", "Negative index");
+        assert.formatsTo("Negative index:!{-1}!", "Negative index:!{-1}!", 42);
 
         
         test.section("Path");
         assert.formatsTo("Hi, John!", "Hi, {authors[0].firstname}!", testObject);
         assert.formatsTo("Hi, !", "Hi, {authors[1].firstname}!", testObject);
+        assert.formatsTo("Hi, {authors[1]..firstname}!", "Hi, {authors[1]..firstname}!", testObject);
+        assert.formatsTo("Hi, {authors[1.firstname}!", "Hi, {authors[1.firstname}!", testObject);
+        assert.formatsTo("Hi, {0.authors}!", "Hi, {0.authors}!", testObject);
         
         test.section("Resolve");
         assert.areEqual(undefined, msf.resolve("fgfgdgh", undefined), "Undefined value");
@@ -79,10 +84,14 @@
         assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
         assert.formatsTo("April 2", "{0:M}", dtpm);
         assert.formatsTo("April 2", "{0:m}", dtpm);
-        assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:O}", dtpm);
-        assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:o}", dtpm);
         
-        assert.formatsTo("Sun, 2 April 1989 06:20:33 GMT", "{0:R}", dtam);
+        // Not currently supported
+        //assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:O}", dtpm);
+        //assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:o}", dtpm);
+        
+        // Not currently supported
+        //assert.formatsTo("Sun, 2 April 1989 06:20:33 GMT", "{0:R}", dtam);
+        
         assert.formatsTo("1989-04-02T06:20:33", "{0:s}", dtam);
         
         assert.formatsTo("6:20 AM", "{0:t}", dtam);
@@ -91,8 +100,9 @@
         assert.formatsTo("6:20:33 AM", "{0:T}", dtam);
         assert.formatsTo("6:20:33 PM", "{0:T}", dtpm);
         
-        assert.formatsTo("1989-04-02 06:20:33Z", "{0:u}", dtpm);
-        assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:U}", dtpm);
+        // Not currently supported
+        //assert.formatsTo("1989-04-02 06:20:33Z", "{0:u}", dtpm);
+        //assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:U}", dtpm);
         
         assert.formatsTo("April 1989", "{0:y}", dtpm);
         assert.formatsTo("April 1989", "{0:Y}", dtpm);
@@ -120,8 +130,10 @@
         assert.formatsTo("-Infinity", "{0:N5}", -1.7976931348623157E+10308);
 
         test.section("Align");
-        assert.formatsTo("0.42      ", "{0,10}", 0.42);
-        assert.formatsTo("      0.42", "{0,-10}", 0.42);
+        assert.formatsTo("|0.42    |", "|{0,8}|", 0.42);
+        assert.formatsTo("|    0.42|", "|{0,-8}|", 0.42);
+        assert.formatsTo("|0123456789|", "|{0,8}|", "0123456789");
+        assert.formatsTo("|0123456789|", "|{0,-8}|", "0123456789");
         
         test.section("Positive/negative numeric strings");
         assert.formatsTo("pos", "{0:pos;neg}", 5);
@@ -404,7 +416,7 @@
         },
         
         doesThrow: function (fn, expectedError, message) {
-            var actualError;
+            var actualError = "[No exception thrown]";
             
             try {
                 fn();
