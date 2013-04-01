@@ -1,6 +1,7 @@
 mkdir Release
 del /Q Release\*.*
 copy /Y stringformat.js Release\stringformat.src.js
+copy /Y stringformat.tests.js Release\
 copy /Y license.txt Release\
 copy /Y readme.txt Release\
 copy /Y changelog.txt Release\
