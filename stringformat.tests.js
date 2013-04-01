@@ -267,8 +267,39 @@
         }
         
         this.print = function () {
+            var container = document.createElement("div");
+            
+            var numTests = 0;
+            var numPassedTests = 0;
+            
+            for (var si in this.sections) {
+                for (var ri in this.sections[si].results) {
+                    numTests++;
+                    if (this.sections[si].results[ri].result) {
+                        numPassedTests++;
+                    }
+                }
+            }
+            
+            var totalResult = document.createElement("div");
+            totalResult.className = numPassedTests == numTests ? "pass" : "fail";
+            totalResult.innerHTML = String.format("<em>{0}</em> of <em>{1}</em> tests passed", numPassedTests, numTests);
+            totalResult.setAttribute("data-percent", Math.round(100 * numPassedTests / numTests));
+            container.appendChild(totalResult);
+            
+            var progressBar = document.createElement("div");
+            progressBar.className = "progress";
+            progressBar.style.width = "200px";
+            
+            var progress = document.createElement("span");
+            progress.style.width = Math.round(100 * numPassedTests / numTests) + "%";
+            progressBar.appendChild(progress);
+            totalResult.appendChild(progressBar);
+            
+            
             var table = document.createElement("table");
             var tr, td;
+            container.appendChild(table);
             
             function createRow() {
                 var tr = document.createElement("tr");
@@ -298,6 +329,7 @@
                     
                     // Message
                     td = document.createElement("td");
+                    td.className = "message";
                     tr.appendChild(td);
                     td.appendChild(document.createTextNode(result.message));
                     
@@ -309,7 +341,7 @@
                 }
             }
             
-            document.body.appendChild(table);
+            document.body.appendChild(container);
         }
     }
     
@@ -385,14 +417,16 @@
             var args = Array.prototype.slice.call(arguments, 1);
             var actual;
             
-            var message = String.format("{0,-14}  {1,15}", formatString, stringify(obj0));
-
+            var message = String.format("{0,-25}  {1}", formatString, stringify(obj0));
+            
             try {
                 actual = String.format.apply(null, args);
             } catch (e) {
                 registerTestResult(message, "Exception: " + e);
                 return;
             }
+            
+            var message = String.format("{0,-25}  {1}", formatString, actual);
             
             assert.areEqual(expected, actual, message);
         }

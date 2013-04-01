@@ -8,6 +8,40 @@
             font: 0.75em Aial, sans-serif;
         }
         
+        div.pass, div.fail {
+            font-size: 1.5em;
+        }
+        
+        div.pass em, div.fail em {
+            font-size: 1.2em;
+            font-weight: bold;
+            font-style: normal;
+        }
+        
+        div.pass {
+            color: green;
+        }
+        
+        div.fail {
+            color: red;
+        }
+        
+        .progress {
+            height: 10px;
+            background: red;
+        }
+        
+        .progress span {
+            display: block;
+            height: 10px;
+            background: green;
+            border-right: 1px solid white;
+        }
+        
+        table {
+            border-collapse: collapse;
+        }
+        
         td {
             padding: 0.4em 1.5em;
         }
@@ -30,6 +64,28 @@
             background: red;
             color: white;
             text-align: center;
+        }
+        
+        td.message {
+            white-space: pre-wrap;
+            font: 1em Consolas, monospace;
+        }
+        
+        tr {
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+        }
+        
+        tr:nth-child(odd) {
+            background: #fcfcfc;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        tr:hover {
+            background: #eee;
         }
         
         td.error {
