@@ -29,6 +29,8 @@
         
         test.section("Tags");
         assert.formatsTo("Test {with} brackets", "Test {{with}} brackets");
+        assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
+        assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
         
         
         test.section("Index");
