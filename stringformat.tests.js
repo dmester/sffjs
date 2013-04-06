@@ -65,21 +65,21 @@
         assert.formatsTo("Hi, {.fg}!", "Hi, {.fg}!", undefined);
         assert.formatsTo("Hi, {a..b}!", "Hi, {a..b}!", undefined);
         
-        test.section("Date/time tandard");
+        test.section("Date/time standard (invariant culture)");
         var dtam = new Date(1989, 3, 2, 6, 20, 33);
         var dtpm = new Date(1989, 3, 2, 18, 20, 33);
-        assert.formatsTo("4/2/1989", "{0:d}", dtam);
-        assert.formatsTo("Sunday, April 2, 1989", "{0:D}", dtam);
-        assert.formatsTo("Sunday, April 2, 1989 6:20 AM", "{0:f}", dtam);
-        assert.formatsTo("Sunday, April 2, 1989 6:20 PM", "{0:f}", dtpm);
-        assert.formatsTo("Sunday, April 2, 1989 6:20:33 AM", "{0:F}", dtam);
-        assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:F}", dtpm);
-        assert.formatsTo("4/2/1989 6:20 AM", "{0:g}", dtam);
-        assert.formatsTo("4/2/1989 6:20 PM", "{0:g}", dtpm);
-        assert.formatsTo("4/2/1989 6:20:33 AM", "{0:G}", dtam);
-        assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
-        assert.formatsTo("April 2", "{0:M}", dtpm);
-        assert.formatsTo("April 2", "{0:m}", dtpm);
+        assert.formatsTo("04/02/1989", "{0:d}", dtam);
+        assert.formatsTo("Sunday, 02 April 1989", "{0:D}", dtam);
+        assert.formatsTo("Sunday, 02 April 1989 06:20", "{0:f}", dtam);
+        assert.formatsTo("Sunday, 02 April 1989 18:20", "{0:f}", dtpm);
+        assert.formatsTo("Sunday, 02 April 1989 06:20:33", "{0:F}", dtam);
+        assert.formatsTo("Sunday, 02 April 1989 18:20:33", "{0:F}", dtpm);
+        assert.formatsTo("04/02/1989 06:20", "{0:g}", dtam);
+        assert.formatsTo("04/02/1989 18:20", "{0:g}", dtpm);
+        assert.formatsTo("04/02/1989 06:20:33", "{0:G}", dtam);
+        assert.formatsTo("04/02/1989 18:20:33", "{0:G}", dtpm);
+        assert.formatsTo("April 02", "{0:M}", dtpm);
+        assert.formatsTo("April 02", "{0:m}", dtpm);
         
         // Not currently supported
         //assert.formatsTo("1989-04-02T18:20:33.0000000", "{0:O}", dtpm);
@@ -90,18 +90,18 @@
         
         assert.formatsTo("1989-04-02T06:20:33", "{0:s}", dtam);
         
-        assert.formatsTo("6:20 AM", "{0:t}", dtam);
-        assert.formatsTo("6:20 PM", "{0:t}", dtpm);
+        assert.formatsTo("06:20", "{0:t}", dtam);
+        assert.formatsTo("18:20", "{0:t}", dtpm);
         
-        assert.formatsTo("6:20:33 AM", "{0:T}", dtam);
-        assert.formatsTo("6:20:33 PM", "{0:T}", dtpm);
+        assert.formatsTo("06:20:33", "{0:T}", dtam);
+        assert.formatsTo("18:20:33", "{0:T}", dtpm);
         
         // Not currently supported
         //assert.formatsTo("1989-04-02 06:20:33Z", "{0:u}", dtpm);
         //assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:U}", dtpm);
         
-        assert.formatsTo("April 1989", "{0:y}", dtpm);
-        assert.formatsTo("April 1989", "{0:Y}", dtpm);
+        assert.formatsTo("1989 April", "{0:y}", dtpm);
+        assert.formatsTo("1989 April", "{0:Y}", dtpm);
         
         test.section("Date/time custom");
         assert.formatsTo("1989-04-02 18:20:33", "{0:yyyy-MM-dd HH:mm:ss}", dtpm);
@@ -111,6 +111,12 @@
         assert.formatsTo("06:20:33 PM", "{0:hh:mm:ss tt}", dtpm);
         
         assert.formatsTo("hh:mm:33 PM", "{0:'hh:mm':ss tt}", dtpm);
+        
+        assert.formatsTo("Sun", "{0:ddd}", dtpm);
+        assert.formatsTo("Sunday", "{0:dddd}", dtpm);
+        
+        assert.formatsTo("Apr", "{0:MMM}", dtpm);
+        assert.formatsTo("April", "{0:MMMM}", dtpm);
 
         test.section("Special numeric values");
         assert.formatsTo("NaN", "{0}", NaN);
@@ -170,8 +176,8 @@
         assert.formatsTo("43", "{0:D0}", 42.5);
         
         test.section("Specifier C");
-        assert.formatsTo("$42.50", "{0:c}", 42.5);
-        assert.formatsTo("$42.50", "{0:C}", 42.5);
+        assert.formatsTo("¤42.50", "{0:c}", 42.5);
+        assert.formatsTo("¤42.50", "{0:C}", 42.5);
         
         test.section("Specifier F");
         assert.formatsTo("1242.50", "{0:f}", 1242.5);
@@ -247,7 +253,7 @@
         assert.formatsTo("25.3333333", "{0:R}", 25.3333333);
         
         test.section("Culture sv-se");
-        msf.setCulture("sv");
+        msf.setCulture("sv-SE");
         assert.formatsTo("1,2e+03", "{0:g2}", 1242.55);
         assert.formatsTo("1242,50", "{0:f}", 1242.5);
         assert.formatsTo("1 242,500", "{0:N3}", 1242.5);
@@ -262,6 +268,23 @@
         assert.formatsTo("18:20", "{0:t}", dtpm);
         assert.formatsTo("18:20:33", "{0:T}", dtpm);
         assert.formatsTo("april 1989", "{0:y}", dtpm);
+        
+        assert.formatsTo("1.555,48 kr", "{0:c}", 1555.475);
+        
+        test.section("Date/time standard (en-US)");
+        msf.setCulture("en-US");
+        assert.formatsTo("4/2/1989", "{0:d}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989", "{0:D}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989 6:20 AM", "{0:f}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989 6:20 PM", "{0:f}", dtpm);
+        assert.formatsTo("Sunday, April 2, 1989 6:20:33 AM", "{0:F}", dtam);
+        assert.formatsTo("Sunday, April 2, 1989 6:20:33 PM", "{0:F}", dtpm);
+        assert.formatsTo("4/2/1989 6:20 AM", "{0:g}", dtam);
+        assert.formatsTo("4/2/1989 6:20 PM", "{0:g}", dtpm);
+        assert.formatsTo("4/2/1989 6:20:33 AM", "{0:G}", dtam);
+        assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
+        assert.formatsTo("April 2", "{0:M}", dtpm);
+        assert.formatsTo("April 2", "{0:m}", dtpm);
 
         test.print();
     }

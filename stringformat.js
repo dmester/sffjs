@@ -24,7 +24,7 @@
  * 
  */
 
-var msf = {};
+var msf = { version: "1.04" };
 
 (function() {
 
@@ -38,103 +38,71 @@ var msf = {};
     // ***** Private Methods *****
     
     // Minimization optimization 
-    function toUpperCase(s) {
-        return s.toUpperCase();
+    var toUpperCase = "toUpperCase";
+    
+    // This is the default values of a culture. Any missing format will default to the format in CULTURE_TEMPLATE.
+    // The invariant culture is generated from these default values.
+    var CULTURE_TEMPLATE = {
+        name: "", // Empty on invariant culture
+        d: "MM/dd/yyyy",
+        D: "dddd, dd MMMM yyyy",
+        t: "HH:mm",
+        T: "HH:mm:ss",
+        M: "MMMM dd",
+        Y: "yyyy MMMM",
+        s: "yyyy-MM-ddTHH:mm:ss",
+        _M: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+        _D: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+        _r: ".", // Radix point
+        _t: ",", // Thounsands separator
+        _c: "¤#,0.00", // Currency format string
+        _ct: ",", // Currency thounsands separator
+        _cr: ".",  // Currency radix point
+        _am: "AM",
+        _pm: "PM"
+    };
+    
+    // Generate invariant culture
+    var INVARIANT_CULTURE = {};
+    completeCulture(INVARIANT_CULTURE);
+    
+    // Holds the id of the current culture. The id is also included in the culture object (msf.LC), but the 
+    // culture object might be replaced during runtime when a better matching culture is registered.
+    var currentCultureId = navigator.systemLanguage || navigator.language || "";
+    
+    // Holds all registered cultures.
+    var cultures = {};
+     
+    function completeCulture(culture) {
+        /// <summary>This method will fill gaps in the specified culture with information from the invariant culture.</summary>
+        
+        // Create short 
+        
+        
+        // Add missing formats from the culture template
+        for (var key in CULTURE_TEMPLATE) {
+            culture[key] = culture[key] || CULTURE_TEMPLATE[key];
+        }
+        
+        // Construct composite formats if they are not already defined
+        culture.f = culture.f || culture.D + " " + culture.t;
+        culture.F = culture.F || culture.D + " " + culture.T;
+        culture.g = culture.g || culture.d + " " + culture.t;
+        culture.G = culture.G || culture.d + " " + culture.T;
+        
+        // Add aliases
+        culture.m = culture.M;
+        culture.y = culture.Y;
     }
     
-    function getCulture(lcid) {
-        /// <summary>This method generates a culture object from a specified IETF language code.</summary>
-        
-        lcid = toUpperCase(lcid);
-        
-        // Common format strings
-        var t = {
-            name: "en-GB",
-            d: "dd/MM/yyyy",
-            D: "dd MMMM yyyy",
-            t: "HH:mm",
-            T: "HH:mm:ss",
-            M: "d MMMM",
-            Y: "MMMM yyyy",
-            s: "yyyy-MM-ddTHH:mm:ss",
-            _m: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-            _d: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-            _r: ".", // Radix point
-            _t: ",", // Thounsands separator
-            _c: "£#,0.00", // Currency format string
-            _ct: ",", // Currency thounsands separator
-            _cr: ".",  // Currency radix point
-            _am: "AM",
-            _pm: "PM"
-        };
-        
-        var language = lcid.substr(0, 2);
-        var europeanNumbers;
-        
-        // Culture specific strings
-        if (language == "SV") {
-            t.name = "sv";
-            t.d = "yyyy-MM-dd";
-            t.D = "'den 'd MMMM yyyy";
-            t._m = ["januari", "februari", "mars", "april", "maj", "juni", "juli", "augusti", "september", "oktober", "november", "december"];
-            t._d = ["söndag", "måndag", "tisdag", "onsdag", "torsdag", "fredag", "lördag"];
-            t._r = t._cr = ",";
-            t._t = " ";
-            t._ct = ".";
-            t._c = "#,0.00 kr";
-        } else if (language == "DE") {
-            t.name = "de";
-            t.M = "d. MMMM";
-            t.d = "yyyy-MM-dd";
-            t.D = "dddd, d. MMMM yyyy";
-            t._m = ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"];
-            t._d = ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"];
-            europeanNumbers = 1;
-        } else if (language == "ES") {
-            t.name = "es";
-            t.M = "d' de 'MMMM";
-            t.d = "dd/MM/yyyy";
-            t.Y = "MMMM' de 'yyyy";
-            t.D = "dddd, d' de 'MMMM' de 'yyyy";
-            t._m = ["enero", "febrero", "marzo", "abril", "mayo", "junio", "julio", "agosto", "septiembre", "octubre", "noviembre", "diciembre"];
-            t._d = ["domingo", "lunes", "martes", "miércoles", "jueves", "viernes", "sábado"];
-            europeanNumbers = 1;
-        } else if (language == "FR") {
-            t.name = "fr";
-            t._r = t._cr = ",";
-            t._t = t._ct = " ";
-            t._c = "#,0.00 €";
-            t.M = "";
-            t.d = "dd/MM/yyyy";
-            t.D = "dddd d MMMM yyyy";
-            t._m = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
-            t._d = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-            europeanNumbers = 1;
-        } else if (lcid != "EN-GB") {
-            t.name = "en-US";
-            t.t = "h:mm tt";
-            t.T = "h:mm:ss tt";
-            t.d = "M/d/yyyy";
-            t.D = "dddd, MMMM d, yyyy";
-            t.M = "MMMM d";
-            t._c = "$#,0.00";
-        }
-        
-        if (europeanNumbers) {
-            t._r = t._cr = ",";
-            t._t = t._ct = ".";
-            t._c = "#,0.00 €";
-        }
-        
-        // Composite formats
-        t.f = t.D + " " + t.t;
-        t.F = t.D + " " + t.T;
-        t.g = t.d + " " + t.t;
-        t.G = t.d + " " + t.T;
-        t.m = t.M;
-        t.y = t.Y;
-        
-        return t;
+    function updateCulture() {
+        /// <summary>This method will update the currently selected culture object to reflect the currently set LCID (as far as possible).</summary>
+        msf.LC = 
+            currentCultureId && 
+            (
+                cultures[currentCultureId[toUpperCase]()] || 
+                cultures[currentCultureId.split("-")[0][toUpperCase]()]
+            ) || INVARIANT_CULTURE;
     }
     
     function numberPair(n) {
@@ -478,7 +446,7 @@ var msf = {};
         var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d*)$/);
         if (standardFormatStringMatch)
         {
-            var standardFormatStringMatch_UpperCase = toUpperCase(standardFormatStringMatch[1]),
+            var standardFormatStringMatch_UpperCase = standardFormatStringMatch[1][toUpperCase](),
                 precision = parseInt(standardFormatStringMatch[2], 10); // parseInt used to ensure empty string is aprsed to NaN
             
             // Limit precision to max 15
@@ -587,7 +555,7 @@ var msf = {};
                     var result = Math.round(number).toString(16);
                     
                     if (standardFormatStringMatch[1] == "X") {
-                        result = toUpperCase(result);
+                        result = result[toUpperCase]();
                     }
                     
                     // Add padding, remember precision might be NaN
@@ -656,12 +624,14 @@ var msf = {};
 			function () { 
                 var argument = arguments[0], getFullYear = "getFullYear", getMonth = "getMonth", getSeconds = "getSeconds", getMinutes = "getMinutes", getHours = "getHours";
 
-                return argument == "dddd" ? culture._d[date.getDay()] :
-                        argument == "ddd" ? culture._d[date.getDay()].substr(0, 3) :
+                return argument == "dddd" ? culture._D[date.getDay()] :
+                        // Use three first characters from long day name if abbreviations are not specifed
+                        argument == "ddd" ? (culture._d ? culture._d[date.getDay()] : culture._D[date.getDay()].substr(0, 3)) : 
                         argument == "dd" ? numberPair(date.getDate()) :
                         argument == "d" ? date.getDate() :
-                        argument == "MMMM" ? culture._m[date[getMonth]()] :
-                        argument == "MMM" ? culture._m[date[getMonth]()].substr(0, 3) :
+                        argument == "MMMM" ? culture._M[date[getMonth]()] :
+                        // Use three first characters from long month name if abbreviations are not specifed
+                        argument == "MMM" ? (culture._m ? culture._m[date[getMonth]()] : culture._M[date[getMonth]()].substr(0, 3)) :
                         argument == "MM" ? numberPair(date[getMonth]() + 1) :
                         argument == "M" ? date[getMonth]() + 1 :
                         argument == "yyyy" ? date[getFullYear]() :
@@ -720,18 +690,28 @@ var msf = {};
     ///     The current culture used for culture specific formatting.
     /// </summary>
     msf.LC = null;
-
+    
     msf.setCulture = function(languageCode) {
         /// <summary>
         ///     Sets the current culture, used for culture specific formatting.
         /// </summary>
         /// <param name="LCID">The IETF language code of the culture, e.g. en-US or en.</param>
-        msf.LC = getCulture(languageCode) || getCulture(languageCode.substr(0, 2)) || getCulture();
+        
+        currentCultureId = languageCode;
+        updateCulture();
     };
     
-    // Initiate culture
-    /*global navigator */// <- for JSLint, just ignore
-    msf.setCulture(navigator.systemLanguage || navigator.language || "en-US");
+    msf.registerCulture = function (culture) {
+        /// <summary>
+        ///     Registers an object containing information about a culture.
+        /// </summary>
+        
+        completeCulture(culture);
+        cultures[culture.name[toUpperCase]()] = culture;
+        
+        // ...and reevaulate current culture
+        updateCulture();
+    };
     
     // Set Format methods
     var pr = Date.prototype;
@@ -773,4 +753,3 @@ var msf = {};
 //#END IF
  
 })();
-
