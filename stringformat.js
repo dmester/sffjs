@@ -76,9 +76,6 @@ var msf = { version: "1.04" };
     function completeCulture(culture) {
         /// <summary>This method will fill gaps in the specified culture with information from the invariant culture.</summary>
         
-        // Create short 
-        
-        
         // Add missing formats from the culture template
         for (var key in CULTURE_TEMPLATE) {
             culture[key] = culture[key] || CULTURE_TEMPLATE[key];
@@ -614,7 +611,15 @@ var msf = { version: "1.04" };
 
     // ***** Date Formatting *****
     Date.prototype.__Format = function(format) {
-        var date = this, culture = msf.LC;
+        var date        = this, 
+            culture     = msf.LC,
+            year        = date.getFullYear(),
+            month       = date.getMonth(),
+            dayOfMonth  = date.getDate(),
+            dayOfWeek   = date.getDay(),
+            hour        = date.getHours(),
+            minute      = date.getMinutes(),
+            second      = date.getSeconds();
             
         if (format.length == 1) {
             format = culture[format] || format;
@@ -622,30 +627,45 @@ var msf = { version: "1.04" };
 		
 		return format.replace(/('[^']*'|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
 			function () { 
-                var argument = arguments[0], getFullYear = "getFullYear", getMonth = "getMonth", getSeconds = "getSeconds", getMinutes = "getMinutes", getHours = "getHours";
+                var argument = arguments[0];
 
-                return argument == "dddd" ? culture._D[date.getDay()] :
-                        // Use three first characters from long day name if abbreviations are not specifed
-                        argument == "ddd" ? (culture._d ? culture._d[date.getDay()] : culture._D[date.getDay()].substr(0, 3)) : 
-                        argument == "dd" ? numberPair(date.getDate()) :
-                        argument == "d" ? date.getDate() :
-                        argument == "MMMM" ? culture._M[date[getMonth]()] :
-                        // Use three first characters from long month name if abbreviations are not specifed
-                        argument == "MMM" ? (culture._m ? culture._m[date[getMonth]()] : culture._M[date[getMonth]()].substr(0, 3)) :
-                        argument == "MM" ? numberPair(date[getMonth]() + 1) :
-                        argument == "M" ? date[getMonth]() + 1 :
-                        argument == "yyyy" ? date[getFullYear]() :
-                        argument == "yy" ? ("" + date[getFullYear]()).substr(2) :
-                        argument == "HH" ? numberPair(date[getHours]()) :
-                        argument == "H" ? date[getHours]() :
-                        argument == "hh" ? numberPair((date[getHours]() - 1) % 12 + 1) :
-                        argument == "h" ? (date[getHours]() - 1) % 12 + 1 :
-                        argument == "mm" ? numberPair(date[getMinutes]()) :
-                        argument == "m" ? date[getMinutes]() :
-                        argument == "ss" ? numberPair(date[getSeconds]()) :
-                        argument == "s" ? date[getSeconds]() :
-                        argument == "tt" ? (date[getHours]() < 12 ? culture._am : culture._pm) : 
-                        argument == "t" ? (date[getHours]() < 12 ? culture._am : culture._pm).charAt(0) :
+                        // Day
+                return argument == "dddd" ? culture._D[dayOfWeek] :
+                                             // Use three first characters from long day name if abbreviations are not specifed
+                        argument == "ddd"  ? (culture._d ? culture._d[dayOfWeek] : culture._D[dayOfWeek].substr(0, 3)) : 
+                        argument == "dd"   ? numberPair(dayOfMonth) :
+                        argument == "d"    ? dayOfMonth :
+                        
+                        // Month
+                        argument == "MMMM" ? culture._M[month] :
+                                             // Use three first characters from long month name if abbreviations are not specifed
+                        argument == "MMM"  ? (culture._m ? culture._m[month] : culture._M[month].substr(0, 3)) :
+                        argument == "MM"   ? numberPair(month + 1) :
+                        argument == "M"    ? month + 1 :
+                        
+                        // Year
+                        argument == "yyyy" ? year :
+                        argument == "yy"   ? ("" + year).substr(2) :
+                        
+                        // Hour
+                        argument == "HH"   ? numberPair(hour) :
+                        argument == "H"    ? hour :
+                        argument == "hh"   ? numberPair((hour - 1) % 12 + 1) :
+                        argument == "h"    ? (hour - 1) % 12 + 1 :
+                        
+                        // Minute
+                        argument == "mm"   ? numberPair(minute) :
+                        argument == "m"    ? minute :
+                        
+                        // Second
+                        argument == "ss"   ? numberPair(second) :
+                        argument == "s"    ? second :
+                        
+                        // AM/PM
+                        argument == "tt"   ? (hour < 12 ? culture._am : culture._pm) : 
+                        argument == "t"    ? (hour < 12 ? culture._am : culture._pm).charAt(0) :
+                        
+                        // String literal => strip quotation marks
                         argument.substr(1, argument.length - 2);
 			});
     };
