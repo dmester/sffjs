@@ -35,3 +35,11 @@ Released 2013-04-01
 * Bug fix: escaped end braces (}}) were not unescaped to }.
 * Bug fix: values containing escaped braces (}}) was incorrectly unescaped to }.
 ------------------------------------------------------------
+Version 1.05
+Released XXXXXX
+
+* Added support for explicit abbreviated month and day names.
+* Added public interface for registering cultures after initialization (msf.registerCulture(<culture>)).
+* Added all cultures available in Mono.
+* Added library version to global msf object.
+* Bug fix: fallback from region specific culture to neutral culture assumed the language code was always 2 characters.
