@@ -286,6 +286,35 @@
         assert.formatsTo("April 2", "{0:M}", dtpm);
         assert.formatsTo("April 2", "{0:m}", dtpm);
 
+        test.section("setCulture");
+        msf.registerCulture({ name: "__LANG" });
+        msf.registerCulture({ name: "__LANG-REGION" });
+        msf.registerCulture({ name: "__LANG2" });
+        msf.registerCulture({ name: "__LANG3-region" });
+        
+        msf.setCulture("");
+        assert.areEqual("", msf.LC.name, "Invariant culture");
+        
+        msf.setCulture("__LANG");
+        assert.areEqual("__LANG", msf.LC.name, "Neutral culture");
+        
+        msf.setCulture("__LANG-REGION");
+        assert.areEqual("__LANG-REGION", msf.LC.name, "Specific culture");
+        
+        msf.setCulture("__LANG2-REGION");
+        assert.areEqual("__LANG2", msf.LC.name, "Fallback to neutral");
+        
+        msf.setCulture("__LANG3-REGION");
+        assert.areEqual("__LANG3-region", msf.LC.name, "Specific to non-existing neutral");
+        
+        msf.setCulture("__LANG3");
+        assert.areEqual("", msf.LC.name, "Non-existing neutral");
+        
+        msf.registerCulture({ name: "__Lang3" });
+        assert.areEqual("__Lang3", msf.LC.name, "Delayed neutral");
+
+        msf.setCulture("");
+        
         test.print();
     }
     
