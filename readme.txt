@@ -16,16 +16,74 @@ FILES
 
 You got a number of files when you extracted the script library:
 
-stringformat.js       - Compressed and obfuscated, to be used in production.
-stringformat.src.js   - Commented source file for your reference.
-tests.html            - Test page that performs unit tests on the library.
-stringformat.tests.js - Script for tests.html.
+stringformat.js             - Compressed and obfuscated, to be used in production.
+stringformat.src.js         - Commented source file for your reference.
+tests.html                  - Test page that performs unit tests on the library.
+stringformat.tests.js       - Script for tests.html.
+cultures/stringformat.XX.js - Files holding metadata about cultures.
 
 
 HOW TO USE
 
-For usage examples, please see:
+To use the library, include the library and optionally the cultures you 
+are targetting. Note that if no culture files are included, the invariant 
+culture will be used.
+
+    [CODE]
+    <script type="text/javascript" src="stringformat.js"></script>
+    <script type="text/javascript" src="stringformat.en.js"></script>
+    <script type="text/javascript" src="stringformat.sv.js"></script>
+
+Then you're ready to go. Here are two simple examples using indexes and object
+paths/named parameters.
+
+    [CODE]
+    // Index
+    String.format(
+        "Welcome back, {0}! Last seen {1:M}", 
+        "John Doe", new DateTime(1985, 3, 7, 12, 33)
+        );
+        
+    // Outputs: 
+    // Welcome back, John Doe! Last seen April 07
+
+    // Named parameters
+    String.format(
+        "Welcome back, {user.name}! Last seen {lastseen:M}", 
+        { 
+            user: {
+                name : "John Doe", 
+                age : 42
+            },
+            lastseen: new DateTime(2009, 3, 7, 12, 33) 
+        });
+        
+    // Outputs: 
+    // Welcome back, John Doe! Last seen April 07
+
+For more usage examples, please see:
 http://www.masterdata.se/r/string_format_for_javascript/
 
-For a reference manual regarding .NET format strings, please see MSDN or:
-http://blog.stevex.net/index.php/string-formatting-in-csharp/
+For reference information regarding .NET format strings, please consult MSDN:
+http://msdn.microsoft.com/en-us/library/system.string.format.aspx
+
+
+COMPATIBILITY WITH .NET IMPLEMENTATION
+
+The output of this library is highly compatible with the output from the .NET 
+implementation. In this section differences will be listed
+
+* Date format
+    * Date format specifier 'O' is not supported
+    * Date format specifier 'R' is not supported
+
+* Number format
+    * Number format specifier 'c' ignores specified precision
+
+Other types does not have a format implementation, and is thus serialized to a 
+string by the __Format function or the Javascript runtime using the toString function.
+
+These are additions in this implementation, and thus not supported by the .NET implementation:
+* Object paths/named parameters
+
+
