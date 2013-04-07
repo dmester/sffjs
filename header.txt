@@ -1,5 +1,7 @@
-// String.format for JavaScript
-// Copyright (c) Daniel Mester Pirttijärvi 2013
-//
-// www.masterdata.se/r/string_format_for_javascript/
-//
+/**
+ * String.format for JavaScript
+ * Copyright (c) Daniel Mester Pirttijärvi 2013
+ * 
+ * www.masterdata.se/r/string_format_for_javascript/
+ */
+
