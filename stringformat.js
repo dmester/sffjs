@@ -29,8 +29,11 @@ var msf = { version: "1.05" };
 (function() {
 
     // ***** Shortcuts *****
-    var Number = window.Number,
-        String = window.String,
+    var _Number = Number,
+        _String = String,
+        zero = "0",
+        toUpperCase = "toUpperCase",
+        undefined,
    
     // ***** Private Variables *****
     
@@ -73,12 +76,12 @@ var msf = { version: "1.05" };
     
     function numberPair(n) {
         /// <summary>Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.</summary>
-        return (n < 10 ? "0" : "") + n;
+        return n < 10 ? zero + n : n;
     }
 
     function hasValue(value) {
         /// <summary>Returns true if <paramref name="value"/> is not null or undefined.</summary>
-        return !(value === null || typeof value === "undefined");
+        return value !== null && value !== undefined;
     }
     
     function numberCoalesce(value1, value2) {
@@ -115,8 +118,8 @@ var msf = { version: "1.05" };
         msf.LC = 
             currentCultureId && 
             (
-                cultures[currentCultureId.toUpperCase()] || 
-                cultures[currentCultureId.split("-")[0].toUpperCase()]
+                cultures[currentCultureId[toUpperCase]()] || 
+                cultures[currentCultureId.split("-")[0][toUpperCase]()]
             ) || INVARIANT_CULTURE;
     }
     
@@ -164,7 +167,7 @@ var msf = { version: "1.05" };
             
             // Evaluate path until we reach the searched member or the value is undefined/null
             while (hasValue(value) && (match = followingMembers.exec(path))) {
-                value = value[match[2] || Number(match[3])];
+                value = value[match[2] || _Number(match[3])];
             }
         }
         
@@ -235,7 +238,7 @@ var msf = { version: "1.05" };
         value = !hasValue(value) ? "" : value.__Format ? value.__Format(formatString) : "" + value;
         
         // Add padding (if necessary)
-        align = Number(align) || 0;
+        align = _Number(align) || 0;
         
         paddingLength = Math.abs(align) - value.length;
 
@@ -274,7 +277,7 @@ var msf = { version: "1.05" };
         // Pad integrals with zeroes to reach the minimum number of integral digits
         minIntegralDigits -= integralDigits;
         while (minIntegralDigits-- > 0) {
-            groupedAppend(out, "0");
+            groupedAppend(out, zero);
         }
         
         // Add integral digits
@@ -289,7 +292,7 @@ var msf = { version: "1.05" };
             // Pad with zeroes
             minDecimalDigits -= decimalDigits;
             while (minDecimalDigits-- > 0) {
-                groupedAppend(out, "0");
+                groupedAppend(out, zero);
             }
         }
         
@@ -327,10 +330,10 @@ var msf = { version: "1.05" };
             } else if (!inString) {
             
                 // Only 0 and # are digit placeholders, skip other characters in analyzing phase
-                if (c == "0" || c == "#") {
+                if (c == zero || c == "#") {
                     decimals += atDecimals;
 
-                    if (c == "0") {
+                    if (c == zero) {
                         // 0 is a forced digit
                         if (atDecimals) {
                             forcedDecimals = decimals;
@@ -378,7 +381,7 @@ var msf = { version: "1.05" };
                 out.push(c);
             
             // Digit placeholder
-            } else if (c == "#" || c == "0") {
+            } else if (c == "#" || c == zero) {
                 if (i < integralDigits) {
                     // In the integral part
                     if (i >= 0) {
@@ -389,14 +392,14 @@ var msf = { version: "1.05" };
 
                         // Not yet inside the number number, force a zero?
                     } else if (i >= integralDigits - forcedDigits) {
-                        groupedAppend(out, "0");
+                        groupedAppend(out, zero);
                     }
 
                     unused = 0;
 
                 } else if (forcedDecimals-- > 0 || i < number.length) {
                     // In the fractional part
-                    groupedAppend(out, i >= number.length ? "0" : number.charAt(i));
+                    groupedAppend(out, i >= number.length ? zero : number.charAt(i));
                 }
 
                 i++;
@@ -418,13 +421,13 @@ var msf = { version: "1.05" };
     
     // ***** PUBLIC INTERFACE
     // ***** Number Formatting *****
-    Number.prototype.__Format = function(format) {
+    _Number.prototype.__Format = function(format) {
         /// <summary>
         ///     Formats this number according the specified format string.
         /// </summary>
         /// <param name="format">The formatting string used to format this number.</param>
 
-        var number = Number(this),
+        var number = _Number(this),
             radixPoint = msf.LC._r,
             thousandSeparator = msf.LC._t;
         
@@ -434,7 +437,7 @@ var msf = { version: "1.05" };
         }
         
         // Default formatting if no format string is specified
-        if (!format && format !== "0") {
+        if (!format && format !== zero) {
             return basicNumberFormatter(number, 0, 0, 10, radixPoint);
         }
         
@@ -445,7 +448,7 @@ var msf = { version: "1.05" };
         var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d*)$/);
         if (standardFormatStringMatch)
         {
-            var standardFormatStringMatch_UpperCase = standardFormatStringMatch[1].toUpperCase(),
+            var standardFormatStringMatch_UpperCase = standardFormatStringMatch[1][toUpperCase](),
                 precision = parseInt(standardFormatStringMatch[2], 10); // parseInt used to ensure empty string is aprsed to NaN
             
             // Limit precision to max 15
@@ -554,13 +557,13 @@ var msf = { version: "1.05" };
                     var result = Math.round(number).toString(16);
                     
                     if (standardFormatStringMatch[1] == "X") {
-                        result = result.toUpperCase();
+                        result = result[toUpperCase]();
                     }
                     
                     // Add padding, remember precision might be NaN
                     precision -= result.length;
                     while (precision-- > 0) {
-                        result = "0" + result;
+                        result = zero + result;
                     }
                     
                     return result;
@@ -671,7 +674,7 @@ var msf = { version: "1.05" };
 			});
     };
     
-    String.__Format = function(str, obj0, obj1, obj2) {
+    _String.__Format = function(str, obj0, obj1, obj2) {
         /// <summary>
         ///     Formats a string according to a specified formatting string.
         /// </summary>
@@ -712,7 +715,7 @@ var msf = { version: "1.05" };
     /// </summary>
     msf.LC = null;
     
-    msf.setCulture = function(languageCode) {
+    msf.setCulture = function (languageCode) {
         /// <summary>
         ///     Sets the current culture, used for culture specific formatting.
         /// </summary>
@@ -727,7 +730,7 @@ var msf = { version: "1.05" };
         ///     Registers an object containing information about a culture.
         /// </summary>
         
-        cultures[culture.name.toUpperCase()] = fillGapsInCulture(culture);
+        cultures[culture.name[toUpperCase]()] = fillGapsInCulture(culture);
         
         // ...and reevaulate current culture
         updateCulture();
@@ -736,8 +739,8 @@ var msf = { version: "1.05" };
     // Set Format methods
     var pr = Date.prototype;
     pr.format = pr.format || pr.__Format;
-    pr = Number.prototype;
+    pr = _Number.prototype;
     pr.format = pr.format || pr.__Format;
-    String.format = String.format || String.__Format;
+    _String.format = _String.format || _String.__Format;
 
 })();
