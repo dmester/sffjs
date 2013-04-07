@@ -31,7 +31,6 @@ var msf = { version: "1.04" };
     // ***** Shortcuts *****
     var Number = window.Number,
         String = window.String,
-        toUpperCase = "toUpperCase",
    
     // ***** Private Variables *****
     
@@ -116,8 +115,8 @@ var msf = { version: "1.04" };
         msf.LC = 
             currentCultureId && 
             (
-                cultures[currentCultureId[toUpperCase]()] || 
-                cultures[currentCultureId.split("-")[0][toUpperCase]()]
+                cultures[currentCultureId.toUpperCase()] || 
+                cultures[currentCultureId.split("-")[0].toUpperCase()]
             ) || INVARIANT_CULTURE;
     }
     
@@ -446,7 +445,7 @@ var msf = { version: "1.04" };
         var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d*)$/);
         if (standardFormatStringMatch)
         {
-            var standardFormatStringMatch_UpperCase = standardFormatStringMatch[1][toUpperCase](),
+            var standardFormatStringMatch_UpperCase = standardFormatStringMatch[1].toUpperCase(),
                 precision = parseInt(standardFormatStringMatch[2], 10); // parseInt used to ensure empty string is aprsed to NaN
             
             // Limit precision to max 15
@@ -555,7 +554,7 @@ var msf = { version: "1.04" };
                     var result = Math.round(number).toString(16);
                     
                     if (standardFormatStringMatch[1] == "X") {
-                        result = result[toUpperCase]();
+                        result = result.toUpperCase();
                     }
                     
                     // Add padding, remember precision might be NaN
@@ -729,7 +728,7 @@ var msf = { version: "1.04" };
         ///     Registers an object containing information about a culture.
         /// </summary>
         
-        cultures[culture.name[toUpperCase]()] = fillGapsInCulture(culture);
+        cultures[culture.name.toUpperCase()] = fillGapsInCulture(culture);
         
         // ...and reevaulate current culture
         updateCulture();
