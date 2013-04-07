@@ -5,7 +5,7 @@
     /// </summary>
     
     
-    function runTests() {
+    function runTests(test) {
         msf.setCulture("en");
         
         var testObject = {
@@ -25,7 +25,6 @@
         };
         
         var undefined;
-        var test = new Test();
         
         test.section("Tags");
         assert.formatsTo("Test {with} brackets", "Test {{with}} brackets");
@@ -314,8 +313,6 @@
         assert.areEqual("__Lang3", msf.LC.name, "Delayed neutral");
 
         msf.setCulture("");
-        
-        test.print();
     }
     
     
@@ -506,5 +503,20 @@
         }
     };
 
-    runTests();
+    var s = String.format;
+    var formats = 0;
+    String.format = function () {
+        formats++;
+        return s.apply(null, arguments);
+    };
+
+    var test = new Test();
+    var startTime = new Date().valueOf();
+    runTests(test);
+    var endTime = new Date().valueOf();
+    test.print();
+    var timeResult = document.createElement("div");
+    timeResult.innerHTML = String.format("Executed in {0:0} ms, mean {1:0.00} µs/format", endTime - startTime, 1000 * (endTime - startTime) / formats);
+    document.body.appendChild(timeResult);
+    document.body.appendChild(timeResult);
 })();
