@@ -2,44 +2,52 @@
 CHANGELOG
 String.format for JavaScript
 
-------------------------------------------------------------
+---------------------------------------------------------------------------
 Version 1.0
 Released 2009-06-05
 
 * Initial release
-------------------------------------------------------------
+---------------------------------------------------------------------------
 Version 1.01
 Released 2009-12-14
 
 * Bug fix: Date formatting bug fix
-------------------------------------------------------------
+---------------------------------------------------------------------------
 Version 1.02
 Released 2009-12-20
 
 * Ms-PL replaced by the zlib license
-------------------------------------------------------------
+---------------------------------------------------------------------------
 Version 1.03
 Released 2012-10-01
 
-* Bug fix: Fixed formatting bug when non-placeholder chars were included after decimal point.
-------------------------------------------------------------
+* Bug fix: Fixed formatting bug when non-placeholder chars were included 
+  after decimal point.
+---------------------------------------------------------------------------
 Version 1.04
 Released 2013-04-01
 
-* Added localizations for the cultures de (German), es (spanish) and fr (French).
-* Added support for object paths instead of indexes. Supply the object as first argument, and access its members by using the syntax {member_name}.
+* Added localizations for the cultures de (German), es (spanish) and fr 
+  (French).
+* Added support for object paths instead of indexes. Supply the object as 
+  first argument, and access its members by using the syntax {member_name}.
 * Added support for the date format specifiers 'M', 'Y' and 't'.
 * Added support for precision on numeric standard format strings.
-* Added support for the standard numeric format strings 'd', 'r', 'p' and 'e'
-* Standard format string 'g' now supports exponential notation and uses it under the same circumstances as the .NET implementation.
+* Added support for the standard numeric format strings 'd', 'r', 'p' and 
+  'e'.
+* Standard format string 'g' now supports exponential notation and uses it 
+  under the same circumstances as the .NET implementation.
 * Bug fix: escaped end braces (}}) were not unescaped to }.
-* Bug fix: values containing escaped braces (}}) was incorrectly unescaped to }.
-------------------------------------------------------------
+* Bug fix: values containing escaped braces (}}) was incorrectly unescaped 
+  to }.
+---------------------------------------------------------------------------
 Version 1.05
-Released XXXXXX
+Released 2013-04-07
 
 * Added support for explicit abbreviated month and day names.
-* Added public interface for registering cultures after initialization (msf.registerCulture(<culture>)).
+* Added public interface for registering cultures after initialization 
+  (msf.registerCulture(<culture>)).
 * Added all cultures available in Mono.
 * Added library version to global msf object.
-* Bug fix: fallback from region specific culture to neutral culture assumed the language code was always 2 characters.
+* Bug fix: fallback from region specific culture to neutral culture assumed 
+  the language code was always 2 characters.
