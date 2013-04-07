@@ -29,78 +29,48 @@ var msf = { version: "1.04" };
 (function() {
 
     // ***** Shortcuts *****
-    var _Number = Number,
-        _String = String;
+    var Number = window.Number,
+        String = window.String,
+        toUpperCase = "toUpperCase",
    
-    // This regular expression describes the syntax of a format item, and escaped braces.
-    var FORMAT_TOKEN = /(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g;
+    // ***** Private Variables *****
+    
+        // This is the default values of a culture. Any missing format will default to the format in CULTURE_TEMPLATE.
+        // The invariant culture is generated from these default values.
+        CULTURE_TEMPLATE = {
+            name: "", // Empty on invariant culture
+            d: "MM/dd/yyyy",
+            D: "dddd, dd MMMM yyyy",
+            t: "HH:mm",
+            T: "HH:mm:ss",
+            M: "MMMM dd",
+            Y: "yyyy MMMM",
+            s: "yyyy-MM-ddTHH:mm:ss",
+            _M: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
+            _D: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+            _r: ".", // Radix point
+            _t: ",", // Thounsands separator
+            _c: "¤#,0.00", // Currency format string
+            _ct: ",", // Currency thounsands separator
+            _cr: ".",  // Currency radix point
+            _am: "AM",
+            _pm: "PM"
+        },
+    
+        // Generate invariant culture
+        INVARIANT_CULTURE = fillGapsInCulture({}),
+    
+        // Holds the id of the current culture. The id is also included in the culture object (msf.LC), but the 
+        // culture object might be replaced during runtime when a better matching culture is registered.
+        currentCultureId = navigator.systemLanguage || navigator.language || "",
+    
+        // Holds all registered external cultures, i.e. not the invariant culture
+        cultures = {};
+    
     
     // ***** Private Methods *****
     
-    // Minimization optimization 
-    var toUpperCase = "toUpperCase";
-    
-    // This is the default values of a culture. Any missing format will default to the format in CULTURE_TEMPLATE.
-    // The invariant culture is generated from these default values.
-    var CULTURE_TEMPLATE = {
-        name: "", // Empty on invariant culture
-        d: "MM/dd/yyyy",
-        D: "dddd, dd MMMM yyyy",
-        t: "HH:mm",
-        T: "HH:mm:ss",
-        M: "MMMM dd",
-        Y: "yyyy MMMM",
-        s: "yyyy-MM-ddTHH:mm:ss",
-        _M: ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"],
-        _D: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        _r: ".", // Radix point
-        _t: ",", // Thounsands separator
-        _c: "¤#,0.00", // Currency format string
-        _ct: ",", // Currency thounsands separator
-        _cr: ".",  // Currency radix point
-        _am: "AM",
-        _pm: "PM"
-    };
-    
-    // Generate invariant culture
-    var INVARIANT_CULTURE = {};
-    completeCulture(INVARIANT_CULTURE);
-    
-    // Holds the id of the current culture. The id is also included in the culture object (msf.LC), but the 
-    // culture object might be replaced during runtime when a better matching culture is registered.
-    var currentCultureId = navigator.systemLanguage || navigator.language || "";
-    
-    // Holds all registered cultures.
-    var cultures = {};
-     
-    function completeCulture(culture) {
-        /// <summary>This method will fill gaps in the specified culture with information from the invariant culture.</summary>
-        
-        // Add missing formats from the culture template
-        for (var key in CULTURE_TEMPLATE) {
-            culture[key] = culture[key] || CULTURE_TEMPLATE[key];
-        }
-        
-        // Construct composite formats if they are not already defined
-        culture.f = culture.f || culture.D + " " + culture.t;
-        culture.F = culture.F || culture.D + " " + culture.T;
-        culture.g = culture.g || culture.d + " " + culture.t;
-        culture.G = culture.G || culture.d + " " + culture.T;
-        
-        // Add aliases
-        culture.m = culture.M;
-        culture.y = culture.Y;
-    }
-    
-    function updateCulture() {
-        /// <summary>This method will update the currently selected culture object to reflect the currently set LCID (as far as possible).</summary>
-        msf.LC = 
-            currentCultureId && 
-            (
-                cultures[currentCultureId[toUpperCase]()] || 
-                cultures[currentCultureId.split("-")[0][toUpperCase]()]
-            ) || INVARIANT_CULTURE;
-    }
+    // General helpers
     
     function numberPair(n) {
         /// <summary>Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.</summary>
@@ -117,39 +87,45 @@ var msf = { version: "1.04" };
         return isNaN(value1) ? value2 : value1;
     }
     
-    function resolvePath(path, value) {
-        /// <summary>
-        ///     This function resolves a path on the format <membername>(.<membername>|[<index>])*
-        ///     and evaluates the value.
-        /// </summary>
-        /// <param name="path">A series of path components separated by points. Each component is either an index in square brackets.</param>
-        /// <param name="value">An object on which the path is evaluated.</param>
+    
+    // Culture functions
+    
+    function fillGapsInCulture(culture) {
+        /// <summary>This method will fill gaps in the specified culture with information from the invariant culture.</summary>
         
-        // Validate path
-        if (!/^([a-zA-Z_$]\w+|\d+)(\.[a-zA-Z_$]\w+|\[\d+\])*$/.test(path)) {
-            throw "Invalid path";
-        }
-
-        // Parse and evaluate path
-        if (hasValue(value)) {
-            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g,
-                match = /^[a-zA-Z_$]\w+/.exec(path);
-                
-            value = value[match[0]];
-            
-            // Evaluate path until we reach the searched member or the value is undefined/null
-            while (hasValue(value) && (match = followingMembers.exec(path))) {
-                value = value[match[2] || _Number(match[3])];
-            }
+        // Add missing formats from the culture template
+        for (var key in CULTURE_TEMPLATE) {
+            culture[key] = culture[key] || CULTURE_TEMPLATE[key];
         }
         
-        return value;
-    };
+        // Construct composite formats if they are not already defined
+        culture.f = culture.f || culture.D + " " + culture.t;
+        culture.F = culture.F || culture.D + " " + culture.T;
+        culture.g = culture.g || culture.d + " " + culture.t;
+        culture.G = culture.G || culture.d + " " + culture.T;
+        
+        // Add aliases
+        culture.m = culture.M;
+        culture.y = culture.Y;
+        
+        return culture;
+    }
+    
+    function updateCulture() {
+        /// <summary>This method will update the currently selected culture object to reflect the currently set LCID (as far as possible).</summary>
+        msf.LC = 
+            currentCultureId && 
+            (
+                cultures[currentCultureId[toUpperCase]()] || 
+                cultures[currentCultureId.split("-")[0][toUpperCase]()]
+            ) || INVARIANT_CULTURE;
+    }
+    
     
     // Maths
     
-    function absRound(number, decimals) {
-        /// <summary>Rounds a number to the specified number of digits.</summary>
+    function numberToString(number, decimals) {
+        /// <summary>Generates a string representation of the specified number with the specified number of digits.</summary>
         /// <param name="number" type="Number">The value to be processed.</param>
         /// <param name="decimals" type="Number" integer="true" optional="true">The maximum number of decimals. If not specified, the value is not rounded.</param>
         /// <returns>The rounded absolute value as a string.</returns>
@@ -169,7 +145,32 @@ var msf = { version: "1.04" };
         return point < 0 ? 0 : numberString.length - point - 1;
     }
     
+    
     // Formatting helpers
+    
+    function resolvePath(path, value) {
+        /// <summary>
+        ///     This function resolves a path on the format <membername>(.<membername>|[<index>])*
+        ///     and evaluates the value.
+        /// </summary>
+        /// <param name="path">A series of path components separated by points. Each component is either an index in square brackets.</param>
+        /// <param name="value">An object on which the path is evaluated.</param>
+        
+        // Parse and evaluate path
+        if (hasValue(value)) {
+            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g,
+                match = /^[a-zA-Z_$]\w+/.exec(path);
+                
+            value = value[match[0]];
+            
+            // Evaluate path until we reach the searched member or the value is undefined/null
+            while (hasValue(value) && (match = followingMembers.exec(path))) {
+                value = value[match[2] || Number(match[3])];
+            }
+        }
+        
+        return value;
+    };
     
     function groupedAppend(out, value) {
         /// <summary>Writes a value to an array in groups of three digits.</summary>
@@ -211,22 +212,23 @@ var msf = { version: "1.04" };
         /// <param name="args" type="Array">The arguments that were passed to String.format, where index 0 is the full composite format string.</param>
         /// <returns>The formatted value as a string.</returns>
         
-        var value;
+        var value, 
+            index = parseInt(pathOrIndex, 10), 
+            paddingLength, 
+            padding = "";
         
-        if (/^\d+$/.test(pathOrIndex)) {
-            // Numeric mode
-            
-            // Read index and ensure it is within the bounds of the specified argument list
-            var index = _Number(pathOrIndex);
+        // Determine whether index or path mode was used
+        if (isNaN(index)) {
+            // Non-numerical index => treat as path
+            value = resolvePath(pathOrIndex, args[1]);
+        } else {
+            // Index was numerical => ensure index is within range
             if (index > args.length - 2) {
                 // Throw exception if argument is not specified (however undefined and null values are fine!)
                 throw "Missing argument";
             }
             
             value = args[index + 1];
-        } else {
-            // Object path mode
-            value = resolvePath(pathOrIndex, args[1]);
         }
         
         // If the object has a custom format method, use it,
@@ -234,11 +236,10 @@ var msf = { version: "1.04" };
         value = !hasValue(value) ? "" : value.__Format ? value.__Format(formatString) : "" + value;
         
         // Add padding (if necessary)
-        align = _Number(align) || 0;
+        align = Number(align) || 0;
         
-        var paddingLength = Math.abs(align) - value.length,
-            padding = "";
-            
+        paddingLength = Math.abs(align) - value.length;
+
         while (paddingLength-- > 0) {
             padding += " ";
         }
@@ -247,7 +248,7 @@ var msf = { version: "1.04" };
         return (align > 0 ? value + padding : padding + value);
     }
     
-    function basicNumberFormatter(number, minIntegralDigits, minDecimals, maxDecimals, radixPoint, thousandSeparator) {
+    function basicNumberFormatter(number, minIntegralDigits, minDecimalDigits, maxDecimalDigits, radixPoint, thousandSeparator) {
         /// <summary>Handles basic formatting used for standard numeric format strings.</summary>
         /// <param name="number" type="Number">The number to format.</param>
         /// <param name="minIntegralDigits" type="Number" integer="true">The minimum number of integral digits. The number is padded with leading zeroes if necessary.</param>
@@ -257,37 +258,38 @@ var msf = { version: "1.04" };
         /// <param name="thousandSeparator" type="String">The string that will be used as a thousand separator of the integral digits.</param>
         /// <returns>The formatted value as a string.</returns>
         
-        var out = [];
+        var integralDigits, decimalDigits, out = [];
         out.t = thousandSeparator;
         
+        // Minus sign
         if (number < 0) {
             out.push("-");
         }
         
-        number = absRound(number, maxDecimals);
+        // Prepare number 
+        number = numberToString(number, maxDecimalDigits);
         
-        var integralDigits = numberOfIntegralDigits(number),
-            decimals = numberOfDecimalDigits(number);
-        
-        minIntegralDigits -= (out.g = integralDigits);
-        
-        // Pad with zeroes
+        integralDigits = out.g = numberOfIntegralDigits(number);
+        decimalDigits = numberOfDecimalDigits(number);
+
+        // Pad integrals with zeroes to reach the minimum number of integral digits
+        minIntegralDigits -= integralDigits;
         while (minIntegralDigits-- > 0) {
             groupedAppend(out, "0");
         }
         
-        // Add integer part
+        // Add integral digits
         groupedAppend(out, number.substr(0, integralDigits));
         
-        // Add decimal point
-        if (minDecimals || decimals) {
+        // Add decimal point and decimal digits
+        if (minDecimalDigits || decimalDigits) {
             out.push(radixPoint);
             
-            minDecimals -= decimals;
             groupedAppend(out, number.substr(integralDigits + 1));
 
             // Pad with zeroes
-            while (minDecimals-- > 0) {
+            minDecimalDigits -= decimalDigits;
+            while (minDecimalDigits-- > 0) {
                 groupedAppend(out, "0");
             }
         }
@@ -352,7 +354,7 @@ var msf = { version: "1.04" };
         }
 
         // Round the number value to a specified number of decimals
-        number = absRound(number, decimals);
+        number = numberToString(number, decimals);
 
         // Get integral length
         integralDigits = numberOfIntegralDigits(number);
@@ -416,13 +418,13 @@ var msf = { version: "1.04" };
     
     // ***** PUBLIC INTERFACE
     // ***** Number Formatting *****
-    _Number.prototype.__Format = function(format) {
+    Number.prototype.__Format = function(format) {
         /// <summary>
         ///     Formats this number according the specified format string.
         /// </summary>
         /// <param name="format">The formatting string used to format this number.</param>
 
-        var number = _Number(this),
+        var number = Number(this),
             radixPoint = msf.LC._r,
             thousandSeparator = msf.LC._t;
         
@@ -670,7 +672,7 @@ var msf = { version: "1.04" };
 			});
     };
     
-    _String.__Format = function(str, obj0, obj1, obj2) {
+    String.__Format = function(str, obj0, obj1, obj2) {
         /// <summary>
         ///     Formats a string according to a specified formatting string.
         /// </summary>
@@ -681,7 +683,7 @@ var msf = { version: "1.04" };
 
         var outerArgs = arguments;
         
-        return str.replace(FORMAT_TOKEN, function () {
+        return str.replace(/(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
             var innerArgs = arguments, value;
             
             // Handle escaped {
@@ -726,8 +728,7 @@ var msf = { version: "1.04" };
         ///     Registers an object containing information about a culture.
         /// </summary>
         
-        completeCulture(culture);
-        cultures[culture.name[toUpperCase]()] = culture;
+        cultures[culture.name[toUpperCase]()] = fillGapsInCulture(culture);
         
         // ...and reevaulate current culture
         updateCulture();
@@ -736,8 +737,8 @@ var msf = { version: "1.04" };
     // Set Format methods
     var pr = Date.prototype;
     pr.format = pr.format || pr.__Format;
-    pr = _Number.prototype;
+    pr = Number.prototype;
     pr.format = pr.format || pr.__Format;
-    _String.format = _String.format || _String.__Format;
+    String.format = String.format || String.__Format;
 
 })();
