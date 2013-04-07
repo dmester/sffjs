@@ -628,47 +628,46 @@ var msf = { version: "1.04" };
         }
 		
 		return format.replace(/('[^']*'|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
-			function () { 
-                var argument = arguments[0];
+			function (match) { 
 
                         // Day
-                return argument == "dddd" ? culture._D[dayOfWeek] :
+                return match == "dddd" ? culture._D[dayOfWeek] :
                                              // Use three first characters from long day name if abbreviations are not specifed
-                        argument == "ddd"  ? (culture._d ? culture._d[dayOfWeek] : culture._D[dayOfWeek].substr(0, 3)) : 
-                        argument == "dd"   ? numberPair(dayOfMonth) :
-                        argument == "d"    ? dayOfMonth :
+                        match == "ddd"  ? (culture._d ? culture._d[dayOfWeek] : culture._D[dayOfWeek].substr(0, 3)) : 
+                        match == "dd"   ? numberPair(dayOfMonth) :
+                        match == "d"    ? dayOfMonth :
                         
                         // Month
-                        argument == "MMMM" ? culture._M[month] :
+                        match == "MMMM" ? culture._M[month] :
                                              // Use three first characters from long month name if abbreviations are not specifed
-                        argument == "MMM"  ? (culture._m ? culture._m[month] : culture._M[month].substr(0, 3)) :
-                        argument == "MM"   ? numberPair(month + 1) :
-                        argument == "M"    ? month + 1 :
+                        match == "MMM"  ? (culture._m ? culture._m[month] : culture._M[month].substr(0, 3)) :
+                        match == "MM"   ? numberPair(month + 1) :
+                        match == "M"    ? month + 1 :
                         
                         // Year
-                        argument == "yyyy" ? year :
-                        argument == "yy"   ? ("" + year).substr(2) :
+                        match == "yyyy" ? year :
+                        match == "yy"   ? ("" + year).substr(2) :
                         
                         // Hour
-                        argument == "HH"   ? numberPair(hour) :
-                        argument == "H"    ? hour :
-                        argument == "hh"   ? numberPair((hour - 1) % 12 + 1) :
-                        argument == "h"    ? (hour - 1) % 12 + 1 :
+                        match == "HH"   ? numberPair(hour) :
+                        match == "H"    ? hour :
+                        match == "hh"   ? numberPair((hour - 1) % 12 + 1) :
+                        match == "h"    ? (hour - 1) % 12 + 1 :
                         
                         // Minute
-                        argument == "mm"   ? numberPair(minute) :
-                        argument == "m"    ? minute :
+                        match == "mm"   ? numberPair(minute) :
+                        match == "m"    ? minute :
                         
                         // Second
-                        argument == "ss"   ? numberPair(second) :
-                        argument == "s"    ? second :
+                        match == "ss"   ? numberPair(second) :
+                        match == "s"    ? second :
                         
                         // AM/PM
-                        argument == "tt"   ? (hour < 12 ? culture._am : culture._pm) : 
-                        argument == "t"    ? (hour < 12 ? culture._am : culture._pm).charAt(0) :
+                        match == "tt"   ? (hour < 12 ? culture._am : culture._pm) : 
+                        match == "t"    ? (hour < 12 ? culture._am : culture._pm).charAt(0) :
                         
                         // String literal => strip quotation marks
-                        argument.substr(1, argument.length - 2);
+                        match.substr(1, match.length - 2);
 			});
     };
     
