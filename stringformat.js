@@ -185,7 +185,7 @@ var msf = { version: "1.04" };
         /// </param>
         /// <param name="value" type="String">The value that will be written to <paramref name="out"/>.</param>
         
-        for (var i = 0; i < value.length; i++) {
+        for (var i = 0, length = value.length; i < length; i++) {
             // Write number
             out.push(value.charAt(i));
 
@@ -314,11 +314,12 @@ var msf = { version: "1.04" };
             inString = 0, // Bool
             unused = 1, // Bool, True until a digit has been written to the output
             c, i, f,
+            format_length = format.length,
             out = [];
 
         // Analyse format string
         // Count number of digits, decimals, forced digits and forced decimals.
-        for (i = 0; i < format.length; i++) {
+        for (i = 0; i < format_length; i++) {
             c = format.charAt(i);
             
             // Check if we are within a literal
@@ -368,7 +369,7 @@ var msf = { version: "1.04" };
         
         inString = 0;
         
-        for (f = 0; f < format.length; f++) {
+        for (f = 0; f < format_length; f++) {
             c = format.charAt(f);
         
             // Check if we are within a literal
