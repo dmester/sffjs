@@ -24,7 +24,7 @@
  * 
  */
 
-var msf = { version: "1.04" };
+var msf = { version: "1.05" };
 
 (function() {
 
