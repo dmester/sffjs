@@ -740,36 +740,4 @@ var msf = { version: "1.04" };
     pr.format = pr.format || pr.__Format;
     _String.format = _String.format || _String.__Format;
 
-//#IF DEBUG
-    
-    msf.doBenchmark = function (format, arg) {
-        /// <summary>
-        ///     Tests the performance of the String.format script.
-        /// </summary>
-        /// <param name="str">The format string to test</param>
-        /// <param name="arg">The value {0} to be used as an argument to
-        /// the String.format method.</param>
-        /// <returns>Returns the time in milliseconds to complete 
-        /// one format operation for the specified format string.</returns>
-        
-        // Number of variables in the test format string
-        var num = 5000;
-        
-        // Construct a long format string
-        var longformat = "";
-        for (var i = 0; i < num; i++) {
-            longformat += format;
-        }
-        
-        // Perform test
-        var start, end;
-        start = new Date().valueOf();
-        String.__Format(longformat, arg);
-        end = new Date().valueOf();
-        
-        return (end - start) / num;
-    };
-
-//#END IF
- 
 })();
