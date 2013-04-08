@@ -131,8 +131,8 @@
         assert.formatsTo("-Infinity", "{0:N5}", -1.7976931348623157E+10308);
 
         test.section("Align");
-        assert.formatsTo("|0.42    |", "|{0,8}|", 0.42);
-        assert.formatsTo("|    0.42|", "|{0,-8}|", 0.42);
+        assert.formatsTo("|0.42    |", "|{0,-8}|", 0.42);
+        assert.formatsTo("|    0.42|", "|{0,8}|", 0.42);
         assert.formatsTo("|0123456789|", "|{0,8}|", "0123456789");
         assert.formatsTo("|0123456789|", "|{0,-8}|", "0123456789");
         

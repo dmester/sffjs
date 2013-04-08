@@ -24,7 +24,7 @@
  * 
  */
 
-var msf = { version: "1.05" };
+var msf = { version: "1.06" };
 
 (function() {
 
@@ -247,7 +247,7 @@ var msf = { version: "1.05" };
         }
         
         // innerArgs[1] is the leading {'s
-        return (align > 0 ? value + padding : padding + value);
+        return (align < 0 ? value + padding : padding + value);
     }
     
     function basicNumberFormatter(number, minIntegralDigits, minDecimalDigits, maxDecimalDigits, radixPoint, thousandSeparator) {
