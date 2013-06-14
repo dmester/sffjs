@@ -742,5 +742,9 @@ var msf = { version: "1.06" };
     pr = _Number.prototype;
     pr.format = pr.format || pr.__Format;
     _String.format = _String.format || _String.__Format;
+    
+    // Initiate culture
+    /*global navigator */// <- for JSLint, just ignore
+    msf.setCulture(navigator.systemLanguage || navigator.language || "en-US");
 
 })();
