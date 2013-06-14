@@ -51,10 +51,14 @@ Released 2013-04-07
 * Added library version to global msf object.
 * Bug fix: fallback from region specific culture to neutral culture assumed 
   the language code was always 2 characters.
-  ---------------------------------------------------------------------------
+---------------------------------------------------------------------------
 Version 1.06
 Released 2013-04-08
 
 * Bug fix: the text alignment when specifying the alignment option was 
   reversed.
-  
+---------------------------------------------------------------------------
+Version 1.07
+Released 2013-06-14
+
+* Bug fix: no default culture was set on startup.
