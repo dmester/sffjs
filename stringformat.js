@@ -26,12 +26,36 @@
  * 
  */
 
-var msf = { version: "{version}" };
+var msf = (function() {
 
-(function() {
-
+    // ***** Public Interface *****
+    var sffjs = {
+            version: "{version}",
+            
+            setCulture: function (languageCode) {
+                /// <summary>
+                ///     Sets the current culture, used for culture specific formatting.
+                /// </summary>
+                /// <param name="LCID">The IETF language code of the culture, e.g. en-US or en.</param>
+                
+                currentCultureId = languageCode;
+                updateCulture();
+            },
+            
+            registerCulture: function (culture) {
+                /// <summary>
+                ///     Registers an object containing information about a culture.
+                /// </summary>
+                
+                cultures[culture.name[toUpperCase]()] = fillGapsInCulture(culture);
+                
+                // ...and reevaulate current culture
+                updateCulture();
+            }
+        },
+        
     // ***** Shortcuts *****
-    var _Number = Number,
+        _Number = Number,
         _String = String,
         zero = "0",
         toUpperCase = "toUpperCase",
@@ -64,7 +88,10 @@ var msf = { version: "{version}" };
         // Generate invariant culture
         INVARIANT_CULTURE = fillGapsInCulture({}),
     
-        // Holds the id of the current culture. The id is also included in the culture object (msf.LC), but the 
+        // Holds the current culture object
+        currentCulture,
+    
+        // Holds the id of the current culture. The id is also included in the culture object, but the 
         // culture object might be replaced during runtime when a better matching culture is registered.
         currentCultureId = navigator.systemLanguage || navigator.language || "",
     
@@ -117,7 +144,7 @@ var msf = { version: "{version}" };
     
     function updateCulture() {
         /// <summary>This method will update the currently selected culture object to reflect the currently set LCID (as far as possible).</summary>
-        msf.LC = 
+        sffjs.LC = currentCulture = 
             currentCultureId && 
             (
                 cultures[currentCultureId[toUpperCase]()] || 
@@ -421,7 +448,7 @@ var msf = { version: "{version}" };
         return out.join("");
     }
     
-    // ***** PUBLIC INTERFACE
+    // ***** FORMATTERS
     // ***** Number Formatting *****
     _Number.prototype.__Format = function(format) {
         /// <summary>
@@ -430,8 +457,8 @@ var msf = { version: "{version}" };
         /// <param name="format">The formatting string used to format this number.</param>
 
         var number = _Number(this),
-            radixPoint = msf.LC._r,
-            thousandSeparator = msf.LC._t;
+            radixPoint = currentCulture._r,
+            thousandSeparator = currentCulture._t;
         
         // If not finite, i.e. ±Intifity and NaN, return the default JavaScript string notation
         if (!isFinite(number)) {
@@ -577,9 +604,9 @@ var msf = { version: "{version}" };
                     // The currency format uses a custom format string specified by the culture.
                     // Precision is not supported and probably won't be supported in the future.
                     // Developers probably use explicit formatting of currencies anyway...
-                    format = msf.LC._c;
-                    radixPoint = msf.LC._cr;
-                    thousandSeparator = msf.LC._ct;
+                    format = currentCulture._c;
+                    radixPoint = currentCulture._cr;
+                    thousandSeparator = currentCulture._ct;
                     break;
                 
                 case "R":
@@ -619,7 +646,6 @@ var msf = { version: "{version}" };
     // ***** Date Formatting *****
     Date.prototype.__Format = function(format) {
         var date        = this, 
-            culture     = msf.LC,
             year        = date.getFullYear(),
             month       = date.getMonth(),
             dayOfMonth  = date.getDate(),
@@ -633,23 +659,23 @@ var msf = { version: "{version}" };
         
         // Resolve standard date/time format strings
         if (format.length == 1) {
-            format = culture[format] || format;
+            format = currentCulture[format] || format;
         }
 		
 		return format.replace(/('[^']*'|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
 			function (match) { 
 
                         // Day
-                return match == "dddd" ? culture._D[dayOfWeek] :
+                return match == "dddd" ? currentCulture._D[dayOfWeek] :
                                              // Use three first characters from long day name if abbreviations are not specifed
-                        match == "ddd"  ? (culture._d ? culture._d[dayOfWeek] : culture._D[dayOfWeek].substr(0, 3)) : 
+                        match == "ddd"  ? (currentCulture._d ? currentCulture._d[dayOfWeek] : currentCulture._D[dayOfWeek].substr(0, 3)) : 
                         match == "dd"   ? numberPair(dayOfMonth) :
                         match == "d"    ? dayOfMonth :
                         
                         // Month
-                        match == "MMMM" ? culture._M[month] :
+                        match == "MMMM" ? currentCulture._M[month] :
                                              // Use three first characters from long month name if abbreviations are not specifed
-                        match == "MMM"  ? (culture._m ? culture._m[month] : culture._M[month].substr(0, 3)) :
+                        match == "MMM"  ? (currentCulture._m ? currentCulture._m[month] : currentCulture._M[month].substr(0, 3)) :
                         match == "MM"   ? numberPair(month + 1) :
                         match == "M"    ? month + 1 :
                         
@@ -672,8 +698,8 @@ var msf = { version: "{version}" };
                         match == "s"    ? second :
                         
                         // AM/PM
-                        match == "tt"   ? (hour < 12 ? culture._am : culture._pm) : 
-                        match == "t"    ? (hour < 12 ? culture._am : culture._pm).charAt(0) :
+                        match == "tt"   ? (hour < 12 ? currentCulture._am : currentCulture._pm) : 
+                        match == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm).charAt(0) :
                         
                         // String literal => strip quotation marks
                         match.substr(1, match.length - 2);
@@ -713,43 +739,14 @@ var msf = { version: "{version}" };
         });
     };
 
-    
-    // ***** Initialize msf object *****
-
-    /// <summary>
-    ///     The current culture used for culture specific formatting.
-    /// </summary>
-    msf.LC = null;
-    
-    msf.setCulture = function (languageCode) {
-        /// <summary>
-        ///     Sets the current culture, used for culture specific formatting.
-        /// </summary>
-        /// <param name="LCID">The IETF language code of the culture, e.g. en-US or en.</param>
-        
-        currentCultureId = languageCode;
-        updateCulture();
-    };
-    
-    msf.registerCulture = function (culture) {
-        /// <summary>
-        ///     Registers an object containing information about a culture.
-        /// </summary>
-        
-        cultures[culture.name[toUpperCase]()] = fillGapsInCulture(culture);
-        
-        // ...and reevaulate current culture
-        updateCulture();
-    };
-    
-    // Set Format methods
-    var pr = Date.prototype;
-    pr.format = pr.format || pr.__Format;
-    pr = _Number.prototype;
-    pr.format = pr.format || pr.__Format;
-    _String.format = _String.format || _String.__Format;
+    // If a format method has not already been defined on the following objects, set __Format as format.
+    var formattables = [ Date.prototype, _Number.prototype, _String ];
+    for (var i in formattables) {
+        formattables[i].format = formattables[i].format || formattables[i].__Format;
+    }
     
     // Initiate culture
     updateCulture();
-
+    
+    return sffjs;
 })();
