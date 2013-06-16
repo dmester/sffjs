@@ -744,7 +744,6 @@ var msf = { version: "1.07" };
     _String.format = _String.format || _String.__Format;
     
     // Initiate culture
-    /*global navigator */// <- for JSLint, just ignore
-    msf.setCulture(navigator.systemLanguage || navigator.language || "en-US");
+    updateCulture();
 
 })();
