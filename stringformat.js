@@ -625,7 +625,11 @@ var msf = { version: "1.07" };
             hour        = date.getHours(),
             minute      = date.getMinutes(),
             second      = date.getSeconds();
-            
+           
+        // If no format is specified, default to G format
+        format = format || "G";
+        
+        // Resolve standard date/time format strings
         if (format.length == 1) {
             format = culture[format] || format;
         }
