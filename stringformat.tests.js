@@ -64,9 +64,13 @@
         assert.formatsTo("Hi, {.fg}!", "Hi, {.fg}!", undefined);
         assert.formatsTo("Hi, {a..b}!", "Hi, {a..b}!", undefined);
         
-        test.section("Date/time standard (invariant culture)");
         var dtam = new Date(1989, 3, 2, 6, 20, 33);
         var dtpm = new Date(1989, 3, 2, 18, 20, 33);
+        
+        test.section("Date/time no formatting");
+        assert.formatsTo("04/02/1989 06:20:33", "{0}", dtam);
+        
+        test.section("Date/time standard (invariant culture)");
         assert.formatsTo("04/02/1989", "{0:d}", dtam);
         assert.formatsTo("Sunday, 02 April 1989", "{0:D}", dtam);
         assert.formatsTo("Sunday, 02 April 1989 06:20", "{0:f}", dtam);
