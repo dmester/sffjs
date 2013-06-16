@@ -1,7 +1,11 @@
 ﻿/**
- * String.format for JavaScript
- * Copyright (c) Daniel Mester Pirttijärvi 2013
- * 
+ * String.format for JavaScript {version}
+ * go.mester.se/sffjs
+ *  
+ * Built: {date}
+ *
+ * copyright (c), 2009-{year} Daniel Mester Pirttijärvi
+ *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
  * arising from the use of this software.
@@ -20,11 +24,9 @@
  * 
  * 3. This notice may not be removed or altered from any source distribution.
  * 
- * -- END OF LICENSE --
- * 
  */
 
-var msf = { version: "1.07" };
+var msf = { version: "{version}" };
 
 (function() {
 
