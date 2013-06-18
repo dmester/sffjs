@@ -1,4 +1,4 @@
-
+﻿
 CHANGELOG
 String.format for JavaScript
 
@@ -62,3 +62,9 @@ Version 1.07
 Released 2013-06-14
 
 * Bug fix: no default culture was set on startup.
+---------------------------------------------------------------------------
+Version 1.08
+Released 2013-06-16
+
+* Bug fix: String.format crashing while processing a format item without a 
+  format string when the value was a Date instance.

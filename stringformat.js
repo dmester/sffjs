@@ -4,7 +4,7 @@
  *  
  * Built: {date}
  *
- * copyright (c), 2009-{year} Daniel Mester Pirttijärvi
+ * Copyright (c) 2009-{year} Daniel Mester Pirttijärvi
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages

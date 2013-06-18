@@ -1,8 +1,8 @@
-
+﻿
 ---------------------------------------------------------------------------
 
 String.format for JavaScript
-Copyright (c) Daniel Mester Pirttij�rvi 2013
+Copyright (c) 2009-{year} Daniel Mester Pirttijärvi
 
 The library core (stringformat.js and stringformat.src.js) is licensed 
 under the terms of the zlib license. 

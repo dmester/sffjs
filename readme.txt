@@ -1,8 +1,10 @@
+﻿
+String.format for JavaScript {version}
+go.mester.se/sffjs
 
-String.format for JavaScript
-Copyright (c) Daniel Mester Pirttij�rvi 2013
+Built: {date}
 
-http://www.masterdata.se/r/string_format_for_javascript/
+Copyright (c) 2009-{year} Daniel Mester Pirttijärvi
 
 
 DESCRIPTION
