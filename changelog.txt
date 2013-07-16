@@ -64,7 +64,11 @@ Released 2013-06-14
 * Bug fix: no default culture was set on startup.
 ---------------------------------------------------------------------------
 Version 1.08
-Released 2013-06-16
+Released 2013-07-16
 
 * Bug fix: String.format crashing while processing a format item without a 
   format string when the value was a Date instance.
+* Bug fix: string literals enclosed by double quotation marks and escaped 
+  single characters were not treated as such.
+---------------------------------------------------------------------------
+
