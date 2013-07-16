@@ -33,7 +33,6 @@
         assert.formatsTo("Mismatch {{0}", "Mismatch {{{0}}", "{{brackets}");
         assert.formatsTo("Double outer {{{brackets}}", "Double outer {{{0}}}", "{{brackets}");
         
-        
         test.section("Index");
         assert.formatsTo("!String!", "!{0}!", "String");
         assert.formatsTo("!42!", "!{0}!", 42);
@@ -288,6 +287,31 @@
         assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
         assert.formatsTo("April 2", "{0:M}", dtpm);
         assert.formatsTo("April 2", "{0:m}", dtpm);
+
+        test.section("Quoted text");
+        assert.formatsTo("06mm33", "{0:hh'mm'ss}", dtam);
+        assert.formatsTo("06mm33", "{0:hh\"mm\"ss}", dtam);
+        assert.formatsTo("06m2033", "{0:hh\\mmss}", dtam);
+        
+        // The handling of non-matching quotation marks in date/time format strings is not compatible 
+        // with .NET, but this is ignored, as a solution would inflate the library.
+        // assert.formatsTo("06mm\"ss", "{0:hh'mm\"ss}", dtam);
+        // assert.formatsTo("06mm'ss", "{0:hh\"mm'ss}", dtam);
+        
+        // so let's instead see if non-matching quotation marks are handled gracefully, i.e. with no crash, infinity loop etc.
+        assert.formatsTo("06'20\"33", "{0:hh'mm\"ss}", dtam);
+        assert.formatsTo("06\"20'33", "{0:hh\"mm'ss}", dtam);
+        
+        assert.formatsTo("40.2", "{0:0'0'.0}", 4.2);
+        assert.formatsTo("40\".0", "{0:0'0\".0}", 4.2);
+        assert.formatsTo("40.2", "{0:0\"0\".0}", 4.2);
+        assert.formatsTo("40'.0", "{0:0\"0'.0}", 4.2);
+        assert.formatsTo("40.2", "{0:0\\0.0}", 4.2);
+        
+        assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
+        assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
+        assert.formatsTo("Mismatch {{0}", "Mismatch {{{0}}", "{{brackets}");
+        assert.formatsTo("Double outer {{{brackets}}", "Double outer {{{0}}}", "{{brackets}");
 
         test.section("setCulture");
         msf.registerCulture({ name: "__LANG" });

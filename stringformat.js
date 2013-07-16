@@ -342,10 +342,10 @@ var msf = (function() {
             decimals = 0,
             forcedDecimals = -1,
             atDecimals = 0, // Bool
-            inString = 0, // Bool
             unused = 1, // Bool, True until a digit has been written to the output
             c, i, f,
             format_length = format.length,
+            endIndex,
             out = [];
 
         // Analyse format string
@@ -353,10 +353,21 @@ var msf = (function() {
         for (i = 0; i < format_length; i++) {
             c = format.charAt(i);
             
-            // Check if we are within a literal
-            if (c == "'") {
-                inString = !inString;
-            } else if (!inString) {
+            // Check if we have reached a literal
+            if (c == "'" || c == '"') {
+                
+                // Search for end of literal
+                i = format.indexOf(c, i + 1);
+                
+                // If there is no matching end quotation mark, let's assume the rest of the string is a literal.
+                // This is the way .NET handles things.
+                if (i < 0) break;
+                
+            // Check for single escaped character
+            } else if (c == "\\") {
+                i++;
+                
+            } else {
             
                 // Only 0 and # are digit placeholders, skip other characters in analyzing phase
                 if (c == zero || c == "#") {
@@ -403,12 +414,26 @@ var msf = (function() {
         for (f = 0; f < format_length; f++) {
             c = format.charAt(f);
         
-            // Check if we are within a literal
-            if (c == "'") {
-                inString = !inString;
-            } else if (inString)  {
-                out.push(c);
+            // Check if we have reached a literal
+            if (c == "'" || c == '"') {
+                
+                // Find end of literal
+                endIndex = format.indexOf(c, f + 1);
+                
+                out.push(
+                    format.substring(
+                        f + 1, 
+                        endIndex < 0 ? format.length : endIndex // assume rest of string if matching quotation mark is missing
+                    ));
+                
+                if (endIndex < 0) break;
+                f = endIndex;
             
+            // Single escaped character
+            } else if (c == "\\") {
+                out.push(format.charAt(f + 1));
+                f++;
+
             // Digit placeholder
             } else if (c == "#" || c == zero) {
                 if (i < integralDigits) {
@@ -662,7 +687,7 @@ var msf = (function() {
             format = currentCulture[format] || format;
         }
 		
-		return format.replace(/('[^']*'|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
+		return format.replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
 			function (match) { 
 
                         // Day
@@ -702,7 +727,7 @@ var msf = (function() {
                         match == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm).charAt(0) :
                         
                         // String literal => strip quotation marks
-                        match.substr(1, match.length - 2);
+                        match.substr(1, match.length - 1 - (match.charAt(0) != "\\"));
 			});
     };
     
