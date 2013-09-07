@@ -43,7 +43,7 @@ paths/named parameters.
     // Index
     String.format(
         "Welcome back, {0}! Last seen {1:M}", 
-        "John Doe", new DateTime(1985, 3, 7, 12, 33)
+        "John Doe", new Date(1985, 3, 7, 12, 33)
         );
         
     // Outputs: 
@@ -57,7 +57,7 @@ paths/named parameters.
                 name : "John Doe", 
                 age : 42
             },
-            lastseen: new DateTime(2009, 3, 7, 12, 33) 
+            lastseen: new Date(2009, 3, 7, 12, 33) 
         });
         
     // Outputs: 
