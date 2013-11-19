@@ -1,1 +1,1 @@
-// String.format for JavaScript {version} | go.mester.se/sffjs | (c) 2009-{year} Daniel Mester Pirttijärvi
+// String.format for JavaScript {version} | mstr.se/sffjs | (c) 2009-{year} Daniel Mester Pirttijärvi

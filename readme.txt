@@ -1,6 +1,6 @@
 ﻿
 String.format for JavaScript {version}
-go.mester.se/sffjs
+mstr.se/sffjs
 
 Built: {date}
 
