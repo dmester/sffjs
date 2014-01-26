@@ -72,7 +72,8 @@ Released 2013-07-16
   single characters were not treated as such.
 ---------------------------------------------------------------------------
 Version 1.09
-Released XXXXX
+Released 2014-01-26
 
+* Minor changes.
 * Changed name of API namespace from msf to sffjs. msf will remain for some 
   time for backward compatibility but will be removed in the future.
