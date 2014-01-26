@@ -30,6 +30,7 @@ var sffjs = (function() {
 
     // ***** Public Interface *****
     var sffjs = {
+            /// <field name="version" type="String">The version of the library String.Format for JavaScript.</field>
             version: "{version}",
             
             setCulture: function (languageCode) {

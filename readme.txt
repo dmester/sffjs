@@ -63,6 +63,13 @@ paths/named parameters.
     // Outputs: 
     // Welcome back, John Doe! Last seen April 07
 
+By default the browser culture will be used, given that the appropriate culture 
+file has been referenced from the page. To set culture explicitly, use the 
+sffjs.setCulture method, which accepts a IETF language code.
+
+    [CODE]
+    sffjs.setCulture("sv");
+
 For more usage examples, please see:
 http://mstr.se/sffjs
 
