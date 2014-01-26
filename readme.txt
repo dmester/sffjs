@@ -64,7 +64,7 @@ paths/named parameters.
     // Welcome back, John Doe! Last seen April 07
 
 For more usage examples, please see:
-http://www.masterdata.se/r/string_format_for_javascript/
+http://mstr.se/sffjs
 
 For reference information regarding .NET format strings, please consult MSDN:
 http://msdn.microsoft.com/en-us/library/system.string.format.aspx
