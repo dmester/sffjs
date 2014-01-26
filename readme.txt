@@ -18,8 +18,8 @@ FILES
 
 You got a number of files when you extracted the script library:
 
-stringformat.js             - Compressed and obfuscated, to be used in production.
-stringformat.src.js         - Commented source file for your reference.
+stringformat-{version}.min.js    - Compressed and obfuscated, to be used in production.
+stringformat-{version}.js        - Commented source file for your reference.
 tests.html                  - Test page that performs unit tests on the library.
 stringformat.tests.js       - Script for tests.html.
 cultures/stringformat.XX.js - Files holding metadata about cultures.
@@ -32,9 +32,9 @@ are targetting. Note that if no culture files are included, the invariant
 culture will be used.
 
     [CODE]
-    <script type="text/javascript" src="stringformat.js"></script>
-    <script type="text/javascript" src="stringformat.en.js"></script>
-    <script type="text/javascript" src="stringformat.sv.js"></script>
+    <script type="text/javascript" src="stringformat-{version}.min.js"></script>
+    <script type="text/javascript" src="cultures/stringformat.en.js"></script>
+    <script type="text/javascript" src="cultures/stringformat.sv.js"></script>
 
 Then you're ready to go. Here are two simple examples using indexes and object
 paths/named parameters.

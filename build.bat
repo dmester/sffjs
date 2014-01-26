@@ -14,7 +14,7 @@ del /Q ~stringformat.nuspec
 rem obj files
 del /Q out.~js
 
-copy /Y stringformat.js obj\stringformat.js
+copy /Y stringformat.js obj\stringformat-%version%.js
 copy /Y stringformat.tests.js obj\
 copy /Y license.txt obj\
 copy /Y readme.txt obj\
@@ -25,7 +25,7 @@ xcopy /D /Y cultures\*.* obj\cultures\
 utils\compiler.jar --js=stringformat.js --js_output_file=out.~js
 
 rem Append header
-copy /B header.txt + out.~js obj\stringformat.min.js
+copy /B header.txt + out.~js obj\stringformat-%version%.min.js
 
 rem Timestamp
 utils\DateTimeFormat --utc --format "yyyy-MM-ddTHH:mm:ssZ" > date.~tmp
@@ -37,7 +37,7 @@ del date.~tmp
 copy stringformat.nuspec ~stringformat.nuspec
 
 rem Replace version
-utils\replace "{version}=%version%" "{date}=%date%" "{year}=%year%" obj\stringformat.js obj\stringformat.min.js obj\readme.txt obj\license.txt ~stringformat.nuspec
+utils\replace "{version}=%version%" "{date}=%date%" "{year}=%year%" obj\stringformat-%version%.js obj\stringformat-%version%.min.js obj\stringformat.tests.js obj\readme.txt obj\license.txt obj\tests.html ~stringformat.nuspec
 
 rem Create NuGet Package
 utils\NuGet.exe pack ~stringformat.nuspec -OutputDirectory releases

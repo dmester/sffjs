@@ -298,8 +298,8 @@ Currently the script takes less than 5 kB, excluding additional localizations. T
         <file src="obj\cultures\stringformat.zh.js" target="Content\Scripts\cultures\stringformat.zh.js" />
         <file src="obj\cultures\stringformat.zu-ZA.js" target="Content\Scripts\cultures\stringformat.zu-ZA.js" />
         <file src="obj\cultures\stringformat.zu.js" target="Content\Scripts\cultures\stringformat.zu.js" />
-        <file src="obj\stringformat.min.js" target="Content\Scripts\stringformat-{version}.min.js" />
-        <file src="obj\stringformat.js" target="Content\Scripts\stringformat-{version}.js" />
+        <file src="obj\stringformat-{version}.min.js" target="Content\Scripts\stringformat-{version}.min.js" />
+        <file src="obj\stringformat-{version}.js" target="Content\Scripts\stringformat-{version}.js" />
         <file src="obj\readme.txt" target="Content\Scripts\stringformat.readme.txt" />
     </files>
 </package>
