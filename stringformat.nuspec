@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
     <metadata>
-        <id>sffjs</id>
+        <id>String.Format.Js</id>
         <version>{version}</version>
         <title>String.format for JavaScript</title>
         <authors>Daniel Mester Pirttijärvi</authors>
-        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
-        <projectUrl>http://www.masterdata.se/r/string_format_for_javascript/</projectUrl>
+        <licenseUrl>http://mstr.se/sffjslicense</licenseUrl>
+        <projectUrl>http://mstr.se/sffjs</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>This is a JavaScript implementation of the .NET Framework method String.Format, which you can use for building strings with formatted numbers, formatted dates, or just concatenate strings with other objects in a convenient way (especially if you have a localized web application). 
 
