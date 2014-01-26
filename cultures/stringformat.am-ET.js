@@ -2,7 +2,7 @@
 // licensed under the terms of the MIT X11 license.
 // See: http://www.mono-project.com/FAQ:_Licensing
 
-msf.registerCulture({
+sffjs.registerCulture({
     name: "am-ET",
     d: "d/M/yyyy",
     D: "dddd \u0027፣\u0027 MMMM d \u0027ቀን\u0027 yyyy",

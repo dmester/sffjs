@@ -2,7 +2,7 @@
 // licensed under the terms of the MIT X11 license.
 // See: http://www.mono-project.com/FAQ:_Licensing
 
-msf.registerCulture({
+sffjs.registerCulture({
     name: "fi",
     d: "d.M.yyyy",
     D: "d. MMMM\u0027ta \u0027yyyy",

@@ -1,5 +1,5 @@
 
-msf.registerCulture({
+sffjs.registerCulture({
     name: "en-US",
     d: "M/d/yyyy",
     D: "dddd, MMMM d, yyyy",

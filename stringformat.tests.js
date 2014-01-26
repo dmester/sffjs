@@ -6,7 +6,7 @@
     
     
     function runTests(test) {
-        msf.setCulture("en");
+        sffjs.setCulture("en");
         
         var testObject = {
             authors: [
@@ -255,7 +255,7 @@
         assert.formatsTo("25.3333333", "{0:R}", 25.3333333);
         
         test.section("Culture sv-se");
-        msf.setCulture("sv-SE");
+        sffjs.setCulture("sv-SE");
         assert.formatsTo("1,2e+03", "{0:g2}", 1242.55);
         assert.formatsTo("1242,50", "{0:f}", 1242.5);
         assert.formatsTo("1 242,500", "{0:N3}", 1242.5);
@@ -274,7 +274,7 @@
         assert.formatsTo("1.555,48 kr", "{0:c}", 1555.475);
         
         test.section("Date/time standard (en-US)");
-        msf.setCulture("en-US");
+        sffjs.setCulture("en-US");
         assert.formatsTo("4/2/1989", "{0:d}", dtam);
         assert.formatsTo("Sunday, April 2, 1989", "{0:D}", dtam);
         assert.formatsTo("Sunday, April 2, 1989 6:20 AM", "{0:f}", dtam);
@@ -314,33 +314,33 @@
         assert.formatsTo("Double outer {{{brackets}}", "Double outer {{{0}}}", "{{brackets}");
 
         test.section("setCulture");
-        msf.registerCulture({ name: "__LANG" });
-        msf.registerCulture({ name: "__LANG-REGION" });
-        msf.registerCulture({ name: "__LANG2" });
-        msf.registerCulture({ name: "__LANG3-region" });
+        sffjs.registerCulture({ name: "__LANG" });
+        sffjs.registerCulture({ name: "__LANG-REGION" });
+        sffjs.registerCulture({ name: "__LANG2" });
+        sffjs.registerCulture({ name: "__LANG3-region" });
         
-        msf.setCulture("");
-        assert.areEqual("", msf.LC.name, "Invariant culture");
+        sffjs.setCulture("");
+        assert.areEqual("", sffjs.LC.name, "Invariant culture");
         
-        msf.setCulture("__LANG");
-        assert.areEqual("__LANG", msf.LC.name, "Neutral culture");
+        sffjs.setCulture("__LANG");
+        assert.areEqual("__LANG", sffjs.LC.name, "Neutral culture");
         
-        msf.setCulture("__LANG-REGION");
-        assert.areEqual("__LANG-REGION", msf.LC.name, "Specific culture");
+        sffjs.setCulture("__LANG-REGION");
+        assert.areEqual("__LANG-REGION", sffjs.LC.name, "Specific culture");
         
-        msf.setCulture("__LANG2-REGION");
-        assert.areEqual("__LANG2", msf.LC.name, "Fallback to neutral");
+        sffjs.setCulture("__LANG2-REGION");
+        assert.areEqual("__LANG2", sffjs.LC.name, "Fallback to neutral");
         
-        msf.setCulture("__LANG3-REGION");
-        assert.areEqual("__LANG3-region", msf.LC.name, "Specific to non-existing neutral");
+        sffjs.setCulture("__LANG3-REGION");
+        assert.areEqual("__LANG3-region", sffjs.LC.name, "Specific to non-existing neutral");
         
-        msf.setCulture("__LANG3");
-        assert.areEqual("", msf.LC.name, "Non-existing neutral");
+        sffjs.setCulture("__LANG3");
+        assert.areEqual("", sffjs.LC.name, "Non-existing neutral");
         
-        msf.registerCulture({ name: "__Lang3" });
-        assert.areEqual("__Lang3", msf.LC.name, "Delayed neutral");
+        sffjs.registerCulture({ name: "__Lang3" });
+        assert.areEqual("__Lang3", sffjs.LC.name, "Delayed neutral");
 
-        msf.setCulture("");
+        sffjs.setCulture("");
     }
     
     

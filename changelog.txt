@@ -71,4 +71,7 @@ Released 2013-07-16
 * Bug fix: string literals enclosed by double quotation marks and escaped 
   single characters were not treated as such.
 ---------------------------------------------------------------------------
+Version 1.09
+Released XXXXX
 
+* Changed name of API object from msf to sffjs.

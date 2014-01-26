@@ -26,7 +26,7 @@
  * 
  */
 
-var msf = (function() {
+var sffjs = (function() {
 
     // ***** Public Interface *****
     var sffjs = {
@@ -774,4 +774,7 @@ var msf = (function() {
     updateCulture();
     
     return sffjs;
-})();
+})(), 
+
+// msf for backward compatibility
+msf = sffjs;
