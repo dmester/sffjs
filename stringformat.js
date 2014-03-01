@@ -744,7 +744,7 @@ var sffjs = (function() {
         var outerArgs = arguments;
         
         return str.replace(/(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
-            var innerArgs = arguments, value;
+            var innerArgs = arguments;
             
             // Handle escaped {
             return innerArgs[7] ? unescapeBraces(innerArgs[7]) :
