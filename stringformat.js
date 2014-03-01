@@ -202,7 +202,7 @@ var sffjs = (function() {
         }
         
         return value;
-    };
+    }
     
     function groupedAppend(out, value) {
         /// <summary>Writes a value to an array in groups of three digits.</summary>
