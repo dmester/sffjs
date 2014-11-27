@@ -14,18 +14,18 @@ del /Q ~stringformat.nuspec
 rem obj files
 del /Q out.~js
 
-copy /Y stringformat.js obj\stringformat-%version%.js
-copy /Y stringformat.tests.js obj\
-copy /Y license.txt obj\
-copy /Y readme.txt obj\
-copy /Y changelog.txt obj\
-copy /Y tests.html obj\
-xcopy /D /Y cultures\*.* obj\cultures\
+copy /Y src\stringformat.js obj\stringformat-%version%.js
+copy /Y src\stringformat.tests.js obj\
+copy /Y src\license.txt obj\
+copy /Y src\readme.txt obj\
+copy /Y src\changelog.txt obj\
+copy /Y src\tests.html obj\
+xcopy /D /Y src\cultures\*.* obj\cultures\
 
-utils\compiler.jar --js=stringformat.js --js_output_file=out.~js
+utils\compiler.jar --js=src\stringformat.js --js_output_file=out.~js
 
 rem Append header
-copy /B header.txt + out.~js obj\stringformat-%version%.min.js
+copy /B src\header.txt + out.~js obj\stringformat-%version%.min.js
 
 rem Timestamp
 utils\DateTimeFormat --utc --format "yyyy-MM-ddTHH:mm:ssZ" > date.~tmp
@@ -34,7 +34,7 @@ utils\DateTimeFormat --utc --format "yyyy" > date.~tmp
 set /P year= < date.~tmp
 del date.~tmp
 
-copy stringformat.nuspec ~stringformat.nuspec
+copy src\stringformat.nuspec ~stringformat.nuspec
 
 rem Replace version
 utils\replace "{version}=%version%" "{date}=%date%" "{year}=%year%" obj\stringformat-%version%.js obj\stringformat-%version%.min.js obj\stringformat.tests.js obj\readme.txt obj\license.txt obj\tests.html ~stringformat.nuspec
