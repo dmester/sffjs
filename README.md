@@ -30,7 +30,7 @@ To use the library, include the library and optionally the cultures you
 are targetting. Note that if no culture files are included, the invariant 
 culture will be used.
 
-```
+```HTML
 <script type="text/javascript" src="stringformat-X.XX.min.js"></script>
 <script type="text/javascript" src="cultures/stringformat.en.js"></script>
 <script type="text/javascript" src="cultures/stringformat.sv.js"></script>
@@ -39,7 +39,7 @@ culture will be used.
 Then you're ready to go. Here are two simple examples using indexes and object
 paths/named parameters.
 
-```
+```JavaScript
 // Index
 String.format(
     "Welcome back, {0}! Last seen {1:M}", 
@@ -68,7 +68,7 @@ By default the browser culture will be used, given that the appropriate culture
 file has been referenced from the page. To set culture explicitly, use the 
 `sffjs.setCulture` method, which accepts a IETF language code.
 
-```
+```JavaScript
 sffjs.setCulture("sv");
 ```
 
