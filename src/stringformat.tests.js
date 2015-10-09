@@ -59,7 +59,7 @@
         assert.formatsTo("Test {with} brackets", "Test {{with}} brackets");
         assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
         assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
-        assert.formatsTo("Mismatch {{0}", "Mismatch {{{0}}", "{{brackets}");
+        assert.formatsTo("Mismatch {{{brackets}}", "Mismatch {{{0}}", "{{brackets}");
         assert.formatsTo("Double outer {{{brackets}}", "Double outer {{{0}}}", "{{brackets}");
         
         test.section("Index");
@@ -83,7 +83,7 @@
         assert.formatsTo("Hi, !", "Hi, {authors.fdg}!", testObject);
         assert.formatsTo("Hi, 1!", "Hi, {authors.length}!", testObject);
         assert.formatsTo("1.00", "{authors.length:0.00}", testObject);
-        assert.formatsTo("After a comes {a}.", "After a comes b.", testObject);
+        assert.formatsTo("After a comes b.", "After a comes {a}.", testObject);
         
         test.section("Invalid paths");
         assert.formatsTo("Hi, {fg$}!", "Hi, {fg$}!", undefined);
@@ -92,6 +92,18 @@
         assert.formatsTo("Hi, {fg.}!", "Hi, {fg.}!", undefined);
         assert.formatsTo("Hi, {.fg}!", "Hi, {.fg}!", undefined);
         assert.formatsTo("Hi, {a..b}!", "Hi, {a..b}!", undefined);
+        
+        test.section("Escaped braces");
+        assert.formatsTo("a { b", "a {{ b", testObject);
+        assert.formatsTo("a } b", "a }} b", testObject);
+        assert.formatsTo("a{{a}}", "a{{{{a}}}", testObject); // *
+        assert.formatsTo("a{{b}", "a{{{{{a}}}", testObject);
+        assert.formatsTo("a{aba}a", "a{{a{a}a}}a", testObject);
+        assert.formatsTo("a{{aba", "a{{{a{a}a", testObject); // *
+        assert.formatsTo("a{bbb{}a", "a{{b{a}{a}{}a", testObject); // *
+        // * These tests do not produce the same output as in .NET. In .NET these format strings will 
+        // generate a FormatException while the JS implementation makes a best effort to finish processing
+        // the format string.
         
         var dtam = new Date(1989, 3, 2, 6, 20, 33);
         var dtpm = new Date(1989, 3, 2, 18, 20, 33);
@@ -340,8 +352,6 @@
         
         assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
         assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
-        assert.formatsTo("Mismatch {{0}", "Mismatch {{{0}}", "{{brackets}");
-        assert.formatsTo("Double outer {{{brackets}}", "Double outer {{{0}}}", "{{brackets}");
 
         test.section("setCulture");
         sffjs.registerCulture({ name: "__LANG" });
