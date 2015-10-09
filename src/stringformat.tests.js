@@ -101,6 +101,9 @@
         assert.formatsTo("a{aba}a", "a{{a{a}a}}a", testObject);
         assert.formatsTo("a{{aba", "a{{{a{a}a", testObject); // *
         assert.formatsTo("a{bbb{}a", "a{{b{a}{a}{}a", testObject); // *
+        assert.formatsTo("4}.2", "{0:0}}.0}", 4.2);
+        assert.formatsTo("4{.2", "{0:0{{.0}", 4.2);
+        assert.formatsTo("4}{{}.2", "{0:0}}{{{{}}.0}", 4.2);
         // * These tests do not produce the same output as in .NET. In .NET these format strings will 
         // generate a FormatException while the JS implementation makes a best effort to finish processing
         // the format string.

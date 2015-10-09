@@ -735,7 +735,7 @@ var sffjs = (function() {
 
         var outerArgs = arguments;
         
-        return str.replace(/\{((\d+|[a-zA-Z_$]\w*(?:\.[a-zA-Z_$]\w*|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)\}|(\{{2})|(\}{2})/g, function () {
+        return str.replace(/\{((\d+|[a-zA-Z_$]\w*(?:\.[a-zA-Z_$]\w*|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*(?:(?:\}\})+[^\}]+)*))?)\}|(\{\{)|(\}\})/g, function () {
             var innerArgs = arguments;
             
             // Handle escaped {
@@ -745,7 +745,12 @@ var sffjs = (function() {
                 innerArgs[6] ? "}" :
             
             // Valid format item
-                processFormatItem(innerArgs[2], innerArgs[3], innerArgs[4], outerArgs);
+                processFormatItem(
+                    innerArgs[2], 
+                    innerArgs[3], 
+                    // Format string might contain escaped braces
+                    innerArgs[4] && innerArgs[4].replace(/\}\}/g, "}").replace(/\{\{/g, "{"), 
+                    outerArgs);
         });
     };
 
