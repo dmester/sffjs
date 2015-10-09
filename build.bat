@@ -18,7 +18,6 @@ copy /Y src\stringformat.js obj\stringformat-%version%.js
 copy /Y src\stringformat.tests.js obj\
 copy /Y src\license.txt obj\
 copy /Y src\readme.txt obj\
-copy /Y src\changelog.txt obj\
 copy /Y src\tests.html obj\
 xcopy /D /Y src\cultures\*.* obj\cultures\
 
