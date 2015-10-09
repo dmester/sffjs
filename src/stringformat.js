@@ -190,8 +190,8 @@ var sffjs = (function() {
         
         // Parse and evaluate path
         if (hasValue(value)) {
-            var followingMembers = /(\.([a-zA-Z_$]\w+)|\[(\d+)\])/g,
-                match = /^[a-zA-Z_$]\w+/.exec(path);
+            var followingMembers = /(\.([a-zA-Z_$]\w*)|\[(\d+)\])/g,
+                match = /^[a-zA-Z_$]\w*/.exec(path);
                 
             value = value[match[0]];
             
@@ -743,7 +743,7 @@ var sffjs = (function() {
 
         var outerArgs = arguments;
         
-        return str.replace(/(\{+)((\d+|[a-zA-Z_$]\w+(?:\.[a-zA-Z_$]\w+|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
+        return str.replace(/(\{+)((\d+|[a-zA-Z_$]\w*(?:\.[a-zA-Z_$]\w*|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*))?)(\}+)|(\{+)|(\}+)/g, function () {
             var innerArgs = arguments;
             
             // Handle escaped {
