@@ -37,6 +37,7 @@
         sffjs.setCulture("en");
         
         var testObject = {
+            a: "b",
             authors: [
                 {
                     firstname: "John",
@@ -82,6 +83,7 @@
         assert.formatsTo("Hi, !", "Hi, {authors.fdg}!", testObject);
         assert.formatsTo("Hi, 1!", "Hi, {authors.length}!", testObject);
         assert.formatsTo("1.00", "{authors.length:0.00}", testObject);
+        assert.formatsTo("After a comes {a}.", "After a comes b.", testObject);
         
         test.section("Invalid paths");
         assert.formatsTo("Hi, {fg$}!", "Hi, {fg$}!", undefined);
