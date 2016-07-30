@@ -188,10 +188,16 @@
         assert.formatsTo("pos", "{0:pos;neg}", 5);
         assert.formatsTo("neg", "{0:pos;neg}", -5);
         assert.formatsTo("pos", "{0:pos;neg}", 0);
+        assert.formatsTo("pos;", "{0:pos';';neg';'}", 5);
+        assert.formatsTo("neg;", "{0:pos';';neg';'}", -5);
+        assert.formatsTo("pos;", "{0:pos';';neg';'}", 0);
         
         assert.formatsTo("pos", "{0:pos;neg;zero}", 5);
         assert.formatsTo("neg", "{0:pos;neg;zero}", -5);
         assert.formatsTo("zero", "{0:pos;neg;zero}", 0);
+        assert.formatsTo("pos", "{0:pos;neg;zero';'}", 5);
+        assert.formatsTo("neg", "{0:pos;neg;zero';'}", -5);
+        assert.formatsTo("zero;", "{0:pos;neg;zero';'}", 0);
         
         test.section("Simple numeric format strings");
         assert.formatsTo("0.42", "{0}", 0.42);
