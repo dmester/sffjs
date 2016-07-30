@@ -362,7 +362,7 @@ var sffjs = (function() {
                 
             } else {
             
-                // Only 0 and # are digit placeholders, skip other characters in analyzing phase
+                // Only handle digit placeholders and number multipliers during analysis phase
                 if (c == zero || c == "#") {
                     decimals += atDecimals;
 
@@ -377,7 +377,17 @@ var sffjs = (function() {
 
                     digits += !atDecimals;
                 }
-
+                
+                // Percent
+                else if (c == "%") {
+                    number *= 100;
+                }
+                
+                // Thousands (charAt returns empty string if (i + 1) is out of range)
+                else if (c == "," && format.charAt(i + 1) == ".") { 
+                    number /= 1000;
+                }
+                
                 // If the current character is ".", then we have reached the end of the integral part
                 atDecimals = atDecimals || c == ".";
             }
@@ -638,16 +648,6 @@ var sffjs = (function() {
         }
         
         // EVALUATE CUSTOM NUMERIC FORMAT STRING
-                
-        // Thousands
-        if (format.indexOf(",.") !== -1) {
-            number /= 1000;
-        }
-
-        // Percent
-        if (format.indexOf("%") !== -1) {
-            number *= 100;
-        }
 
         // Split groups ( positive; negative; zero, where the two last ones are optional)
         var groups = format.split(";");

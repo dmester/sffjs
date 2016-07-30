@@ -200,6 +200,13 @@
         test.section("Custom numeric format strings");
         assert.formatsTo("4", "{0:0}", 4.42);
         assert.formatsTo("42%", "{0:0%}", 0.42);
+        assert.formatsTo("4200%%", "{0:0%%}", 0.42);
+        assert.formatsTo("4%", "{0:0'%'}", 4.2);
+        assert.formatsTo("4%", "{0:0\\%}", 4.2);
+        assert.formatsTo("4200,", "{0:0\\,.}", 4200);
+        assert.formatsTo("4200.", "{0:0,\\.}", 4200);
+        assert.formatsTo("4200,.", "{0:0',.'}", 4200);
+        assert.formatsTo("4", "{0:0,.}", 4200);
         assert.formatsTo("42.01%", "{0:0.00%}", 0.42009);
         assert.formatsTo("42.01d", "{0:0.00d}", 42.009);
         assert.formatsTo("42.01", "{0:0.0#}", 42.009);
