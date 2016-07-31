@@ -205,15 +205,6 @@
 
         test.section("Custom numeric format strings");
         assert.formatsTo("4", "{0:0}", 4.42);
-        assert.formatsTo("42%", "{0:0%}", 0.42);
-        assert.formatsTo("4200%%", "{0:0%%}", 0.42);
-        assert.formatsTo("4%", "{0:0'%'}", 4.2);
-        assert.formatsTo("4%", "{0:0\\%}", 4.2);
-        assert.formatsTo("4200,", "{0:0\\,.}", 4200);
-        assert.formatsTo("4200.", "{0:0,\\.}", 4200);
-        assert.formatsTo("4200,.", "{0:0',.'}", 4200);
-        assert.formatsTo("4", "{0:0,.}", 4200);
-        assert.formatsTo("42.01%", "{0:0.00%}", 0.42009);
         assert.formatsTo("42.01d", "{0:0.00d}", 42.009);
         assert.formatsTo("42.01", "{0:0.0#}", 42.009);
         assert.formatsTo("42.0", "{0:0.0#}", 42.001);
@@ -225,8 +216,25 @@
         assert.formatsTo("042.50", "{0:000.#0}", 42.5);
         assert.formatsTo("042.5", "{0:000.0#}", 42.5);
         assert.formatsTo("042.5000000000000000000000000", "{0:000.0000000000000000000000000}", 42.5);
-        
         assert.formatsTo("1098#234.0", "{0:0'098#'000.0#}", 1234);
+        
+        test.section("Custom numeric format strings - percent");
+        assert.formatsTo("42%", "{0:0%}", 0.42);
+        assert.formatsTo("4200%%", "{0:0%%}", 0.42);
+        assert.formatsTo("4%", "{0:0'%'}", 4.2);
+        assert.formatsTo("4%", "{0:0\\%}", 4.2);
+        assert.formatsTo("42.01%", "{0:0.00%}", 0.42009);
+        
+        test.section("Custom numeric format strings - thousands separator and scaling");
+        assert.formatsTo("4200", "{0:,0,}", 4200000);
+        assert.formatsTo("4,200", "{0:#,0,}", 4200000);
+        assert.formatsTo("4", "{0:#,0,,}", 4200000);
+        assert.formatsTo("4.2", "{0:0,,.0}", 4200000);
+        assert.formatsTo("4.2", "{0:#,0,,.0}", 4200000);
+        assert.formatsTo("4200.0", "{0:0.,0}", 4200);
+        assert.formatsTo("4200,", "{0:0\\,.}", 4200);
+        assert.formatsTo("4.", "{0:0,\\.}", 4200);
+        assert.formatsTo("4200,.", "{0:0',.'}", 4200);
         
         test.section("Specifier D");
         assert.formatsTo("43", "{0:d}", 42.5);
