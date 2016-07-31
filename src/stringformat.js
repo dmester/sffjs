@@ -27,6 +27,7 @@
  */
 
 var sffjs = (function() {
+    "use strict";
 
     // ***** Public Interface *****
     var sffjs = {
