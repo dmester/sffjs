@@ -105,7 +105,7 @@ var sffjs = (function() {
     // General helpers
     
     function numberPair(n) {
-        /// <summary>Converts a number to a string that is at least 2 digit in length. A leading "0" is inserted as padding if necessary.</summary>
+        /// <summary>Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.</summary>
         return n < 10 ? "0" + n : n;
     }
 
@@ -397,7 +397,7 @@ var sffjs = (function() {
             }
         }
 
-        // Determine which token group to be used ( positive; negative; "0", where the two last ones are optional)
+        // Determine which token group to be used ( positive; negative; zero, where the two last ones are optional)
         if (number < 0 && tokenGroups.length > 1) {
             number *= -1;
             format = tokenGroups[1];
@@ -482,7 +482,7 @@ var sffjs = (function() {
                         }
                         groupedAppend(out, number.charAt(numberIndex));
 
-                        // Not yet inside the number number, force a "0"?
+                        // Not yet inside the number number, force a zero?
                     } else if (numberIndex >= integralDigits - forcedDigits) {
                         groupedAppend(out, "0");
                     }
