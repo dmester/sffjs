@@ -58,7 +58,6 @@ var sffjs = (function() {
     // ***** Shortcuts *****
         _Number = Number,
         _String = String,
-        zero = "0",
         toUpperCase = "toUpperCase",
         undefined,
    
@@ -105,8 +104,8 @@ var sffjs = (function() {
     // General helpers
     
     function numberPair(n) {
-        /// <summary>Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.</summary>
-        return n < 10 ? zero + n : n;
+        /// <summary>Converts a number to a string that is at least 2 digit in length. A leading "0" is inserted as padding if necessary.</summary>
+        return n < 10 ? "0" + n : n;
     }
 
     function hasValue(value) {
@@ -299,7 +298,7 @@ var sffjs = (function() {
         // Pad integrals with zeroes to reach the minimum number of integral digits
         minIntegralDigits -= integralDigits;
         while (minIntegralDigits-- > 0) {
-            groupedAppend(out, zero);
+            groupedAppend(out, "0");
         }
         
         // Add integral digits
@@ -314,7 +313,7 @@ var sffjs = (function() {
             // Pad with zeroes
             minDecimalDigits -= decimalDigits;
             while (minDecimalDigits-- > 0) {
-                groupedAppend(out, zero);
+                groupedAppend(out, "0");
             }
         }
         
@@ -397,7 +396,7 @@ var sffjs = (function() {
             }
         }
 
-        // Determine which token group to be used ( positive; negative; zero, where the two last ones are optional)
+        // Determine which token group to be used ( positive; negative; "0", where the two last ones are optional)
         if (number < 0 && tokenGroups.length > 1) {
             number *= -1;
             format = tokenGroups[1];
@@ -411,10 +410,10 @@ var sffjs = (function() {
             currentToken = format[formatIndex];
             
             // Only handle digit placeholders and number multipliers during analysis phase
-            if (currentToken === zero || currentToken === "#") {
+            if (currentToken === "0" || currentToken === "#") {
                 decimals += atDecimals;
 
-                if (currentToken == zero) {
+                if (currentToken == "0") {
                     // 0 is a forced digit
                     if (atDecimals) {
                         forcedDecimals = decimals;
@@ -475,7 +474,7 @@ var sffjs = (function() {
             currentToken = format[formatIndex];
         
             // Digit placeholder
-            if (currentToken === "#" || currentToken === zero) {
+            if (currentToken === "#" || currentToken === "0") {
                 if (numberIndex < integralDigits) {
                     // In the integral part
                     if (numberIndex >= 0) {
@@ -484,16 +483,16 @@ var sffjs = (function() {
                         }
                         groupedAppend(out, number.charAt(numberIndex));
 
-                        // Not yet inside the number number, force a zero?
+                        // Not yet inside the number number, force a "0"?
                     } else if (numberIndex >= integralDigits - forcedDigits) {
-                        groupedAppend(out, zero);
+                        groupedAppend(out, "0");
                     }
 
                     unused = 0;
 
                 } else if (forcedDecimals-- > 0 || numberIndex < number.length) {
                     // In the fractional part
-                    groupedAppend(out, numberIndex >= number.length ? zero : number.charAt(numberIndex));
+                    groupedAppend(out, numberIndex >= number.length ? "0" : number.charAt(numberIndex));
                 }
 
                 numberIndex++;
@@ -531,7 +530,7 @@ var sffjs = (function() {
         }
         
         // Default formatting if no format string is specified
-        if (!format && format !== zero) {
+        if (!format && format !== "0") {
             return basicNumberFormatter(number, 0, 0, 10, radixPoint);
         }
         
@@ -657,7 +656,7 @@ var sffjs = (function() {
                     // Add padding, remember precision might be NaN
                     precision -= result.length;
                     while (precision-- > 0) {
-                        result = zero + result;
+                        result = "0" + result;
                     }
                     
                     return result;
