@@ -60,7 +60,6 @@ var sffjs = (function() {
         _Number = Number,
         _String = String,
         toUpperCase = "toUpperCase",
-        undefined,
    
     // ***** Private Variables *****
     
@@ -111,7 +110,7 @@ var sffjs = (function() {
 
     function hasValue(value) {
         /// <summary>Returns true if <paramref name="value"/> is not null or undefined.</summary>
-        return value !== null && value !== undefined;
+        return value != null;
     }
     
     function numberCoalesce(value1, value2) {
@@ -363,7 +362,7 @@ var sffjs = (function() {
                 endIndex = format.indexOf(currentToken, formatIndex + 1);
                 
                 // String instances are used to represent constants
-                tokens.push(new String(
+                tokens.push(new _String(
                     format.substring(
                         formatIndex + 1, 
                         endIndex < 0 ? undefined : endIndex // assume rest of string if matching quotation mark is missing
@@ -378,7 +377,7 @@ var sffjs = (function() {
             // Check for single escaped character
             } else if (currentToken == "\\") {
                 // String instances are used to represent constants
-                tokens.push(new String(format.charAt(++formatIndex)));
+                tokens.push(new _String(format.charAt(++formatIndex)));
                 
             } else if (currentToken == ";") {
             
