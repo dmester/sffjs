@@ -11,7 +11,7 @@ sffjs.registerCulture({
     _d: ["sön", "mån", "tis", "ons", "tor", "fre", "lör"],
     _r: ",",
     _cr: ",",
-    _t: " ",
+    _t: " ",
     _ct: ".",
     _c: "#,0.00 kr"
 });
