@@ -468,8 +468,6 @@ var sffjs = (function() {
         // Initialize thousand grouping
         out.g = Math.max(integralDigits, forcedDigits);
         
-        inString = 0;
-        
         for (formatIndex = 0; formatIndex < format.length; formatIndex++) {
             currentToken = format[formatIndex];
         
