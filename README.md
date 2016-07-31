@@ -1,32 +1,13 @@
 ﻿
-# String.format for JavaScript
-
-http://mstr.se/sffjs
-
-Copyright (c) Daniel Mester Pirttijärvi
-
-## Description
+# [String.format for JavaScript](http://mstr.se/sffjs)
 
 This is a JavaScript library for string, date and number formatting. Formatting 
-is done with format strings and is almost completely compatible with the 
-`String.Format` method in Microsoft .NET Framework.
-
-## Files
-
-You got a number of files when you extracted the script library:
-
-| File                         | Description                                          |
-| ---------------------------- | ---------------------------------------------------- |
-| stringformat-X.XX.min.js     | Compressed and obfuscated, to be used in production. |
-| stringformat-X.XX.js         | Commented source file for your reference.            |
-| tests.html                   | Test page that performs unit tests on the library.   |
-| stringformat.tests.js        | Script for tests.html.                               |
-| cultures/stringformat.XX.js  | Files holding metadata about cultures.               |
-
+is done using format strings almost completely compatible with the `String.Format` 
+method in Microsoft .NET Framework.
 
 ## How to use
 
-To use the library, include the library and optionally the cultures you 
+To use the library, include the library itself and optionally the cultures you 
 are targetting. Note that if no culture files are included, the invariant 
 culture will be used.
 
