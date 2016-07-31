@@ -324,7 +324,7 @@
         sffjs.setCulture("sv-SE");
         assert.formatsTo("1,2e+03", "{0:g2}", 1242.55);
         assert.formatsTo("1242,50", "{0:f}", 1242.5);
-        assert.formatsTo("1 242,500", "{0:N3}", 1242.5);
+        assert.formatsTo("1 242,500", "{0:N3}", 1242.5);
         
         assert.formatsTo("2353", "{0:R}", 2353);
         assert.formatsTo("25.3333333", "{0:R}", 25.3333333);
