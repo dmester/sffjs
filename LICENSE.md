@@ -1,6 +1,6 @@
 ﻿
 # String.format for JavaScript
-Copyright (c) 2009-2014 Daniel Mester Pirttijärvi
+Copyright (c) 2009-2017 Daniel Mester Pirttijärvi
 
 ## Core
 The library core (stringformat-X.XX.js and stringformat-X.XX.min.js) is 
