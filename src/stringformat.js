@@ -590,7 +590,7 @@ var sffjs = (function() {
                         exponent++;
                     }
                     
-                    while (coefficient < 1) {
+                    while (coefficient > 0 && coefficient < 1) {
                         coefficient *= 10;
                         exponent--;
                     }
