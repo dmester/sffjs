@@ -354,7 +354,21 @@
         assert.formatsTo("4/2/1989 6:20:33 PM", "{0:G}", dtpm);
         assert.formatsTo("April 2", "{0:M}", dtpm);
         assert.formatsTo("April 2", "{0:m}", dtpm);
-
+        
+        assert.formatsTo("12:30 AM", "{0:hh:mm tt}", new Date(2000, 0, 1, 00, 30, 00));
+        assert.formatsTo("01:30 AM", "{0:hh:mm tt}", new Date(2000, 0, 1, 01, 30, 00));
+        assert.formatsTo("11:30 AM", "{0:hh:mm tt}", new Date(2000, 0, 1, 11, 30, 00));
+        assert.formatsTo("12:30 PM", "{0:hh:mm tt}", new Date(2000, 0, 1, 12, 30, 00));
+        assert.formatsTo("01:30 PM", "{0:hh:mm tt}", new Date(2000, 0, 1, 13, 30, 00));
+        assert.formatsTo("11:30 PM", "{0:hh:mm tt}", new Date(2000, 0, 1, 23, 30, 00));
+        
+        assert.formatsTo("12:30 AM", "{0:h:mm tt}", new Date(2000, 0, 1, 00, 30, 00));
+        assert.formatsTo("1:30 AM", "{0:h:mm tt}", new Date(2000, 0, 1, 01, 30, 00));
+        assert.formatsTo("11:30 AM", "{0:h:mm tt}", new Date(2000, 0, 1, 11, 30, 00));
+        assert.formatsTo("12:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 12, 30, 00));
+        assert.formatsTo("1:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 13, 30, 00));
+        assert.formatsTo("11:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 23, 30, 00));
+        
         test.section("Quoted text");
         assert.formatsTo("06mm33", "{0:hh'mm'ss}", dtam);
         assert.formatsTo("06mm33", "{0:hh\"mm\"ss}", dtam);

@@ -728,8 +728,8 @@ var sffjs = (function() {
                         // Hour
                         match == "HH"   ? numberPair(hour) :
                         match == "H"    ? hour :
-                        match == "hh"   ? numberPair((hour - 1) % 12 + 1) :
-                        match == "h"    ? (hour - 1) % 12 + 1 :
+                        match == "hh"   ? numberPair(hour % 12 || 12) :
+                        match == "h"    ? hour % 12 || 12 :
                         
                         // Minute
                         match == "mm"   ? numberPair(minute) :
