@@ -780,7 +780,7 @@ var sffjs = (function() {
 
     // If a format method has not already been defined on the following objects, set __Format as format.
     var formattables = [ Date.prototype, _Number.prototype, _String ];
-    for (var i in formattables) {
+    for (var i = 0, length = formattables.length; i < length; i++) {
         formattables[i].format = formattables[i].format || formattables[i].__Format;
     }
     
