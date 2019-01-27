@@ -158,7 +158,7 @@ var sffjs = (function() {
     function numberToString(number, decimals) {
         /// <summary>Generates a string representation of the specified number with the specified number of digits.</summary>
         /// <param name="number" type="Number">The value to be processed.</param>
-        /// <param name="decimals" type="Number" integer="true" optional="true">The maximum number of decimals. If not specified, the value is not rounded.</param>
+        /// <param name="decimals" type="Number" integer="true">The maximum number of decimals. If not specified, the value is not rounded.</param>
         /// <returns>The rounded absolute value as a string.</returns>
         var roundingFactor = Math.pow(10, decimals || 0);
         return "" + (Math.round(Math.abs(number) * roundingFactor) / roundingFactor);
@@ -629,7 +629,7 @@ var sffjs = (function() {
                         coefficient *= -1;
                     }
                     
-                    return basicNumberFormatter("" + coefficient, 1, minDecimals, maxDecimals, radixPoint, thousandSeparator) + exponentPrefix + basicNumberFormatter(exponent, exponentPrecision, 0);
+                    return basicNumberFormatter("" + coefficient, 1, minDecimals, maxDecimals, radixPoint, thousandSeparator) + exponentPrefix + basicNumberFormatter(exponent, exponentPrecision, 0, 0);
                 
                 case "P":
                     // PERCENT
