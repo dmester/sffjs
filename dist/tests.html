@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<!-- 
+    Unit tests for 
+    String.format for JavaScript 1.15.0
+    
+    https://github.com/dmester/sffjs
+     
+    Built: 2019-01-27T17:16:32.547Z
+
+    Copyright (c) 2009-2019 Daniel Mester Pirttij�rvi
+
+    This software is provided 'as-is', without any express or implied
+    warranty.  In no event will the authors be held liable for any damages
+    arising from the use of this software.
+
+    Permission is granted to anyone to use this software for any purpose,
+    including commercial applications, and to alter it and redistribute it
+    freely, subject to the following restrictions:
+
+    1. The origin of this software must not be misrepresented; you must not
+       claim that you wrote the original software. If you use this software
+       in a product, an acknowledgment in the product documentation would be
+       appreciated but is not required.
+
+    2. Altered source versions must be plainly marked as such, and must not be
+       misrepresented as being the original software.
+
+    3. This notice may not be removed or altered from any source distribution.
+-->
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Unit testning String.format for JavaScript</title>
+    <style type="text/css">
+    
+        body {
+            font: 0.75em Arial, sans-serif;
+        }
+        
+        div.pass, div.fail {
+            font-size: 1.5em;
+        }
+        
+        div.pass em, div.fail em {
+            font-size: 1.2em;
+            font-weight: bold;
+            font-style: normal;
+        }
+        
+        div.pass {
+            color: green;
+        }
+        
+        div.fail {
+            color: red;
+        }
+        
+        .progress {
+            height: 10px;
+            background: red;
+        }
+        
+        .progress span {
+            display: block;
+            height: 10px;
+            background: green;
+            border-right: 1px solid white;
+        }
+        
+        table {
+            border-collapse: collapse;
+        }
+        
+        td {
+            padding: 0.4em 1.5em;
+        }
+        
+        th {
+            text-align: left;
+            font-weight: bold;
+            padding-top: 1em;
+        }
+        
+        td.pass {
+            font-weight: bold;
+            background: green;
+            color: white;
+            text-align: center;
+        }
+        
+        td.fail {
+            font-weight: bold;
+            background: red;
+            color: white;
+            text-align: center;
+        }
+        
+        td.message {
+            white-space: pre-wrap;
+            font: 1em Consolas, monospace;
+        }
+        
+        tr {
+            border-top: 2px solid white;
+            border-bottom: 2px solid white;
+        }
+        
+        tr:nth-child(odd) {
+            background: #fcfcfc;
+        }
+        
+        tr:nth-child(even) {
+            background: #fafafa;
+        }
+        
+        tr:hover {
+            background: #eee;
+        }
+        
+        td.error {
+            color: red;
+        }
+    
+    </style>
+</head>
+<body>
+
+<script type="text/javascript" src="stringformat.js"></script>
+<script type="text/javascript" src="stringformat-1.15.0.min.js"></script>
+<script type="text/javascript" src="cultures/stringformat.en-US.js"></script>
+<script type="text/javascript" src="cultures/stringformat.sv.js"></script>
+<script type="text/javascript" src="stringformat.tests.js"></script>
+
+</body>
+</html>
