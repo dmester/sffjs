@@ -536,14 +536,11 @@ var sffjs = (function() {
         // See reference at
         // http://msdn.microsoft.com/en-us/library/dwhawy9k.aspx
         
-        var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d*)$/);
+        var standardFormatStringMatch = format.match(/^([a-zA-Z])(\d{0,2})$/);
         if (standardFormatStringMatch)
         {
             var standardFormatStringMatch_UpperCase = standardFormatStringMatch[1][toUpperCase](),
                 precision = parseInt(standardFormatStringMatch[2], 10); // parseInt used to ensure empty string is aprsed to NaN
-            
-            // Limit precision to max 15
-            precision = precision > 15 ? 15 : precision;
             
             // Standard numeric format string
             switch (standardFormatStringMatch_UpperCase) {

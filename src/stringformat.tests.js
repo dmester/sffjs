@@ -253,7 +253,8 @@
         assert.formatsTo("1242.6", "{0:f1}", 1242.55);
         assert.formatsTo("1242.500", "{0:F3}", 1242.5);
         assert.formatsTo("1242.000", "{0:F3}", 1242);
-        assert.formatsTo("1242.000000000000000", "{0:F3000}", 1242);
+        assert.formatsTo("1242.000000000000000000000000000000", "{0:F30}", 1242);
+        assert.formatsTo("F301", "{0:F300}", 1);
         assert.formatsTo("1242", "{0:F0}", 1242.3);
         
         test.section("Specifier N");
@@ -262,7 +263,8 @@
         assert.formatsTo("1,242.6", "{0:n1}", 1242.55);
         assert.formatsTo("1,242.500", "{0:N3}", 1242.5);
         assert.formatsTo("1,242.000", "{0:N3}", 1242);
-        assert.formatsTo("1,242.000000000000000", "{0:N3000}", 1242);
+        assert.formatsTo("1,242.000000000000000000000000000000", "{0:N30}", 1242);
+        assert.formatsTo("N301", "{0:N300}", 1);
         assert.formatsTo("1,242", "{0:N0}", 1242.3);
         
         test.section("Specifier G");
