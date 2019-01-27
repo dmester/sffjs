@@ -1,0 +1,42 @@
+{
+  "name": "@dmester/sffjs",
+  "version": "1.14.0",
+  "description": "String.format for JavaScript",
+  "main": "dist/stringformat.js",
+  "types": "dist/stringformat.d.ts",
+  "directories": {
+    "doc": "docs"
+  },
+  "devDependencies": {
+    "del": "^3.0.0",
+    "google-closure-compiler": "^20190121.0.0",
+    "google-closure-compiler-js": "^20190121.0.0",
+    "gulp": "^4.0.0",
+    "gulp-rename": "^1.4.0",
+    "gulp-replace": "^1.0.0",
+    "gulp-replace-with-sourcemaps": "^0.7.1",
+    "gulp-sourcemaps": "^2.6.4",
+    "gulp-wrap": "^0.14.0",
+    "gulp-zip": "^4.2.0",
+    "merge-stream": "^1.0.1"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmester/sffjs.git"
+  },
+  "keywords": [
+    "sffjs",
+    "String.format",
+    "dotnet"
+  ],
+  "author": "Daniel Mester Pirttijärvi",
+  "license": "Zlib",
+  "bugs": {
+    "url": "https://github.com/dmester/sffjs/issues"
+  },
+  "homepage": "https://github.com/dmester/sffjs"
+}
