@@ -5,8 +5,8 @@
         <version>{version}</version>
         <title>String.format for JavaScript</title>
         <authors>Daniel Mester Pirttijärvi</authors>
-        <licenseUrl>http://mstr.se/sffjslicense</licenseUrl>
-        <projectUrl>http://mstr.se/sffjs</projectUrl>
+        <license type="expression">Zlib</license>
+        <projectUrl>https://github.com/dmester/sffjs</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>This is a JavaScript implementation of the .NET Framework method String.Format, which you can use for building strings with formatted numbers, formatted dates, or just concatenate strings with other objects in a convenient way (especially if you have a localized web application). 
 

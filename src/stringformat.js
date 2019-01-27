@@ -1,6 +1,6 @@
 ﻿/**
  * String.format for JavaScript {version}
- * mstr.se/sffjs
+ * https://github.com/dmester/sffjs
  *  
  * Built: {date}
  *
