@@ -2,8 +2,8 @@
   "name": "@dmester/sffjs",
   "version": "1.14.0",
   "description": "String.format for JavaScript",
-  "main": "dist/stringformat.js",
-  "types": "dist/stringformat.d.ts",
+  "main": "./dist/stringformat.min.js",
+  "types": "./dist/stringformat.d.ts",
   "directories": {
     "doc": "docs"
   },

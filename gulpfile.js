@@ -82,6 +82,7 @@ gulp.task("preparerelease", function () {
         "./src/license.txt", 
         "./src/readme.txt", 
         "./src/tests.html",
+        "./src/stringformat.d.ts",
         "./src/stringformat.tests.js"
     ])
         .pipe(replace(/\{version\}/g, pack.version))
