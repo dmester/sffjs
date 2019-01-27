@@ -15,6 +15,7 @@ rem obj files
 del /Q out.~js
 
 copy /Y src\stringformat.js obj\stringformat-%version%.js
+copy /Y src\stringformat.d.ts obj\
 copy /Y src\stringformat.tests.js obj\
 copy /Y src\license.txt obj\
 copy /Y src\readme.txt obj\
@@ -36,7 +37,7 @@ del date.~tmp
 copy src\stringformat.nuspec ~stringformat.nuspec
 
 rem Replace version
-utils\misc\replace "{version}=%version%" "{date}=%date%" "{year}=%year%" obj\stringformat-%version%.js obj\stringformat-%version%.min.js obj\stringformat.tests.js obj\readme.txt obj\license.txt obj\tests.html ~stringformat.nuspec
+utils\misc\replace "{version}=%version%" "{date}=%date%" "{year}=%year%" obj\stringformat-%version%.js obj\stringformat-%version%.min.js obj\stringformat.d.ts obj\stringformat.tests.js obj\readme.txt obj\license.txt obj\tests.html ~stringformat.nuspec
 
 rem Create NuGet Package
 utils\nuget\NuGet.exe pack ~stringformat.nuspec -OutputDirectory releases

@@ -20,6 +20,7 @@ You got a number of files when you extracted the script library:
 
 stringformat-{version}.min.js    - Compressed and obfuscated, to be used in production.
 stringformat-{version}.js        - Commented source file for your reference.
+stringformat.d.ts           - TypeScript definition file.
 tests.html                  - Test page that performs unit tests on the library.
 stringformat.tests.js       - Script for tests.html.
 cultures/stringformat.XX.js - Files holding metadata about cultures.
