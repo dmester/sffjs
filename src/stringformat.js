@@ -529,7 +529,7 @@ var sffjs = (function() {
         
         // Default formatting if no format string is specified
         if (!format && format !== "0") {
-            return basicNumberFormatter(number, 0, 0, 10, radixPoint);
+            format = "G";
         }
         
         // EVALUATE STANDARD NUMERIC FORMAT STRING
@@ -579,7 +579,7 @@ var sffjs = (function() {
                     
                     // Note that we might have fell through from G above!
                     
-                    // Determine coefficient and exponent for normalized notation
+                    // Determine coefficient and exponent for exponential notation
                     var exponent = 0, coefficient = Math.abs(number);
                     
                     while (coefficient >= 10) {
@@ -597,20 +597,30 @@ var sffjs = (function() {
                         minDecimals, maxDecimals;
                     
                     if (standardFormatStringMatch_UpperCase == "G") {
-                        if (exponent > -5 && (!precision || exponent < precision)) {
-                            minDecimals = precision ? precision - (exponent > 0 ? exponent + 1 : 1) : 0;
-                            maxDecimals = precision ? precision - (exponent > 0 ? exponent + 1 : 1) : 10;
+                        // Default precision in .NET is dependent on the data type.
+                        // For double the default precision is 15.
+                        precision = precision || 15;
                         
-                            return basicNumberFormatter(number, 1, minDecimals, maxDecimals, radixPoint);
+                        // When (exponent <= -5) the exponential notation is always more compact.
+                        //   e.g. 0.0000123 vs 1.23E-05
+                        // When (exponent >= precision) the number cannot be represented 
+                        //   with the right number of significant digits without using 
+                        //   exponential notation.
+                        //   e.g. 123 (1.23E+02) cannot be represented using fixed-point 
+                        //   notation with less than 3 significant digits.
+                        if (exponent > -5 && exponent < precision) {
+                            // Use fixed-point notation
+                            return basicNumberFormatter(number, 1, 0, precision - exponent - 1, radixPoint);
                         }
                     
                         exponentPrefix = exponentPrefix == "G" ? "E" : "e";
                         exponentPrecision = 2;
                         
-                        // The precision of G is number of significant digits, not the number of decimals.
-                        minDecimals = (precision || 1) - 1;
-                        maxDecimals = (precision || 11) - 1;
+                        // The precision of G is the number of significant digits
+                        minDecimals = 0;
+                        maxDecimals = precision - 1;
                     } else {
+                        // The precision of E is the number of decimal digits
                         minDecimals = maxDecimals = numberCoalesce(precision, 6);
                     }
                     
@@ -626,7 +636,11 @@ var sffjs = (function() {
                         coefficient *= -1;
                     }
                     
-                    return basicNumberFormatter("" + coefficient, 1, minDecimals, maxDecimals, radixPoint, thousandSeparator) + exponentPrefix + basicNumberFormatter(exponent, exponentPrecision, 0, 0);
+                    return (
+                        basicNumberFormatter(coefficient, 1, minDecimals, maxDecimals, radixPoint, thousandSeparator) + 
+                        exponentPrefix + 
+                        basicNumberFormatter(exponent, exponentPrecision, 0, 0)
+                        );
                 
                 case "P":
                     // PERCENT

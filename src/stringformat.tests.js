@@ -269,13 +269,29 @@
         
         test.section("Specifier G");
         assert.formatsTo("1242", "{0:g}", 1242);
+        assert.formatsTo("1.594874941e-09", "{0:g}", 0.000000001594874941);
         assert.formatsTo("1242.5", "{0:g}", 1242.5);
         assert.formatsTo("1242.5", "{0:G}", 1242.5);
-        assert.formatsTo("0.0004", "{0:G}", 0.0004);
+        
         assert.formatsTo("0", "{0:G}", 0);
+        assert.formatsTo("0.0004", "{0:G}", 0.0004);
         assert.formatsTo("4E-05", "{0:G}", 0.00004);
         assert.formatsTo("4E-06", "{0:G}", 0.000004);
         assert.formatsTo("4.7e-07", "{0:g}", 0.00000047);
+        assert.formatsTo("1.59487494155E-09", "{0:G}", 0.00000000159487494155);
+        assert.formatsTo("1.59487494155E-09", "{0:G}", 0.00000000159487494155);
+        assert.formatsTo("1.594874942E-09", "{0:G10}", 0.00000000159487494155);
+        
+        assert.formatsTo("159487494155.1", "{0:G}", 159487494155.1);
+        assert.formatsTo("1.5949E+11", "{0:G5}", 159487494155.1);
+        assert.formatsTo("159487494155.1", "{0:G}", 159487494155.1);
+        assert.formatsTo("159487494155568", "{0:G}", 159487494155568);
+        assert.formatsTo("1.59487494155569E+15", "{0:G}", 1594874941555692.0);
+        // The last assert will generate different output on .NET depending on
+        // the data type. double will generate a string with the exponential 
+        // notation, and long will generate an expanded number string. JS does
+        // not expose different data types for double and long =>
+        // we will treat all numbers as doubles.
         
         assert.formatsTo("-1242", "{0:g}", -1242);
         assert.formatsTo("-1242.5", "{0:g}", -1242.5);
@@ -289,9 +305,10 @@
         assert.formatsTo("1e+03", "{0:g1}", 1242.55);
         assert.formatsTo("1.2e+03", "{0:g2}", 1242.55);
         assert.formatsTo("1243", "{0:G4}", 1242.5);
+        assert.formatsTo("1242.5", "{0:G5}", 1242.5);
         assert.formatsTo("1242.6", "{0:G5}", 1242.55);
         assert.formatsTo("1.24E+03", "{0:G3}", 1242);
-        assert.formatsTo("1242.00000000000", "{0:G3000}", 1242);
+        assert.formatsTo("1242", "{0:G30}", 1242);
         
         test.section("Specifier X");
         assert.formatsTo("a", "{0:x}", 10);
