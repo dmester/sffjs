@@ -60,7 +60,7 @@ other environments.
 
 ## See more
 
-* [Compatibility with .NET Framework](docs/Compatiblity with .NET Framework.md)
-* [More usage examples](docs/Usage examples.md)
-* [Extending sffjs with support for custom classes](docs/Extending sffjs.md)
+* [Compatibility with .NET Framework](https://github.com/dmester/sffjs/blob/master/docs/Compatiblity%20with%20.NET%20Framework.md)
+* [More usage examples](https://github.com/dmester/sffjs/blob/master/docs/Usage%20examples.md)
+* [Extending sffjs with support for custom classes](https://github.com/dmester/sffjs/blob/master/docs/Extending%20sffjs.md)
 * [Reference information regarding .NET format strings](http://msdn.microsoft.com/en-us/library/system.string.format.aspx)
