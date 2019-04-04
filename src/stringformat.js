@@ -59,8 +59,6 @@ var sffjs = (function() {
         },
         
     // ***** Shortcuts *****
-        _Number = Number,
-        _String = String,
         toUpperCase = "toUpperCase",
    
     // ***** Private Variables *****
@@ -174,7 +172,7 @@ var sffjs = (function() {
         
         if (parts.length > 1) {
             // Convert exponential to fixed-point number
-            var exponent = _Number(parts[1]);
+            var exponent = Number(parts[1]);
             result = result.replace(".", "");
             
             if (exponent < 0) {
@@ -208,7 +206,7 @@ var sffjs = (function() {
             
             // Add 1 to string representation of the number to improve 
             // the chance that toFixed rounds correctly.
-            result = ensureFixedPoint(_Number(result + "1").toFixed(decimals));
+            result = ensureFixedPoint(Number(result + "1").toFixed(decimals));
             
             // Trim excessive decimal zeroes
             result = result.replace(/\.?0+$/, "");
@@ -256,7 +254,7 @@ var sffjs = (function() {
             
             // Evaluate path until we reach the searched member or the value is undefined/null
             while (hasValue(value) && (match = followingMembers.exec(path))) {
-                value = value[match[2] || _Number(match[3])];
+                value = value[match[2] || Number(match[3])];
             }
         }
         
@@ -319,7 +317,7 @@ var sffjs = (function() {
         value = !hasValue(value) ? "" : value.__Format ? value.__Format(formatString) : "" + value;
         
         // Add padding (if necessary)
-        align = _Number(align) || 0;
+        align = Number(align) || 0;
         
         paddingLength = Math.abs(align) - value.length;
 
@@ -426,7 +424,7 @@ var sffjs = (function() {
                 endIndex = format.indexOf(currentToken, formatIndex + 1);
                 
                 // String instances are used to represent constants
-                tokens.push(new _String(
+                tokens.push(new String(
                     format.substring(
                         formatIndex + 1, 
                         endIndex < 0 ? undefined : endIndex // assume rest of string if matching quotation mark is missing
@@ -441,7 +439,7 @@ var sffjs = (function() {
             // Check for single escaped character
             } else if (currentToken == "\\") {
                 // String instances are used to represent constants
-                tokens.push(new _String(format.charAt(++formatIndex)));
+                tokens.push(new String(format.charAt(++formatIndex)));
                 
             } else if (currentToken == ";") {
             
@@ -582,8 +580,8 @@ var sffjs = (function() {
      * @param {string} format The formatting string used to format this number.
      * @returns {string}
      */
-    _Number.prototype.__Format = function(format) {
-        var number = _Number(this),
+    Number.prototype.__Format = function(format) {
+        var number = Number(this),
             radixPoint = currentCulture._r,
             thousandSeparator = currentCulture._t;
         
@@ -840,7 +838,7 @@ var sffjs = (function() {
      * @param {string} str The formatting string used to format the additional arguments.
      * @param {...*} args
      */
-    _String.__Format = function(str, obj0, obj1, obj2) {
+    String.__Format = function(str, obj0, obj1, obj2) {
         var outerArgs = arguments;
         
         return str.replace(/\{((\d+|[a-zA-Z_$]\w*(?:\.[a-zA-Z_$]\w*|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*(?:(?:\}\})+[^\}]+)*))?)\}|(\{\{)|(\}\})/g, function () {
@@ -863,7 +861,7 @@ var sffjs = (function() {
     };
 
     // If a format method has not already been defined on the following objects, set __Format as format.
-    var formattables = [ Date.prototype, _Number.prototype, _String ];
+    var formattables = [ Date.prototype, Number.prototype, String ];
     for (var i = 0, length = formattables.length; i < length; i++) {
         formattables[i].format = formattables[i].format || formattables[i].__Format;
     }
