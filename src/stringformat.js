@@ -753,8 +753,13 @@ var sffjs = (function() {
         if (format.length == 1) {
             format = currentCulture[format] || format;
         }
+
+        // Note that a leading percent is trimmed below. This is not completely compatible with .NET Framework,
+        // which will treat a percent followed by more than a single character as two format tokens, e.g. 
+        // %yy is interpreted as ['y' 'y'], whereas this implementation will interpret it as ['yy']. This does
+        // not seem to be a documented behavior and thus an acceptable deviation.
+        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
         
-        return format.replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
             function (match) { 
 
                         // Day
