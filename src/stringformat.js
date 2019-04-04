@@ -31,24 +31,26 @@ var sffjs = (function() {
 
     // ***** Public Interface *****
     var sffjs = {
-            /// <field name="version" type="String">The version of the library String.Format for JavaScript.</field>
+            /**
+             * The version of the library String.Format for JavaScript.
+             * @type string
+             */
             version: "{version}",
             
+            /**
+             * Sets the current culture, used for culture specific formatting.
+             * @param {string} languageCode The IETF language code of the culture, e.g. en-US or en.
+             */
             setCulture: function (languageCode) {
-                /// <summary>
-                ///     Sets the current culture, used for culture specific formatting.
-                /// </summary>
-                /// <param name="LCID">The IETF language code of the culture, e.g. en-US or en.</param>
-                
                 currentCultureId = languageCode;
                 updateCulture();
             },
             
+            /**
+             * Registers an object containing information about a culture.
+             * @param {*} culture Culture object.
+             */
             registerCulture: function (culture) {
-                /// <summary>
-                ///     Registers an object containing information about a culture.
-                /// </summary>
-                
                 cultures[culture.name[toUpperCase]()] = fillGapsInCulture(culture);
                 
                 // ...and reevaulate current culture
@@ -103,27 +105,36 @@ var sffjs = (function() {
     
     // General helpers
     
+    /**
+     * Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.
+     * @param {number} n
+     */
     function numberPair(n) {
-        /// <summary>Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.</summary>
         return n < 10 ? "0" + n : n;
     }
 
+    /**
+     * Returns `true` if `value` is not null or undefined.
+     * @param {*} value 
+     */
     function hasValue(value) {
-        /// <summary>Returns true if <paramref name="value"/> is not null or undefined.</summary>
         return value != null;
     }
     
+    /**
+     * Returns the first of the two values that is not NaN.
+     */
     function numberCoalesce(value1, value2) {
-        /// <summary>Returns the first of the two values that is not NaN.</summary>
         return isNaN(value1) ? value2 : value1;
     }
     
     
     // Culture functions
     
+    /**
+     * This method will fill gaps in the specified culture with information from the invariant culture.
+     */
     function fillGapsInCulture(culture) {
-        /// <summary>This method will fill gaps in the specified culture with information from the invariant culture.</summary>
-        
         // Add missing formats from the culture template
         for (var key in CULTURE_TEMPLATE) {
             culture[key] = culture[key] || CULTURE_TEMPLATE[key];
@@ -142,8 +153,10 @@ var sffjs = (function() {
         return culture;
     }
     
+    /**
+     * This method will update the currently selected culture object to reflect the currently set LCID (as far as possible).
+     */
     function updateCulture() {
-        /// <summary>This method will update the currently selected culture object to reflect the currently set LCID (as far as possible).</summary>
         sffjs.LC = currentCulture = 
             currentCultureId && 
             (
@@ -180,12 +193,13 @@ var sffjs = (function() {
         return result;
     }
     
+    /**
+     * Generates a string representation of the specified number with the specified number of digits.
+     * @param {number} number The value to be processed.
+     * @param {number} [decimals] The maximum number of decimals. If not specified, the value is not rounded.
+     * @returns {string} The rounded absolute value as a string.
+     */
     function numberToString(number, decimals) {
-        /// <summary>Generates a string representation of the specified number with the specified number of digits.</summary>
-        /// <param name="number" type="Number">The value to be processed.</param>
-        /// <param name="decimals" type="Number" integer="true">The maximum number of decimals. If not specified, the value is not rounded.</param>
-        /// <returns>The rounded absolute value as a string.</returns>
-        
         var result = ensureFixedPoint(Math.abs(number).toString());
         
         var radixIndex = result.indexOf(".");
@@ -203,14 +217,22 @@ var sffjs = (function() {
         return result;
     }
     
+    /**
+     * Counts the number of integral digits in a number converted to a string by the JavaScript runtime.
+     * @param {string} numberString 
+     * @returns {number}
+     */
     function numberOfIntegralDigits(numberString) {
-        /// <summary>Counts the number of integral digits in a number converted to a string by the JavaScript runtime.</summary>
         var point = numberString.indexOf(".");
         return point < 0 ? numberString.length : point;
     }
     
+    /**
+     * Counts the number of decimal digits in a number converted to a string by the JavaScript runtime
+     * @param {string} numberString 
+     * @returns {number}
+     */
     function numberOfDecimalDigits(numberString) {
-        /// <summary>Counts the number of decimal digits in a number converted to a string by the JavaScript runtime</summary>
         var point = numberString.indexOf(".");
         return point < 0 ? 0 : numberString.length - point - 1;
     }
@@ -218,14 +240,13 @@ var sffjs = (function() {
     
     // Formatting helpers
     
+    /**
+     * This function resolves a path on the format `<membername>(.<membername>|[<index>])*`
+     * and evaluates the value.
+     * @param {string} path A series of path components separated by points. Each component is either an index in square brackets.
+     * @param {*} value An object on which the path is evaluated.
+     */
     function resolvePath(path, value) {
-        /// <summary>
-        ///     This function resolves a path on the format <membername>(.<membername>|[<index>])*
-        ///     and evaluates the value.
-        /// </summary>
-        /// <param name="path">A series of path components separated by points. Each component is either an index in square brackets.</param>
-        /// <param name="value">An object on which the path is evaluated.</param>
-        
         // Parse and evaluate path
         if (hasValue(value)) {
             var followingMembers = /(\.([a-zA-Z_$]\w*)|\[(\d+)\])/g,
@@ -242,19 +263,18 @@ var sffjs = (function() {
         return value;
     }
     
+    /**
+     * Writes a value to an array in groups of three digits.
+     * @param {string[]} out An array used as string builder to which the grouped output will be appended. The array
+     * may have to properties that affect the output:
+     * 
+     * * `g`: the number of integral digits left to write.
+     * * `t`: the thousand separator.
+     *   
+     * If any of those properties are missing, the output is not grouped.
+     * @param {string} value The value that will be written to `out`.
+     */
     function groupedAppend(out, value) {
-        /// <summary>Writes a value to an array in groups of three digits.</summary>
-        /// <param name="out" type="Array">
-        ///     An array used as string builder to which the grouped output will be appended. The array 
-        ///     may have to properties that affect the output:
-        ///
-        ///         g: the number of integral digits left to write.
-        ///         t: the thousand separator.
-        ///
-        //      If any of those properties are missing, the output is not grouped.
-        /// </param>
-        /// <param name="value" type="String">The value that will be written to <paramref name="out"/>.</param>
-        
         for (var i = 0, length = value.length; i < length; i++) {
             // Write number
             out.push(value.charAt(i));
@@ -266,14 +286,15 @@ var sffjs = (function() {
         }
     }
     
+    /**
+     * Process a single format item in a composite format string.
+     * @param {string} pathOrIndex The raw argument index or path component of the format item.
+     * @param {string} align The raw alignment component of the format item.
+     * @param {string} formatString The raw format string of the format item.
+     * @param {Array} args The arguments that were passed to String.format, where index 0 is the full composite format string.
+     * @returns {string} The formatted value as a string.
+     */
     function processFormatItem(pathOrIndex, align, formatString, args) {        
-        /// <summary>Process a single format item in a composite format string</summary>
-        /// <param name="pathOrIndex" type="String">The raw argument index or path component of the format item.</param>
-        /// <param name="align" type="String">The raw alignment component of the format item.</param>
-        /// <param name="formatString" type="String">The raw format string of the format item.</param>
-        /// <param name="args" type="Array">The arguments that were passed to String.format, where index 0 is the full composite format string.</param>
-        /// <returns>The formatted value as a string.</returns>
-        
         var value, 
             index = parseInt(pathOrIndex, 10), 
             paddingLength, 
@@ -310,16 +331,19 @@ var sffjs = (function() {
         return (align < 0 ? value + padding : padding + value);
     }
     
+    /**
+     * Handles basic formatting used for standard numeric format strings.
+     * @param {number} number The number to format.
+     * @param {number} minIntegralDigits The minimum number of integral digits. The number is padded with leading
+     * zeroes if necessary.
+     * @param {number} minDecimalDigits The minimum number of decimal digits. The decimal part is padded with trailing
+     * zeroes if necessary.
+     * @param {number} maxDecimalDigits The maximum number of decimal digits. The number is rounded if necessary.
+     * @param {string} radixPoint The string that will be appended to the output as a radix point.
+     * @param {string} thousandSeparator The string that will be used as a thousand separator of the integral digits.
+     * @returns {string} The formatted value as a string.
+     */
     function basicNumberFormatter(number, minIntegralDigits, minDecimalDigits, maxDecimalDigits, radixPoint, thousandSeparator) {
-        /// <summary>Handles basic formatting used for standard numeric format strings.</summary>
-        /// <param name="number" type="Number">The number to format.</param>
-        /// <param name="minIntegralDigits" type="Number" integer="true">The minimum number of integral digits. The number is padded with leading zeroes if necessary.</param>
-        /// <param name="minDecimals" type="Number" integer="true">The minimum number of decimal digits. The decimal part is padded with trailing zeroes if necessary.</param>
-        /// <param name="maxDecimals" type="Number" integer="true">The maximum number of decimal digits. The number is rounded if necessary.</param>
-        /// <param name="radixPoint" type="String">The string that will be appended to the output as a radix point.</param>
-        /// <param name="thousandSeparator" type="String">The string that will be used as a thousand separator of the integral digits.</param>
-        /// <returns>The formatted value as a string.</returns>
-        
         var integralDigits, decimalDigits, out = [];
         out.t = thousandSeparator;
         
@@ -359,14 +383,15 @@ var sffjs = (function() {
         return out.join("");
     }
     
+    /**
+     * Handles formatting of custom numeric format strings.
+     * @param {number} number The number to format.
+     * @param {string} format A string specifying the format of the output.
+     * @param {string} radixPoint The string that will be appended to the output as a radix point.
+     * @param {string} thousandSeparator The string that will be used as a thousand separator of the integral digits.
+     * @returns {string} The formatted value as a string.
+     */
     function customNumberFormatter(number, format, radixPoint, thousandSeparator) {
-        /// <summary>Handles formatting of custom numeric format strings.</summary>
-        /// <param name="number" type="Number">The number to format.</param>
-        /// <param name="format" type="String">A string specifying the format of the output.</param>
-        /// <param name="radixPoint" type="String">The string that will be appended to the output as a radix point.</param>
-        /// <param name="thousandSeparator" type="String">The string that will be used as a thousand separator of the integral digits.</param>
-        /// <returns>The formatted value as a string.</returns>
-        
         var digits = 0,
             forcedDigits = -1,
             integralDigits = -1,
@@ -551,12 +576,13 @@ var sffjs = (function() {
     
     // ***** FORMATTERS
     // ***** Number Formatting *****
-    _Number.prototype.__Format = function(format) {
-        /// <summary>
-        ///     Formats this number according the specified format string.
-        /// </summary>
-        /// <param name="format">The formatting string used to format this number.</param>
 
+    /**
+     * Formats this number according the specified format string.
+     * @param {string} format The formatting string used to format this number.
+     * @returns {string}
+     */
+    _Number.prototype.__Format = function(format) {
         var number = _Number(this),
             radixPoint = currentCulture._r,
             thousandSeparator = currentCulture._t;
@@ -736,6 +762,12 @@ var sffjs = (function() {
     };
 
     // ***** Date Formatting *****
+
+    /**
+     * Formats this date according the specified format string.
+     * @param {string} format The formatting string used to format this date.
+     * @returns {string}
+     */
     Date.prototype.__Format = function(format) {
         var date        = this, 
             year        = date.getFullYear(),
@@ -803,15 +835,12 @@ var sffjs = (function() {
             });
     };
     
+    /**
+     * Formats a string according to a specified formatting string.
+     * @param {string} str The formatting string used to format the additional arguments.
+     * @param {...*} args
+     */
     _String.__Format = function(str, obj0, obj1, obj2) {
-        /// <summary>
-        ///     Formats a string according to a specified formatting string.
-        /// </summary>
-        /// <param name="str">The formatting string used to format the additional arguments.</param>
-        /// <param name="obj0">Object 1</param>
-        /// <param name="obj1">Object 2 [optional]</param>
-        /// <param name="obj2">Object 3 [optional]</param>
-
         var outerArgs = arguments;
         
         return str.replace(/\{((\d+|[a-zA-Z_$]\w*(?:\.[a-zA-Z_$]\w*|\[\d+\])*)(?:\,(-?\d*))?(?:\:([^\}]*(?:(?:\}\})+[^\}]+)*))?)\}|(\{\{)|(\}\})/g, function () {
