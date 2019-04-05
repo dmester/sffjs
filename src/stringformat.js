@@ -792,8 +792,7 @@ var sffjs = (function() {
         // which will treat a percent followed by more than a single character as two format tokens, e.g. 
         // %yy is interpreted as ['y' 'y'], whereas this implementation will interpret it as ['yy']. This does
         // not seem to be a documented behavior and thus an acceptable deviation.
-        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
-        
+        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|y+|HH?|hh?|mm?|ss?|tt?)/g, 
             function (match) { 
                 var char0 = match[0];
 
@@ -810,8 +809,9 @@ var sffjs = (function() {
                         char0 == "M"    ? zeroPad(month + 1, match.length) :
 
                         // Year
-                        match == "yyyy" ? zeroPad(year, 4) :
                         match == "yy"   ? zeroPad(year % 100, 2) : 
+                        match == "y"    ? year % 100 :
+                        char0 == "y"    ? zeroPad(year, match.length) :
                         
                         // Hour
                         char0 == "H"    ? zeroPad(hour, match.length) :

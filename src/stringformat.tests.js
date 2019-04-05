@@ -159,7 +159,9 @@
         
         assert.formatsTo("hh:mm:33 PM", "{0:'hh:mm':ss tt}", dtpm);
 
-        assert.formatsTo("01 0001", "{0:yy} {0:yyyy}", new Date("0001-01-01"));
+        assert.formatsTo("89 89 1989 1989 01989 0000000000000000000001989", "{0:%y} {0:yy} {0:yyy} {0:yyyy} {0:yyyyy} {0:yyyyyyyyyyyyyyyyyyyyyyyyy}", dtpm);
+        assert.formatsTo("1 01 001 0001 00001 0000000000000000000000001", "{0:%y} {0:yy} {0:yyy} {0:yyyy} {0:yyyyy} {0:yyyyyyyyyyyyyyyyyyyyyyyyy}", new Date("0001-01-01"));
+
 
         assert.formatsTo("Sun", "{0:ddd}", dtpm);
         assert.formatsTo("Sunday", "{0:dddd}", dtpm);
