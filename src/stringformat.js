@@ -104,14 +104,6 @@ var sffjs = (function() {
     // General helpers
     
     /**
-     * Converts a number to a string that is at least 2 digit in length. A leading zero is inserted as padding if necessary.
-     * @param {number} n
-     */
-    function numberPair(n) {
-        return n < 10 ? "0" + n : n;
-    }
-    
-    /**
      * Pads the specified value with zeroes to the left until it reaches the specified length.
      * @param {*} value Value to zeropad. 
      * @param {number} len Minimum length of result.
@@ -803,39 +795,34 @@ var sffjs = (function() {
         return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|yyyy|yy|HH?|hh?|mm?|ss?|tt?)/g, 
         
             function (match) { 
+                var char0 = match[0];
 
                         // Day
-                return match == "dddd" ? currentCulture._D[dayOfWeek] :
+                return  match == "dddd" ? currentCulture._D[dayOfWeek] :
                                              // Use three first characters from long day name if abbreviations are not specifed
                         match == "ddd"  ? (currentCulture._d ? currentCulture._d[dayOfWeek] : currentCulture._D[dayOfWeek].substr(0, 3)) : 
-                        match == "dd"   ? numberPair(dayOfMonth) :
-                        match == "d"    ? dayOfMonth :
+                        char0 == "d"    ? zeroPad(dayOfMonth, match.length) :
                         
                         // Month
                         match == "MMMM" ? currentCulture._M[month] :
                                              // Use three first characters from long month name if abbreviations are not specifed
                         match == "MMM"  ? (currentCulture._m ? currentCulture._m[month] : currentCulture._M[month].substr(0, 3)) :
-                        match == "MM"   ? numberPair(month + 1) :
-                        match == "M"    ? month + 1 :
-                        
+                        char0 == "M"    ? zeroPad(month + 1, match.length) :
+
                         // Year
                         match == "yyyy" ? zeroPad(year, 4) :
                         match == "yy"   ? zeroPad(year % 100, 2) : 
                         
                         // Hour
-                        match == "HH"   ? numberPair(hour) :
-                        match == "H"    ? hour :
-                        match == "hh"   ? numberPair(hour % 12 || 12) :
-                        match == "h"    ? hour % 12 || 12 :
+                        char0 == "H"    ? zeroPad(hour, match.length) :
+                        char0 == "h"    ? zeroPad(hour % 12 || 12, match.length) :
                         
                         // Minute
-                        match == "mm"   ? numberPair(minute) :
-                        match == "m"    ? minute :
+                        char0 == "m"    ? zeroPad(minute, match.length) :
                         
                         // Second
-                        match == "ss"   ? numberPair(second) :
-                        match == "s"    ? second :
-                        
+                        char0 == "s"    ? zeroPad(second, match.length) :
+
                         // AM/PM
                         match == "tt"   ? (hour < 12 ? currentCulture._am : currentCulture._pm) : 
                         char0 == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm)[0] :
