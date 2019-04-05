@@ -110,6 +110,18 @@ var sffjs = (function() {
     function numberPair(n) {
         return n < 10 ? "0" + n : n;
     }
+    
+    /**
+     * Pads the specified value with zeroes to the left until it reaches the specified length.
+     * @param {*} value Value to zeropad. 
+     * @param {number} len Minimum length of result.
+     * @returns {string}
+     */
+    function zeroPad(value, len) {
+        var s = "" + value;
+        while (s.length < len) s = "0" + s;
+        return s;
+    }
 
     /**
      * Returns `true` if `value` is not null or undefined.
@@ -807,8 +819,8 @@ var sffjs = (function() {
                         match == "M"    ? month + 1 :
                         
                         // Year
-                        match == "yyyy" ? year :
-                        match == "yy"   ? ("" + year).substr(2) :
+                        match == "yyyy" ? zeroPad(year, 4) :
+                        match == "yy"   ? zeroPad(year % 100, 2) : 
                         
                         // Hour
                         match == "HH"   ? numberPair(hour) :

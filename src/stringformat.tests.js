@@ -158,7 +158,9 @@
         assert.formatsTo("06:20:33 PM", "{0:hh:mm:ss tt}", dtpm);
         
         assert.formatsTo("hh:mm:33 PM", "{0:'hh:mm':ss tt}", dtpm);
-        
+
+        assert.formatsTo("01 0001", "{0:yy} {0:yyyy}", new Date("0001-01-01"));
+
         assert.formatsTo("Sun", "{0:ddd}", dtpm);
         assert.formatsTo("Sunday", "{0:dddd}", dtpm);
         
