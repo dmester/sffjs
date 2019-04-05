@@ -1,8 +1,8 @@
 
-String.format for JavaScript 1.15.0
+String.format for JavaScript 1.16.0
 https://github.com/dmester/sffjs
 
-Built: 2019-01-27T17:16:32.547Z
+Built: 2019-04-05T18:33:05.038Z
 
 Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
 
@@ -18,8 +18,8 @@ FILES
 
 You got a number of files when you extracted the script library:
 
-stringformat-1.15.0.min.js    - Compressed and obfuscated, to be used in production.
-stringformat-1.15.0.js        - Commented source file for your reference.
+stringformat-1.16.0.min.js    - Compressed and obfuscated, to be used in production.
+stringformat-1.16.0.js        - Commented source file for your reference.
 stringformat.d.ts            - TypeScript definition file.
 tests.html                   - Test page that performs unit tests on the library.
 stringformat.tests.js        - Script for tests.html.
@@ -33,7 +33,7 @@ are targetting. Note that if no culture files are included, the invariant
 culture will be used.
 
     [CODE]
-    <script type="text/javascript" src="stringformat-1.15.0.min.js"></script>
+    <script type="text/javascript" src="stringformat-1.16.0.min.js"></script>
     <script type="text/javascript" src="cultures/stringformat.en.js"></script>
     <script type="text/javascript" src="cultures/stringformat.sv.js"></script>
 

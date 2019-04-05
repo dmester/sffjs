@@ -1,9 +1,9 @@
 /**
  * Unit tests for
- * String.format for JavaScript 1.15.0
+ * String.format for JavaScript 1.16.0
  * https://github.com/dmester/sffjs
  *  
- * Built: 2019-01-27T17:16:32.547Z
+ * Built: 2019-04-05T18:33:05.038Z
  *
  * Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
  *
@@ -108,8 +108,8 @@
         // generate a FormatException while the JS implementation makes a best effort to finish processing
         // the format string.
         
-        var dtam = new Date(1989, 3, 2, 6, 20, 33);
-        var dtpm = new Date(1989, 3, 2, 18, 20, 33);
+        var dtam = new Date(1989, 3, 2, 6, 20, 33, 123);
+        var dtpm = new Date(1989, 3, 2, 18, 20, 33, 123);
         
         test.section("Date/time no formatting");
         assert.formatsTo("04/02/1989 06:20:33", "{0}", dtam);
@@ -158,7 +158,29 @@
         assert.formatsTo("06:20:33 PM", "{0:hh:mm:ss tt}", dtpm);
         
         assert.formatsTo("hh:mm:33 PM", "{0:'hh:mm':ss tt}", dtpm);
-        
+
+        assert.formatsTo("89 89 1989 1989 01989 0000000000000000000001989", "{0:%y} {0:yy} {0:yyy} {0:yyyy} {0:yyyyy} {0:yyyyyyyyyyyyyyyyyyyyyyyyy}", dtpm);
+        assert.formatsTo("1 01 001 0001 00001 0000000000000000000000001", "{0:%y} {0:yy} {0:yyy} {0:yyyy} {0:yyyyy} {0:yyyyyyyyyyyyyyyyyyyyyyyyy}", new Date("0001-01-01"));
+
+        assert.formatsTo("00 ", "{0:ff} {0:FF}", new Date(1901, 0, 1));
+        assert.formatsTo("1 1", "{0:%f} {0:%F}", dtpm);
+        assert.formatsTo("12 12", "{0:ff} {0:FF}", dtpm);
+        assert.formatsTo("123 123", "{0:fff} {0:FFF}", dtpm);
+        assert.formatsTo("1230 123", "{0:ffff} {0:FFFF}", dtpm);
+        assert.formatsTo("12300 123", "{0:fffff} {0:FFFFF}", dtpm);
+        assert.formatsTo("123000 123", "{0:ffffff} {0:FFFFFF}", dtpm);
+        assert.formatsTo("1230000 123", "{0:fffffff} {0:FFFFFFF}", dtpm);
+
+        var negativeTimeZoneOffset = new Date(1901, 0, 1);
+        var zeroTimeZoneOffset = new Date(1901, 0, 1);
+        var positiveTimeZoneOffset = new Date(1901, 0, 1);
+        negativeTimeZoneOffset.getTimezoneOffset = function () { return -90; };
+        zeroTimeZoneOffset.getTimezoneOffset = function () { return 0; };
+        positiveTimeZoneOffset.getTimezoneOffset = function () { return 90; };
+        assert.formatsTo("-1 -01 -01:30", "{0:%z} {0:zz} {0:zzz}", negativeTimeZoneOffset);
+        assert.formatsTo("+0 +00 +00:00", "{0:%z} {0:zz} {0:zzz}", zeroTimeZoneOffset);
+        assert.formatsTo("+1 +01 +01:30", "{0:%z} {0:zz} {0:zzz}", positiveTimeZoneOffset);
+
         assert.formatsTo("Sun", "{0:ddd}", dtpm);
         assert.formatsTo("Sunday", "{0:dddd}", dtpm);
         
