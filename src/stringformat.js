@@ -778,7 +778,8 @@ var sffjs = (function() {
             dayOfWeek   = date.getDay(),
             hour        = date.getHours(),
             minute      = date.getMinutes(),
-            second      = date.getSeconds();
+            second      = date.getSeconds(),
+            fracSecond  = date.getMilliseconds() / 1000;
            
         // If no format is specified, default to G format
         format = format || "G";
@@ -792,7 +793,7 @@ var sffjs = (function() {
         // which will treat a percent followed by more than a single character as two format tokens, e.g. 
         // %yy is interpreted as ['y' 'y'], whereas this implementation will interpret it as ['yy']. This does
         // not seem to be a documented behavior and thus an acceptable deviation.
-        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|y+|HH?|hh?|mm?|ss?|tt?)/g, 
+        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|y+|HH?|hh?|mm?|ss?|[f]{1,7}|[F]{1,7}|tt?)/g, 
             function (match) { 
                 var char0 = match[0];
 
@@ -823,6 +824,10 @@ var sffjs = (function() {
                         // Second
                         char0 == "s"    ? zeroPad(second, match.length) :
 
+                        // Fractional second (substr is to remove "0.")
+                        char0 == "f"    ? (fracSecond).toFixed(match.length).substr(2) :
+                        char0 == "F"    ? numberToString(fracSecond, match.length).substr(2) :
+                        
                         // AM/PM
                         match == "tt"   ? (hour < 12 ? currentCulture._am : currentCulture._pm) : 
                         char0 == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm)[0] :
