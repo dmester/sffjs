@@ -779,8 +779,10 @@ var sffjs = (function() {
             hour        = date.getHours(),
             minute      = date.getMinutes(),
             second      = date.getSeconds(),
-            fracSecond  = date.getMilliseconds() / 1000;
-           
+            fracSecond  = date.getMilliseconds() / 1000,
+            tzOffset    = date.getTimezoneOffset(),
+            tzOffsetAbs = tzOffset < 0 ? -tzOffset : tzOffset;
+            
         // If no format is specified, default to G format
         format = format || "G";
         
@@ -793,7 +795,7 @@ var sffjs = (function() {
         // which will treat a percent followed by more than a single character as two format tokens, e.g. 
         // %yy is interpreted as ['y' 'y'], whereas this implementation will interpret it as ['yy']. This does
         // not seem to be a documented behavior and thus an acceptable deviation.
-        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|y+|HH?|hh?|mm?|ss?|[f]{1,7}|[F]{1,7}|tt?)/g, 
+        return format.replace(/^%/, "").replace(/(\\.|'[^']*'|"[^"]*"|d{1,4}|M{1,4}|y+|HH?|hh?|mm?|ss?|[f]{1,7}|[F]{1,7}|z{1,3}|tt?)/g, 
             function (match) { 
                 var char0 = match[0];
 
@@ -828,6 +830,11 @@ var sffjs = (function() {
                         char0 == "f"    ? (fracSecond).toFixed(match.length).substr(2) :
                         char0 == "F"    ? numberToString(fracSecond, match.length).substr(2) :
                         
+                        // Timezone, "z" -> "+2", "zz" -> "+02", "zzz" -> "+02:00"
+                        char0 == "z"    ? (tzOffset < 0 ? "-" : "+") + // sign
+                                          (zeroPad(0 | (tzOffsetAbs / 60), match == "z" ? 1 : 2)) + // hours
+                                          (match == "zzz" ? ":" + zeroPad(tzOffsetAbs % 60, 2) : "") : // minutes
+
                         // AM/PM
                         match == "tt"   ? (hour < 12 ? currentCulture._am : currentCulture._pm) : 
                         char0 == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm)[0] :

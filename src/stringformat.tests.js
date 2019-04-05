@@ -171,6 +171,16 @@
         assert.formatsTo("123000 123", "{0:ffffff} {0:FFFFFF}", dtpm);
         assert.formatsTo("1230000 123", "{0:fffffff} {0:FFFFFFF}", dtpm);
 
+        var negativeTimeZoneOffset = new Date(1901, 0, 1);
+        var zeroTimeZoneOffset = new Date(1901, 0, 1);
+        var positiveTimeZoneOffset = new Date(1901, 0, 1);
+        negativeTimeZoneOffset.getTimezoneOffset = function () { return -90; };
+        zeroTimeZoneOffset.getTimezoneOffset = function () { return 0; };
+        positiveTimeZoneOffset.getTimezoneOffset = function () { return 90; };
+        assert.formatsTo("-1 -01 -01:30", "{0:%z} {0:zz} {0:zzz}", negativeTimeZoneOffset);
+        assert.formatsTo("+0 +00 +00:00", "{0:%z} {0:zz} {0:zzz}", zeroTimeZoneOffset);
+        assert.formatsTo("+1 +01 +01:30", "{0:%z} {0:zz} {0:zzz}", positiveTimeZoneOffset);
+
         assert.formatsTo("Sun", "{0:ddd}", dtpm);
         assert.formatsTo("Sunday", "{0:dddd}", dtpm);
         
