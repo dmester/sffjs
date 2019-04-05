@@ -275,7 +275,7 @@ var sffjs = (function() {
     function groupedAppend(out, value) {
         for (var i = 0, length = value.length; i < length; i++) {
             // Write number
-            out.push(value.charAt(i));
+            out.push(value[i]);
 
             // Begin a new group?
             if (out.g > 1 && out.g-- % 3 == 1) {
@@ -415,7 +415,7 @@ var sffjs = (function() {
         // Constants are represented with String instances, while all other tokens are represented with
         // string literals.
         for (formatIndex = 0; formatIndex < format.length; formatIndex++) {
-            currentToken = format.charAt(formatIndex);
+            currentToken = format[formatIndex];
             
             // Check if we have reached a literal
             if (currentToken == "'" || currentToken == '"') {
@@ -439,7 +439,7 @@ var sffjs = (function() {
             // Check for single escaped character
             } else if (currentToken == "\\") {
                 // String instances are used to represent constants
-                tokens.push(new String(format.charAt(++formatIndex)));
+                tokens.push(new String(format[++formatIndex]));
                 
             } else if (currentToken == ";") {
             
@@ -541,7 +541,7 @@ var sffjs = (function() {
                         if (unused) {
                             groupedAppend(out, number.substr(0, numberIndex));
                         }
-                        groupedAppend(out, number.charAt(numberIndex));
+                        groupedAppend(out, number[numberIndex]);
 
                         // Not yet inside the number number, force a zero?
                     } else if (numberIndex >= integralDigits - forcedDigits) {
@@ -552,7 +552,7 @@ var sffjs = (function() {
 
                 } else if (forcedDecimals-- > 0 || numberIndex < number.length) {
                     // In the fractional part
-                    groupedAppend(out, numberIndex >= number.length ? "0" : number.charAt(numberIndex));
+                    groupedAppend(out, numberIndex >= number.length ? "0" : number[numberIndex]);
                 }
 
                 numberIndex++;
@@ -826,10 +826,10 @@ var sffjs = (function() {
                         
                         // AM/PM
                         match == "tt"   ? (hour < 12 ? currentCulture._am : currentCulture._pm) : 
-                        match == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm).charAt(0) :
+                        char0 == "t"    ? (hour < 12 ? currentCulture._am : currentCulture._pm)[0] :
                         
                         // String literal => strip quotation marks
-                        match.substr(1, match.length - 1 - (match.charAt(0) != "\\"));
+                        match.substr(1, match.length - 1 - (match[0] != "\\"));
             });
     };
     
