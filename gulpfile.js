@@ -27,7 +27,7 @@ function getWrapper(source, placeholder) {
 }
 
 gulp.task("clean", function () {
-    return del(["./out/*.*", "./dist/*.*"]);
+    return del(["./obj/**/*.*", "./dist/**/*.*"]);
 });
 
 gulp.task("compile", function () {
