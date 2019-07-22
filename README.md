@@ -12,9 +12,9 @@ are targetting. Note that if no culture files are included, the invariant
 culture will be used.
 
 ```HTML
-<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.0/dist/stringformat.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.0/dist/cultures/stringformat.en.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.0/dist/cultures/stringformat.sv.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.1/dist/stringformat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.1/dist/cultures/stringformat.en.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.1/dist/cultures/stringformat.sv.js"></script>
 ```
 
 Then you're ready to go. Here are two simple examples using indexes and object

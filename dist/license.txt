@@ -4,7 +4,7 @@
 String.format for JavaScript
 Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
 
-The library core (stringformat-1.16.0.js and stringformat-1.16.0.min.js) is 
+The library core (stringformat-1.16.1.js and stringformat-1.16.1.min.js) is 
 licensed under the terms of the zlib license. 
 
                                  * * *

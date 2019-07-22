@@ -1,8 +1,8 @@
 /**
- * String.format for JavaScript 1.16.0
+ * String.format for JavaScript 1.16.1
  * https://github.com/dmester/sffjs
  *  
- * Built: 2019-04-05T18:32:54.362Z
+ * Built: 2019-07-22T15:11:55.991Z
  *
  * Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
  *
@@ -35,7 +35,7 @@ var sffjs = (function() {
              * The version of the library String.Format for JavaScript.
              * @type string
              */
-            version: "1.16.0",
+            version: "1.16.1",
             
             /**
              * Sets the current culture, used for culture specific formatting.
@@ -213,7 +213,9 @@ var sffjs = (function() {
             result = ensureFixedPoint(Number(result + "1").toFixed(decimals));
             
             // Trim excessive decimal zeroes
-            result = result.replace(/\.?0+$/, "");
+            if (decimals > 0) {
+                result = result.replace(/\.?0+$/, "");
+            }
         }
         
         return result;

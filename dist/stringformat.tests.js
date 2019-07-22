@@ -1,9 +1,9 @@
 /**
  * Unit tests for
- * String.format for JavaScript 1.16.0
+ * String.format for JavaScript 1.16.1
  * https://github.com/dmester/sffjs
  *  
- * Built: 2019-04-05T18:33:05.038Z
+ * Built: 2019-07-22T15:12:09.052Z
  *
  * Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
  *
@@ -246,6 +246,11 @@
         assert.formatsTo("4%", "{0:0'%'}", 4.2);
         assert.formatsTo("4%", "{0:0\\%}", 4.2);
         assert.formatsTo("42.01%", "{0:0.00%}", 0.42009);
+        assert.formatsTo("30%", "{0:#,#%}", 0.3);
+        assert.formatsTo("30%", "{0:#,#%}", 0.3012);
+        assert.formatsTo("31%", "{0:#,#%}", 0.3123);
+        assert.formatsTo("30%", "{0:0,0%}", 0.30345)
+        assert.formatsTo("03%", "{0:0,0%}", 0.030345)
         
         test.section("Custom numeric format strings - thousands separator and scaling");
         assert.formatsTo("4200", "{0:,0,}", 4200000);
@@ -366,6 +371,10 @@
         
         assert.formatsTo("12.5 %", "{0:p1}", 0.12549);
         assert.formatsTo("12.5 %", "{0:P1}", 0.12549);
+
+        assert.formatsTo("30 %", "{0:p0}", 0.3);
+        assert.formatsTo("30 %", "{0:p0}", 0.301);
+        assert.formatsTo("30 %", "{0:p0}", 0.3012);
         
         test.section("Specifier R");
         assert.formatsTo("2353", "{0:R}", 2353);

@@ -1,8 +1,8 @@
 /*
- * String.format for JavaScript 1.16.0
+ * String.format for JavaScript 1.16.1
  * https://github.com/dmester/sffjs
  *  
- * Built: 2019-04-05T18:33:05.038Z
+ * Built: 2019-07-22T15:12:09.052Z
  *
  * Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
  *
