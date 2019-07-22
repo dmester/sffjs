@@ -57,7 +57,7 @@ gulp.task("compile", function () {
                 { src: "var module; function define(deps, cb) { }" }
             ],
         }, {
-            platform: ['native', 'java', 'javascript']
+            platform: ['javascript']
         }));
 
     return merge(
