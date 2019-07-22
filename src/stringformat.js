@@ -213,7 +213,9 @@ var sffjs = (function() {
             result = ensureFixedPoint(Number(result + "1").toFixed(decimals));
             
             // Trim excessive decimal zeroes
-            result = result.replace(/\.?0+$/, "");
+            if (decimals > 0 ) {
+                result = result.replace(/\.?0+$/, "");
+            }
         }
         
         return result;
