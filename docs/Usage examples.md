@@ -69,6 +69,8 @@ sffjs.setCulture("sv");
 Note that sffjs does not come with a culture loader. You need to manually include
 the culture files on your page.
 
+See also [Working with cultures](https://github.com/dmester/sffjs/blob/master/docs/Working%20with%20cultures.md).
+
 ## More examples
 
 ```js

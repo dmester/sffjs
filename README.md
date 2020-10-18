@@ -62,5 +62,6 @@ other environments.
 
 * [Compatibility with .NET Framework](https://github.com/dmester/sffjs/blob/master/docs/Compatiblity%20with%20.NET%20Framework.md)
 * [More usage examples](https://github.com/dmester/sffjs/blob/master/docs/Usage%20examples.md)
+* [Working with cultures](https://github.com/dmester/sffjs/blob/master/docs/Working%20with%20cultures.md)
 * [Extending sffjs with support for custom classes](https://github.com/dmester/sffjs/blob/master/docs/Extending%20sffjs.md)
 * [Reference information regarding .NET format strings](http://msdn.microsoft.com/en-us/library/system.string.format.aspx)
