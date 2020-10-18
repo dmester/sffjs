@@ -180,6 +180,11 @@ declare namespace sffjs {
      * Gets a list of all registered cultures. The invariant culture is included with an empty string as name.
      */
     function getCultures(): CultureInfo[];
+
+    /**
+     * Gets the culture currently in use.
+     */
+    const LC: CultureInfo;
 }
 
 interface StringConstructor {
