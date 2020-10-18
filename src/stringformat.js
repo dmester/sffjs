@@ -55,7 +55,18 @@ var sffjs = (function() {
                 
                 // ...and reevaulate current culture
                 updateCulture();
-            }
+            },
+
+            /**
+             * Gets an array of all registered cultures.
+             */
+            getCultures: function () {
+                var result = [INVARIANT_CULTURE];
+                for (var key in cultures) {
+                    result.push(cultures[key]);
+                }
+                return result;
+            },
         },
         
     // ***** Shortcuts *****
@@ -96,7 +107,7 @@ var sffjs = (function() {
         currentCultureId = typeof navigator != "undefined" && (navigator.systemLanguage || navigator.language) || "",
     
         // Holds all registered external cultures, i.e. not the invariant culture
-        cultures = {};
+        cultures = Object.create(null);
     
     
     // ***** Private Methods *****

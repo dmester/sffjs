@@ -458,6 +458,12 @@
         assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
         assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
 
+        test.section("getCultures");
+        var cultures = sffjs.getCultures();
+        assert.areEqual(true, 
+            Array.isArray(cultures) && cultures[0].name === "" && cultures[1].name === "en-US",
+            "Registered cultures returned");
+
         test.section("setCulture");
         sffjs.registerCulture({ name: "__LANG" });
         sffjs.registerCulture({ name: "__LANG-REGION" });
