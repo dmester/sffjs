@@ -427,6 +427,13 @@
         assert.formatsTo("12:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 12, 30, 00));
         assert.formatsTo("1:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 13, 30, 00));
         assert.formatsTo("11:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 23, 30, 00));
+
+        test.section("Empty format string in culture");
+        sffjs.registerCulture({ name: "__EMPTY", _t: "" });
+        assert.formatsTo("1,000", "{0:0,0}", 1000);
+        sffjs.setCulture("__EMPTY");
+        assert.formatsTo("1000", "{0:0,0}", 1000);
+        sffjs.setCulture("en-US");
         
         test.section("Quoted text");
         assert.formatsTo("06mm33", "{0:hh'mm'ss}", dtam);

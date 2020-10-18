@@ -139,7 +139,9 @@ var sffjs = (function() {
     function fillGapsInCulture(culture) {
         // Add missing formats from the culture template
         for (var key in CULTURE_TEMPLATE) {
-            culture[key] = culture[key] || CULTURE_TEMPLATE[key];
+            if (CULTURE_TEMPLATE.hasOwnProperty(key) && culture[key] == null) {
+                culture[key] = CULTURE_TEMPLATE[key];
+            }
         }
         
         // Construct composite formats if they are not already defined
