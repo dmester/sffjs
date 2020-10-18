@@ -169,6 +169,14 @@ declare namespace sffjs {
     }
 
     /**
+     * Registers a culture object and reevaluates which culture to be used. Missing properties 
+     * are filled with information from the invariant culture.
+     * 
+     * This function is automatically called when a sffjs bundled culture file is loaded.
+     */
+    function registerCulture(culture: Partial<CultureInfo>): void;
+
+    /**
      * Sets the specified culture. This command has no effect unless you also load the corresponding culture file. 
      * Sffjs does not come with a culture file autoloader.
      * 
