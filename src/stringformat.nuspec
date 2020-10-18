@@ -10,7 +10,7 @@
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>This is a JavaScript implementation of the .NET Framework method String.Format, which you can use for building strings with formatted numbers, formatted dates, or just concatenate strings with other objects in a convenient way (especially if you have a localized web application). 
 
-Currently the script takes less than 5 kB, excluding additional localizations. The localizations offer a culture specific formatting of numbers, regardig radix points, thousands separators, currency, and of dates, regarding the names of the months and days, time formatting etc. Most of the .NET cultures are available.</description>
+Currently the script is just above 5 kB, excluding additional localizations. The localizations offer a culture specific formatting of numbers, regardig radix points, thousands separators, currency, and of dates, regarding the names of the months and days, time formatting etc. Most of the .NET cultures are available.</description>
         <summary>JavaScript implementation of the .NET String.Format method.</summary>
         <tags>JavaScript formatting</tags>
     </metadata>
