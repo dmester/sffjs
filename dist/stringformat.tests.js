@@ -1,11 +1,11 @@
 /**
  * Unit tests for
- * String.format for JavaScript 1.16.1
+ * String.format for JavaScript 1.17.0
  * https://github.com/dmester/sffjs
  *  
- * Built: 2019-07-22T15:12:09.052Z
+ * Built: 2020-10-18T11:11:41.809Z
  *
- * Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
+ * Copyright (c) 2009-2020 Daniel Mester Pirttijärvi
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -427,6 +427,13 @@
         assert.formatsTo("12:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 12, 30, 00));
         assert.formatsTo("1:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 13, 30, 00));
         assert.formatsTo("11:30 PM", "{0:h:mm tt}", new Date(2000, 0, 1, 23, 30, 00));
+
+        test.section("Empty format string in culture");
+        sffjs.registerCulture({ name: "__EMPTY", _t: "" });
+        assert.formatsTo("1,000", "{0:0,0}", 1000);
+        sffjs.setCulture("__EMPTY");
+        assert.formatsTo("1000", "{0:0,0}", 1000);
+        sffjs.setCulture("en-US");
         
         test.section("Quoted text");
         assert.formatsTo("06mm33", "{0:hh'mm'ss}", dtam);
@@ -450,6 +457,12 @@
         
         assert.formatsTo("{brackets} in args", "{0} in args", "{brackets}");
         assert.formatsTo("{{dblbrackets}} in args", "{0} in args", "{{dblbrackets}}");
+
+        test.section("getCultures");
+        var cultures = sffjs.getCultures();
+        assert.areEqual(true, 
+            Array.isArray(cultures) && cultures[0].name === "" && cultures[1].name === "en-US",
+            "Registered cultures returned");
 
         test.section("setCulture");
         sffjs.registerCulture({ name: "__LANG" });

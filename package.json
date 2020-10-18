@@ -1,6 +1,6 @@
 {
   "name": "@dmester/sffjs",
-  "version": "1.16.1",
+  "version": "1.17.0",
   "description": "String.format for JavaScript",
   "main": "./dist/stringformat.min.js",
   "types": "./dist/stringformat.d.ts",

@@ -7,9 +7,9 @@ are targetting. Note that if no culture files are included, the invariant
 culture will be used.
 
 ```html
-<script type="text/javascript" src="stringformat.js"></script>
-<script type="text/javascript" src="cultures/stringformat.en.js"></script>
-<script type="text/javascript" src="cultures/stringformat.sv.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.17.0/dist/stringformat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.17.0/dist/cultures/stringformat.en.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.17.0/dist/cultures/stringformat.sv.js"></script>
 ```
 
 Then you're ready to go. Here are some simple examples using indexes and object

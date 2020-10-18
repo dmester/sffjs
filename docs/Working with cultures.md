@@ -5,9 +5,9 @@ are used by sffjs. The easiest way to enable formatting in a specific language i
 culture file bundled with sffjs.
 
 ```html
-<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.1/dist/stringformat.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.1/dist/cultures/stringformat.en.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.16.1/dist/cultures/stringformat.sv.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.17.0/dist/stringformat.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.17.0/dist/cultures/stringformat.en.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@dmester/sffjs@1.17.0/dist/cultures/stringformat.sv.js"></script>
 ```
 
 Note that sffjs does not come with a culture loader. You need to manually include the culture files on your page.

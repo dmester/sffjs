@@ -1,10 +1,10 @@
 /**
- * String.format for JavaScript 1.16.1
+ * String.format for JavaScript 1.17.0
  * https://github.com/dmester/sffjs
  *  
- * Built: 2019-07-22T15:11:55.991Z
+ * Built: 2020-10-18T11:11:31.521Z
  *
- * Copyright (c) 2009-2019 Daniel Mester Pirttijärvi
+ * Copyright (c) 2009-2020 Daniel Mester Pirttijärvi
  *
  * This software is provided 'as-is', without any express or implied
  * warranty.  In no event will the authors be held liable for any damages
@@ -35,7 +35,7 @@ var sffjs = (function() {
              * The version of the library String.Format for JavaScript.
              * @type string
              */
-            version: "1.16.1",
+            version: "1.17.0",
             
             /**
              * Sets the current culture, used for culture specific formatting.
@@ -55,7 +55,18 @@ var sffjs = (function() {
                 
                 // ...and reevaulate current culture
                 updateCulture();
-            }
+            },
+
+            /**
+             * Gets an array of all registered cultures.
+             */
+            getCultures: function () {
+                var result = [INVARIANT_CULTURE];
+                for (var key in cultures) {
+                    result.push(cultures[key]);
+                }
+                return result;
+            },
         },
         
     // ***** Shortcuts *****
@@ -96,7 +107,7 @@ var sffjs = (function() {
         currentCultureId = typeof navigator != "undefined" && (navigator.systemLanguage || navigator.language) || "",
     
         // Holds all registered external cultures, i.e. not the invariant culture
-        cultures = {};
+        cultures = Object.create(null);
     
     
     // ***** Private Methods *****
@@ -139,7 +150,9 @@ var sffjs = (function() {
     function fillGapsInCulture(culture) {
         // Add missing formats from the culture template
         for (var key in CULTURE_TEMPLATE) {
-            culture[key] = culture[key] || CULTURE_TEMPLATE[key];
+            if (CULTURE_TEMPLATE.hasOwnProperty(key) && culture[key] == null) {
+                culture[key] = CULTURE_TEMPLATE[key];
+            }
         }
         
         // Construct composite formats if they are not already defined
