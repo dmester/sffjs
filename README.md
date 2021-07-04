@@ -1,5 +1,5 @@
 ﻿
-# [String.format for JavaScript](http://mstr.se/sffjs)
+# String.format for JavaScript
 
 This is a JavaScript library for string, date and number formatting. Formatting 
 is done using format strings almost completely compatible with the `String.Format` 
